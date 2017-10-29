@@ -1,159 +1,185 @@
-/*   1:    */ package thKaguyaMod.client.render.shot;
-/*   2:    */ 
-/*   3:    */ import cpw.mods.fml.relauncher.Side;
-/*   4:    */ import cpw.mods.fml.relauncher.SideOnly;
-/*   5:    */ import java.util.Random;
-/*   6:    */ import net.minecraft.client.renderer.Tessellator;
-/*   7:    */ import net.minecraft.client.renderer.entity.Render;
-/*   8:    */ import net.minecraft.entity.Entity;
-/*   9:    */ import net.minecraft.util.ResourceLocation;
-/*  10:    */ import org.lwjgl.opengl.GL11;
-/*  11:    */ import thKaguyaMod.entity.shot.EntityTHHenyoriLaser;
-/*  12:    */ 
-/*  13:    */ @SideOnly(Side.CLIENT)
-/*  14:    */ public class RenderTHHenyoriLaser
-/*  15:    */   extends Render
-/*  16:    */ {
-/*  17: 23 */   private static final ResourceLocation boatTextures = new ResourceLocation("thkaguyamod", "textures/Laser.png");
-/*  18: 24 */   private Random random = new Random();
-/*  19:    */   
-/*  20:    */   public void doRenderTHHenyoriLaser(EntityTHHenyoriLaser entityTHLaser, double xpos, double ypos, double zpos, float yaw, float pitch)
-/*  21:    */   {
-/*  22: 33 */     GL11.glPushMatrix();
-/*  23: 34 */     bindEntityTexture(entityTHLaser);
-/*  24: 35 */     GL11.glTranslatef((float)xpos, (float)ypos, (float)zpos);
-/*  25: 36 */     GL11.glDisable(2896);
-/*  26:    */     
-/*  27: 38 */     GL11.glEnable(32826);
-/*  28: 39 */     GL11.glBlendFunc(1, 769);
-/*  29: 40 */     GL11.glScalef(1.0F, 1.0F, 1.0F);
-/*  30:    */     
-/*  31: 42 */     Tessellator tessellator = Tessellator.instance;
-/*  32:    */     
-/*  33: 44 */     int color = entityTHLaser.getShotColor();
-/*  34:    */     
-/*  35: 46 */     GL11.glRotatef(entityTHLaser.rotationYaw, 0.0F, 1.0F, 0.0F);
-/*  36: 47 */     GL11.glRotatef(-entityTHLaser.rotationPitch, 1.0F, 0.0F, 0.0F);
-/*  37:    */     
-/*  38: 49 */     double centerZ1 = entityTHLaser.getLaserLength() * 1.2D / 2.0D;
-/*  39: 50 */     double centerZ2 = entityTHLaser.getLaserLength() / 2.0D;
-/*  40:    */     
-/*  41: 52 */     GL11.glEnable(2884);
-/*  42: 53 */     GL11.glEnable(32826);
-/*  43:    */     
-/*  44: 55 */     GL11.glDisable(32826);
-/*  45:    */     
-/*  46: 57 */     GL11.glEnable(3042);
-/*  47: 58 */     renderLaser(tessellator, entityTHLaser.getLaserLength() * 1.2D, entityTHLaser.getShotSize() * 1.2F, 0.0D, color, 0.6F, entityTHLaser.getAnimationCount());
-/*  48: 59 */     GL11.glDisable(3042);
-/*  49:    */     
-/*  50:    */ 
-/*  51:    */ 
-/*  52:    */ 
-/*  53: 64 */     GL11.glEnable(2896);
-/*  54:    */     
-/*  55:    */ 
-/*  56: 67 */     GL11.glPopMatrix();
-/*  57:    */   }
-/*  58:    */   
-/*  59:    */   protected void renderLaser(Tessellator tessellator, double length, float width, double zPos, int color, float alpha, int time)
-/*  60:    */   {
-/*  61: 73 */     float[] colorR = { 224.0F, 0.0F, 0.0F, 224.0F, 224.0F, 0.0F, 255.0F, 224.0F };
-/*  62: 74 */     float[] colorG = { 0.0F, 0.0F, 224.0F, 224.0F, 0.0F, 224.0F, 128.0F, 224.0F };
-/*  63: 75 */     float[] colorB = { 0.0F, 224.0F, 0.0F, 0.0F, 224.0F, 224.0F, 0.0F, 224.0F };
-/*  64:    */     
-/*  65: 77 */     float maxWidth = width;
-/*  66:    */     
-/*  67: 79 */     int zAngleDivNum = 8;
-/*  68:    */     
-/*  69: 81 */     double angleSpanZ = 6.283185307179586D / zAngleDivNum;
-/*  70:    */     
-/*  71: 83 */     int zDivNum = 13;
-/*  72: 84 */     double zLength = length;
-/*  73: 85 */     double zDivLength = zLength / (zDivNum - 1);
-/*  74: 86 */     double zLength2 = zLength / 2.0D;
-/*  75:    */     
-/*  76:    */ 
-/*  77: 89 */     double zPosOld = zPos;
-/*  78:    */     
-/*  79:    */ 
-/*  80: 92 */     float angleSpanY = 0.1047198F;
-/*  81: 93 */     float angleY = angleSpanY * time;
-/*  82:    */     
-/*  83:    */ 
-/*  84: 96 */     float angle = 0.0F;
-/*  85: 97 */     float angleSpan = 3.141593F / (zDivNum - 1);
-/*  86:    */     
-/*  87:    */ 
-/*  88:100 */     width = (float)Math.sin(angle) * maxWidth;
-/*  89:101 */     float widthOld = width;
-/*  90:    */     
-/*  91:    */ 
-/*  92:104 */     float xPos = (float)Math.sin(angleY) * 3.0F;
-/*  93:105 */     float yPos = 0.0F;
-/*  94:106 */     float xPos2 = (float)Math.sin(angleY - angleSpanY) * 3.0F;
-/*  95:107 */     float yPos2 = 0.0F;
-/*  96:    */     
-/*  97:109 */     float xPosOld = xPos;
-/*  98:110 */     float yPosOld = yPos;
-/*  99:111 */     float xPos2Old = xPos2;
-/* 100:112 */     float yPos2Old = yPos2;
-/* 101:123 */     for (int j = 1; j < zDivNum; j++)
-/* 102:    */     {
-/* 103:125 */       zPos += zDivLength;
-/* 104:126 */       widthOld = width;
-/* 105:127 */       angle += angleSpan;
-/* 106:128 */       width = (float)Math.sin(angle) * maxWidth;
-/* 107:    */       
-/* 108:    */ 
-/* 109:    */ 
-/* 110:    */ 
-/* 111:133 */       double angleZ = angleSpanZ;
-/* 112:134 */       angleY += angleSpanY;
-/* 113:136 */       for (int i = 0; i <= zAngleDivNum; i++)
-/* 114:    */       {
-/* 115:138 */         xPos = (float)Math.cos(angleZ) * width + (float)Math.sin(angleY) * 3.0F;
-/* 116:139 */         yPos = (float)Math.sin(angleZ) * width;
-/* 117:140 */         xPos2 = (float)Math.cos(angleZ) * widthOld + (float)Math.sin(angleY - angleSpanY) * 3.0F;
-/* 118:141 */         yPos2 = (float)Math.sin(angleZ) * widthOld;
-/* 119:    */         
-/* 120:143 */         tessellator.startDrawingQuads();
-/* 121:144 */         tessellator.setColorRGBA_F(colorR[color], colorG[color], colorB[color], alpha);
-/* 122:145 */         tessellator.setNormal(0.0F, 1.0F, 0.0F);
-/* 123:146 */         tessellator.addVertexWithUV(xPosOld, yPosOld, zPos, 0.0D, 0.0D);
-/* 124:147 */         tessellator.addVertexWithUV(xPos, yPos, zPos, 1.0D, 0.0D);
-/* 125:148 */         tessellator.addVertexWithUV(xPos2, yPos2, zPosOld, 1.0D, 1.0D);
-/* 126:149 */         tessellator.addVertexWithUV(xPos2Old, yPos2Old, zPosOld, 0.0D, 1.0D);
-/* 127:150 */         tessellator.draw();
-/* 128:    */         
-/* 129:152 */         xPosOld = xPos;
-/* 130:153 */         yPosOld = yPos;
-/* 131:154 */         xPos2Old = xPos2;
-/* 132:155 */         yPos2Old = yPos2;
-/* 133:156 */         angleZ += angleSpanZ;
-/* 134:    */       }
-/* 135:160 */       zPosOld = zPos;
-/* 136:    */     }
-/* 137:    */   }
-/* 138:    */   
-/* 139:    */   protected ResourceLocation func_110781_a(EntityTHHenyoriLaser entityTHLaser)
-/* 140:    */   {
-/* 141:166 */     return boatTextures;
-/* 142:    */   }
-/* 143:    */   
-/* 144:    */   protected ResourceLocation getEntityTexture(Entity entity)
-/* 145:    */   {
-/* 146:171 */     return func_110781_a((EntityTHHenyoriLaser)entity);
-/* 147:    */   }
-/* 148:    */   
-/* 149:    */   public void doRender(Entity entity, double xpos, double ypos, double zpos, float yaw, float pitch)
-/* 150:    */   {
-/* 151:177 */     doRenderTHHenyoriLaser((EntityTHHenyoriLaser)entity, xpos, ypos, zpos, yaw, pitch);
-/* 152:    */   }
-/* 158:    */ }
+package thKaguyaMod.client.render.shot;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.client.render.shot.RenderTHHenyoriLaser
- * JD-Core Version:    0.7.0.1
- */
+import java.util.Random;
+
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.opengl.GL11;
+
+import thKaguyaMod.entity.shot.EntityTHHenyoriLaser;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
+public class RenderTHHenyoriLaser extends Render
+{
+	
+	/*
+	通常レーザーの描画
+	*/
+	private static final ResourceLocation field_110782_f = new ResourceLocation("thkaguyamod", "textures/Laser.png");
+	private Random random = new Random();
+
+    public RenderTHHenyoriLaser()
+    {
+    }
+
+    public void doRenderTHHenyoriLaser(EntityTHHenyoriLaser entityTHLaser, double xpos, double ypos, double zpos,
+            float yaw, float pitch)
+    {
+        GL11.glPushMatrix();
+        bindEntityTexture(entityTHLaser);
+        GL11.glTranslatef((float)xpos, (float)ypos, (float)zpos);
+		GL11.glDisable(GL11.GL_LIGHTING);
+    	//GL11.glEnable(GL11.GL_BLEND);
+    	GL11.glEnable(32826);
+    	GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_COLOR);
+    	GL11.glScalef(1.0F, 1.0F, 1.0F);
+        //loadTexture("/textures/Laser.png");
+        Tessellator tessellator = Tessellator.instance;
+    	
+    	int color = entityTHLaser.getShotColor();
+    	
+    	GL11.glRotatef(entityTHLaser.rotationYaw, 0.0F, 1.0F, 0.0F);
+    	GL11.glRotatef(-entityTHLaser.rotationPitch, 1.0F, 0.0F, 0.0F);
+
+    	double centerZ1 = entityTHLaser.getLaserLength() * 1.2D / 2.0D;
+    	double centerZ2 = entityTHLaser.getLaserLength() / 2.0D;
+    	
+    	GL11.glEnable(GL11.GL_CULL_FACE);//表綿描画
+    	GL11.glEnable(32826);
+    	//renderLaser(tessellator, entityTHLaser.getLaserLength(), entityTHLaser.getShotSize(), centerZ1 - centerZ2, 7, 1.0F, entityTHLaser.getAnimationCount());
+    	GL11.glDisable(32826);
+    	
+    	GL11.glEnable(GL11.GL_BLEND);
+    	renderLaser(tessellator, entityTHLaser.getLaserLength() * 1.2D, entityTHLaser.getShotSize() * 1.2F, 0.0D, color, 0.6F, entityTHLaser.getAnimationCount());
+    	GL11.glDisable(GL11.GL_BLEND);
+
+    	
+    	//GL11.glDisable(GL11.GL_BLEND);
+        //GL11.glDisable(32826);
+    	GL11.glEnable(GL11.GL_LIGHTING);
+    	//GL11.glDisable(GL11.GL_CULL_FACE);//両面描画
+    	//GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glPopMatrix();
+    }
+	
+	//レーザーの描画をする
+	protected void renderLaser(Tessellator tessellator, double length, float width, double zPos, int color, float alpha, int time)
+	{
+		float colorR[] = { 224F,   0F,   0F, 224F, 224F,   0F, 255F, 224F};
+    	float colorG[] = {   0F,   0F, 224F, 224F,   0F, 224F, 128F, 224F};
+    	float colorB[] = {   0F, 224F,   0F,   0F, 224F, 224F,   0F, 224F};
+		
+		float maxWidth = (float)width;//最大の太さをmaxWidthとして保存
+		
+    	int zAngleDivNum = 8;//Z軸回転の分割数
+    	double angleZ;//Z軸回転変数
+    	double angleSpanZ = Math.PI * 2.0D / (double)zAngleDivNum;//Z軸回転の変化量
+    	
+    	int zDivNum = 13;//レーザーの奥方向への分割数。必ず奇数
+    	double zLength = length;//レーザーの長さ（Z方向の長さ、奥行き）
+    	double zDivLength = zLength / (double)(zDivNum - 1);//Z方向へ分割したときの1分割分の長さ
+    	double zLength2 = zLength / 2.0D;//長さの半分
+		//double zPos = 0.0D;
+    	//double zPos = -zLength2;//奥行き方向の現在の描画位置
+    	double zPosOld = zPos;//ひとつ前の描画位置
+    	
+    	//へにょりレーザー独特のY軸回転
+    	float angleSpanY = (float)Math.PI / 30F;
+    	float angleY = angleSpanY * time;//0.0F;
+    	
+    	//半円を描くようにレーザーが太くなるための変数。cos0 ~ cos180で処理
+    	float angle = 0F;
+    	float angleSpan = (float)Math.PI / (float)(zDivNum - 1);
+    	
+    	//レーザーの太さ。Z軸方向への進行で２つ必要
+    	width = (float)Math.sin(angle) * maxWidth;
+    	float widthOld = width;
+    	
+		//初期のXとYの座標（レーザーの始点は点）
+    	float xPos = (float)Math.sin(angleY) * 3.0F;
+    	float yPos = 0F;
+    	float xPos2 = (float)Math.sin(angleY - angleSpanY) * 3.0F;
+    	float yPos2 = 0F;
+    	//初期のXとYの座標
+    	float xPosOld = xPos;
+    	float yPosOld = yPos;
+    	float xPos2Old = xPos2;
+    	float yPos2Old = yPos2;
+    	
+    	//angleY += angleSpanY;
+
+
+    	
+
+    	//if()
+    	
+    	//奥行きが長さの半分に達するまで（奥行きの初期値は長さの半分のマイナス値）
+    	//while(zPos < zLength2)
+		for(int j = 1; j < zDivNum; j++)
+		{
+    		zPos += zDivLength/* * (float)Math.cos(angleY)*/;//奥行きを１段階増やす
+    		widthOld = width;
+    		angle += angleSpan;//レーザーの描く半円の角度を更新
+    		width = (float)Math.sin(angle) * maxWidth;
+    		//XとY座標は初期値、0度のときの座標に戻る。
+    		//xPos = (float)Math.sin(angleY);//0F;
+    		//yPos = (float)width;
+    		//Z軸回転の始点
+    		angleZ = angleSpanZ;
+    		angleY += angleSpanY;
+    		
+    		for(int i = 0; i <= zAngleDivNum; i++)
+    		{
+    			xPos = (float)Math.cos(angleZ) * width + (float)Math.sin(angleY) * 3.0F;
+    			yPos = (float)Math.sin(angleZ)/* * (float)Math.cos(angleY)*/ * width;
+    			xPos2 = (float)Math.cos(angleZ) * widthOld + (float)Math.sin(angleY - angleSpanY) * 3.0F;
+    			yPos2 = (float)Math.sin(angleZ)/* * (float)Math.cos(angleY)*/ * widthOld;
+	    			
+    			tessellator.startDrawingQuads();
+	    		tessellator.setColorRGBA_F(colorR[color], colorG[color], colorB[color], alpha);
+	    		tessellator.setNormal(0.0F, 1.0F, 0.0F);
+	        	tessellator.addVertexWithUV(  xPosOld , yPosOld , zPos   , 0.0F, 0.0F);
+	        	tessellator.addVertexWithUV(  xPos    , yPos    , zPos   , 1.0F, 0.0F);
+	        	tessellator.addVertexWithUV(  xPos2   , yPos2   , zPosOld, 1.0F, 1.0F);
+	        	tessellator.addVertexWithUV(  xPos2Old, yPos2Old, zPosOld, 0.0F, 1.0F);
+	    		tessellator.draw();
+    			
+    			xPosOld = xPos;
+    			yPosOld = yPos;
+    			xPos2Old = xPos2;
+    			yPos2Old = yPos2;
+    			angleZ += angleSpanZ;
+    			
+    			
+    		}
+    		zPosOld = zPos;//古い奥行きを今の奥行きに更新
+    	}
+	}
+	
+    protected ResourceLocation func_110781_a(EntityTHHenyoriLaser entityTHLaser)
+    {
+        return field_110782_f;
+    }
+
+    protected ResourceLocation func_110775_a(Entity entity)
+    {
+        return this.func_110781_a((EntityTHHenyoriLaser)entity);
+    }
+
+    public void doRender(Entity entity, double xpos, double ypos, double zpos,
+            float yaw, float pitch)
+    {
+        doRenderTHHenyoriLaser((EntityTHHenyoriLaser)entity, xpos, ypos, zpos, yaw, pitch);
+    }
+
+	@Override
+	protected ResourceLocation getEntityTexture(Entity var1) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+}

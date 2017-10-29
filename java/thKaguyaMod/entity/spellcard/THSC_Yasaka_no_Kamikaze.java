@@ -1,40 +1,44 @@
-/*  1:   */ package thKaguyaMod.entity.spellcard;
-/*  2:   */ 
-/*  3:   */ import net.minecraft.entity.EntityLivingBase;
-/*  4:   */ import net.minecraft.util.MathHelper;
-/*  5:   */ import net.minecraft.util.Vec3;
-/*  6:   */ import thKaguyaMod.THShotLib;
-/*  7:   */ 
-/*  8:   */ public class THSC_Yasaka_no_Kamikaze
-/*  9:   */   extends THSpellCard
-/* 10:   */ {
-/* 11:   */   public THSC_Yasaka_no_Kamikaze()
-/* 12:   */   {
-/* 13:15 */     setNeedLevel(3);
-/* 14:16 */     setRemoveTime(100);
-/* 15:17 */     setEndTime(270);
-/* 16:18 */     setOriginalUserName(41);
-/* 17:   */   }
-/* 18:   */   
-/* 19:   */   public void spellcard_main()
-/* 20:   */   {
-/* 21:24 */     if ((this.time < 5) || (this.user == null)) {
-/* 22:26 */       return;
-/* 23:   */     }
-/* 24:29 */     Vec3 angle = THShotLib.getVecFromAngle(this.user.rotationYaw, this.user.rotationPitch, -1.0D);
-/* 25:30 */     if (!this.target.isDead) {
-/* 26:32 */       angle = THShotLib.angle_ToPos(pos_Target(), pos_User());
-/* 27:   */     }
-/* 28:35 */     if (this.time % 46 < 23) {
-/* 29:37 */       THShotLib.createRingShot(this.user, this.user, pos_User(), angle, 180.0F, 1, 0.0D, 1.6D, 0.1D, gravity_Zero(), shot(10, 2, THShotLib.SIZE[10], 18.0F, 10, 40, 180), 8, Math.cos(this.time * 2 / 180.0F * 3.141593F - 3.141593F) * 2.0D + 3.0D, MathHelper.sin(this.time * 16 / 180.0F * 3.141593F) * 50.0F + 50.0F, this.time * 10.0F);
-/* 30:   */     } else {
-/* 31:41 */       THShotLib.createRingShot(this.user, this.user, pos_User(), angle, -180.0F, 2, 0.0D, 1.6D, 0.1D, gravity_Zero(), shot(10, 5, THShotLib.SIZE[10], 18.0F, 10, 40, 180), 8, Math.cos(this.time * 2 / 180.0F * 3.141593F - 3.141593F) * 2.0D + 3.0D, MathHelper.sin(-this.time * 16 / 180.0F * 3.141593F) * 50.0F + 50.0F, -this.time * 10.0F);
-/* 32:   */     }
-/* 33:   */   }
-/* 34:   */ }
+package thKaguyaMod.entity.spellcard;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.entity.spellcard.THSC_Yasaka_no_Kamikaze
- * JD-Core Version:    0.7.0.1
- */
+import static thKaguyaMod.DanmakuConstants.*;
+import static thKaguyaMod.THShotLib.*;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
+import thKaguyaMod.THShotLib;
+
+public class THSC_Yasaka_no_Kamikaze extends THSpellCard
+{
+	//大奇跡「八坂の神風」
+	
+	public THSC_Yasaka_no_Kamikaze()
+	{
+		this.setNeedLevel(3);
+		this.setRemoveTime(100);
+		this.setEndTime(270);
+		this.setOriginalUserName(SANAE);
+	}
+	
+	@Override
+	public void spellcard_main()
+	{
+		if(time < 5 || user == null)
+		{
+			return;
+		}
+		
+		Vec3 angle = THShotLib.getVecFromAngle(user.rotationYaw, user.rotationPitch, -1.0D);
+		if(!target.isDead)
+		{
+			angle = THShotLib.angle_ToPos(this.pos_Target(), this.pos_User());
+		}
+		
+		if( time % 46 < 23)
+		{
+			THShotLib.createRingShot(user, user, pos_User(), angle/*getVecFromAngle(0F, -90F)*/,  180F, 1, 0.0D, 1.6D, 0.1D, gravity_Zero(), shot(FORM_RICE, GREEN, SIZE[FORM_RICE], 18F, 10, 40, THShotLib.WIND01), 8, Math.cos((float)(time * 2) / 180F * (float)Math.PI - (float)Math.PI) * 2.0D +  3.0D , MathHelper.sin((float)(time * 16) / 180F * (float)Math.PI) * 50F + 50F, time * 10F);
+		}
+		else
+		{
+			THShotLib.createRingShot(user, user, pos_User(), angle/*getVecFromAngle(0F, -90F)*/, -180F, 2, 0.0D, 1.6D, 0.1D, gravity_Zero(), shot(FORM_RICE, AQUA, SIZE[FORM_RICE], 18F, 10, 40, THShotLib.WIND01), 8, Math.cos((float)(time * 2) / 180F * (float)Math.PI - (float)Math.PI) * 2.0D + 3.0D, MathHelper.sin((float)(-time * 16) / 180F * (float)Math.PI) * 50F + 50F, -time * 10F);
+		}
+	}
+}

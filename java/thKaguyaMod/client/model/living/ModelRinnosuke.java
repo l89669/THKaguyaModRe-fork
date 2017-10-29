@@ -1,189 +1,222 @@
-/*   1:    */ package thKaguyaMod.client.model.living;
-/*   2:    */ 
-/*   3:    */ import cpw.mods.fml.relauncher.Side;
-/*   4:    */ import cpw.mods.fml.relauncher.SideOnly;
-/*   5:    */ import net.minecraft.client.model.ModelBase;
-/*   6:    */ import net.minecraft.client.model.ModelRenderer;
-/*   7:    */ import net.minecraft.entity.Entity;
-/*   8:    */ import net.minecraft.util.MathHelper;
-/*   9:    */ 
-/*  10:    */ @SideOnly(Side.CLIENT)
-/*  11:    */ public class ModelRinnosuke
-/*  12:    */   extends ModelBase
-/*  13:    */ {
-/*  14:    */   ModelRenderer bipedBody;
-/*  15:    */   ModelRenderer bipedRightArm;
-/*  16:    */   ModelRenderer bipedLeftArm;
-/*  17:    */   ModelRenderer bipedRightLeg;
-/*  18:    */   ModelRenderer bipedLeftLeg;
-/*  19:    */   ModelRenderer box;
-/*  20:    */   ModelRenderer bottom;
-/*  21:    */   ModelRenderer bipedHead;
-/*  22:    */   ModelRenderer longHair;
-/*  23:    */   ModelRenderer Grass;
-/*  24:    */   
-/*  25:    */   public ModelRinnosuke()
-/*  26:    */   {
-/*  27: 28 */     this.textureWidth = 64;
-/*  28: 29 */     this.textureHeight = 64;
-/*  29:    */     
-/*  30: 31 */     this.bipedBody = new ModelRenderer(this, 0, 16);
-/*  31: 32 */     this.bipedBody.addBox(-4.0F, 0.0F, -2.0F, 8, 10, 4);
-/*  32: 33 */     this.bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
-/*  33: 34 */     this.bipedBody.setTextureSize(64, 64);
-/*  34: 35 */     this.bipedBody.mirror = true;
-/*  35: 36 */     setRotation(this.bipedBody, 0.0F, 0.0F, 0.0F);
-/*  36: 37 */     this.bipedRightArm = new ModelRenderer(this, 0, 32);
-/*  37: 38 */     this.bipedRightArm.addBox(-2.0F, -1.0F, -1.5F, 3, 10, 3);
-/*  38: 39 */     this.bipedRightArm.setRotationPoint(-5.0F, 1.0F, 0.0F);
-/*  39: 40 */     this.bipedRightArm.setTextureSize(64, 64);
-/*  40: 41 */     this.bipedRightArm.mirror = true;
-/*  41: 42 */     setRotation(this.bipedRightArm, 0.0F, 0.0F, 0.0F);
-/*  42: 43 */     this.bipedLeftArm = new ModelRenderer(this, 12, 32);
-/*  43: 44 */     this.bipedLeftArm.addBox(-1.0F, -1.0F, -1.5F, 3, 10, 3);
-/*  44: 45 */     this.bipedLeftArm.setRotationPoint(5.0F, 1.0F, 0.0F);
-/*  45: 46 */     this.bipedLeftArm.setTextureSize(64, 64);
-/*  46: 47 */     this.bipedLeftArm.mirror = true;
-/*  47: 48 */     setRotation(this.bipedLeftArm, 0.0F, 0.0F, 0.0F);
-/*  48: 49 */     this.bipedRightLeg = new ModelRenderer(this, 48, 16);
-/*  49: 50 */     this.bipedRightLeg.addBox(-1.0F, 0.0F, -2.0F, 4, 14, 4);
-/*  50: 51 */     this.bipedRightLeg.setRotationPoint(-3.0F, 10.0F, 0.0F);
-/*  51: 52 */     this.bipedRightLeg.setTextureSize(64, 64);
-/*  52: 53 */     this.bipedRightLeg.mirror = true;
-/*  53: 54 */     setRotation(this.bipedRightLeg, 0.0F, 0.0F, 0.0F);
-/*  54: 55 */     this.bipedLeftLeg = new ModelRenderer(this, 32, 16);
-/*  55: 56 */     this.bipedLeftLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 14, 4);
-/*  56: 57 */     this.bipedLeftLeg.setRotationPoint(2.0F, 10.0F, 0.0F);
-/*  57: 58 */     this.bipedLeftLeg.setTextureSize(64, 64);
-/*  58: 59 */     this.bipedLeftLeg.mirror = true;
-/*  59: 60 */     setRotation(this.bipedLeftLeg, 0.0F, 0.0F, 0.0F);
-/*  60: 61 */     this.box = new ModelRenderer(this, 32, 10);
-/*  61: 62 */     this.box.addBox(-3.0F, -2.0F, 0.0F, 6, 4, 2);
-/*  62: 63 */     this.box.setRotationPoint(0.0F, 8.0F, -4.0F);
-/*  63: 64 */     this.box.setTextureSize(64, 64);
-/*  64: 65 */     this.box.mirror = true;
-/*  65: 66 */     setRotation(this.box, 0.0F, 0.0F, 0.0F);
-/*  66: 67 */     this.bottom = new ModelRenderer(this, 0, 46);
-/*  67: 68 */     this.bottom.addBox(-4.5F, 0.0F, -2.5F, 9, 13, 5);
-/*  68: 69 */     this.bottom.setRotationPoint(0.0F, 8.0F, 0.0F);
-/*  69: 70 */     this.bottom.setTextureSize(64, 64);
-/*  70: 71 */     this.bottom.mirror = true;
-/*  71: 72 */     setRotation(this.bottom, 0.0F, 0.0F, 0.0F);
-/*  72: 73 */     this.bipedHead = new ModelRenderer(this, 0, 0);
-/*  73: 74 */     this.bipedHead.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8);
-/*  74: 75 */     this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
-/*  75: 76 */     this.bipedHead.setTextureSize(64, 64);
-/*  76: 77 */     this.bipedHead.mirror = true;
-/*  77: 78 */     setRotation(this.bipedHead, 0.0F, 0.0F, 0.0F);
-/*  78: 79 */     this.longHair = new ModelRenderer(this, 24, 0);
-/*  79: 80 */     this.longHair.addBox(-4.0F, 0.0F, -3.0F, 8, 2, 3);
-/*  80: 81 */     this.longHair.setRotationPoint(0.0F, 0.0F, 4.0F);
-/*  81: 82 */     this.longHair.setTextureSize(64, 64);
-/*  82: 83 */     this.longHair.mirror = true;
-/*  83: 84 */     setRotation(this.longHair, 0.0F, 0.0F, 0.0F);
-/*  84: 85 */     this.Grass = new ModelRenderer(this, 48, 0);
-/*  85: 86 */     this.Grass.addBox(-4.0F, 0.0F, 0.0F, 8, 2, 1);
-/*  86: 87 */     this.Grass.setRotationPoint(0.0F, -3.0F, -4.2F);
-/*  87: 88 */     this.Grass.setTextureSize(64, 64);
-/*  88: 89 */     this.Grass.mirror = true;
-/*  89: 90 */     setRotation(this.Grass, 0.0F, 0.0F, 0.0F);
-/*  90:    */     
-/*  91: 92 */     this.bipedHead.addChild(this.longHair);
-/*  92: 93 */     this.bipedHead.addChild(this.Grass);
-/*  93: 94 */     this.bipedBody.addChild(this.box);
-/*  94: 95 */     this.bipedBody.addChild(this.bottom);
-/*  95:    */   }
-/*  96:    */   
-/*  97:    */   public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
-/*  98:    */   {
-/*  99:100 */     super.render(entity, f, f1, f2, f3, f4, f5);
-/* 100:101 */     setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-/* 101:102 */     this.bipedBody.render(f5);
-/* 102:103 */     this.bipedRightArm.render(f5);
-/* 103:    */     
-/* 104:105 */     this.bipedLeftArm.render(f5);
-/* 105:    */     
-/* 106:107 */     this.bipedRightLeg.render(f5);
-/* 107:108 */     this.bipedLeftLeg.render(f5);
-/* 108:    */     
-/* 109:    */ 
-/* 110:111 */     this.bipedHead.render(f5);
-/* 111:    */     
-/* 112:    */ 
-/* 113:    */ 
-/* 114:    */ 
-/* 115:    */ 
-/* 116:    */ 
-/* 117:    */ 
-/* 118:    */ 
-/* 119:    */ 
-/* 120:    */ 
-/* 121:    */ 
-/* 122:    */ 
-/* 123:    */ 
-/* 124:    */ 
-/* 125:    */ 
-/* 126:    */ 
-/* 127:    */ 
-/* 128:    */ 
-/* 129:    */ 
-/* 130:    */ 
-/* 131:    */ 
-/* 132:133 */     this.bipedRightArm.rotateAngleX = -0.2094395F;
-/* 133:134 */     this.bipedRightArm.rotateAngleY = -0.1745329F;
-/* 134:135 */     this.bipedRightArm.rotateAngleZ = 0.5235988F;
-/* 135:    */     
-/* 136:137 */     this.bipedLeftArm.rotateAngleX = this.bipedRightArm.rotateAngleX;
-/* 137:138 */     this.bipedLeftArm.rotateAngleY = (-this.bipedRightArm.rotateAngleY);
-/* 138:139 */     this.bipedLeftArm.rotateAngleZ = (-this.bipedRightArm.rotateAngleZ);
-/* 139:    */   }
-/* 140:    */   
-/* 141:    */   private void setRotation(ModelRenderer model, float rotateX, float rotateY, float rotateZ)
-/* 142:    */   {
-/* 143:153 */     model.rotateAngleX = rotateX;
-/* 144:154 */     model.rotateAngleY = rotateY;
-/* 145:155 */     model.rotateAngleZ = rotateZ;
-/* 146:    */   }
-/* 147:    */   
-/* 148:    */   public void setRotationAngles(float movement, float far, float f2, float f3, float f4, float f5, Entity entity)
-/* 149:    */   {
-/* 150:162 */     this.bipedHead.rotateAngleY = (f3 / 57.295776F);
-/* 151:163 */     this.bipedHead.rotateAngleX = (f4 / 57.295776F);
-/* 152:164 */     this.bipedBody.rotateAngleY = (MathHelper.sin(MathHelper.sqrt_float(this.onGround) * 3.141593F * 2.0F) * 0.2F);
-/* 153:    */     
-/* 154:166 */     this.bipedRightLeg.rotateAngleX = (MathHelper.cos(movement * 0.6662F) * 0.7F * far);
-/* 155:167 */     this.bipedLeftLeg.rotateAngleX = (MathHelper.cos(movement * 0.6662F + 3.141593F) * 0.7F * far);
-/* 156:168 */     this.bipedRightLeg.rotateAngleY = 0.0F;
-/* 157:169 */     this.bipedLeftLeg.rotateAngleY = 0.0F;
-/* 158:170 */     this.bipedRightLeg.rotateAngleZ = 0.0F;
-/* 159:171 */     this.bipedLeftLeg.rotateAngleZ = 0.0F;
-/* 160:    */     
-/* 161:173 */     this.bipedRightArm.rotateAngleX = (MathHelper.cos(movement * 0.6662F + 3.141593F) * 2.0F * far * 0.5F);
-/* 162:174 */     this.bipedLeftArm.rotateAngleX = (MathHelper.cos(movement * 0.6662F) * 2.0F * far * 0.5F);
-/* 163:    */     
-/* 164:176 */     this.bipedRightArm.rotateAngleZ = 0.1745329F;
-/* 165:    */     
-/* 166:178 */     this.bipedLeftArm.rotateAngleZ = (-this.bipedRightArm.rotateAngleZ);
-/* 167:180 */     if (this.isRiding)
-/* 168:    */     {
-/* 169:182 */       this.bipedRightArm.rotateAngleX = -0.6283186F;
-/* 170:183 */       this.bipedLeftArm.rotateAngleX = -0.6283186F;
-/* 171:184 */       this.bipedRightLeg.rotateAngleX = -1.256637F;
-/* 172:185 */       this.bipedLeftLeg.rotateAngleX = -1.256637F;
-/* 173:186 */       this.bipedRightLeg.rotateAngleY = 0.2243995F;
-/* 174:187 */       this.bipedLeftLeg.rotateAngleY = -0.2243995F;
-/* 175:188 */       this.bipedRightLeg.rotateAngleZ = 0.2243995F;
-/* 176:189 */       this.bipedLeftLeg.rotateAngleZ = -0.2243995F;
-/* 177:    */     }
-/* 178:217 */     this.bipedRightArm.rotateAngleZ += MathHelper.cos(f2 * 0.09F) * 0.05F + 0.05F;
-/* 179:218 */     this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(f2 * 0.09F) * 0.05F + 0.05F;
-/* 180:219 */     this.bipedRightArm.rotateAngleX += MathHelper.sin(f2 * 0.067F) * 0.05F;
-/* 181:220 */     this.bipedLeftArm.rotateAngleX -= MathHelper.sin(f2 * 0.067F) * 0.05F;
-/* 182:    */   }
-/* 183:    */ }
+package thKaguyaMod.client.model.living;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.client.model.living.ModelRinnosuke
- * JD-Core Version:    0.7.0.1
- */
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.MathHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+	
+@SideOnly(Side.CLIENT)
+public class ModelRinnosuke extends ModelBase
+{
+	  //fields
+    ModelRenderer bipedBody;
+    ModelRenderer bipedRightArm;
+    ModelRenderer bipedLeftArm;
+    ModelRenderer bipedRightLeg;
+    ModelRenderer bipedLeftLeg;
+    ModelRenderer box;
+    ModelRenderer bottom;
+    ModelRenderer bipedHead;
+    ModelRenderer longHair;
+    ModelRenderer Grass;
+  
+  public ModelRinnosuke()
+  {
+	    textureWidth = 64;
+	    textureHeight = 64;
+	    
+	      bipedBody = new ModelRenderer(this, 0, 16);
+	      bipedBody.addBox(-4F, 0F, -2F, 8, 10, 4);
+	      bipedBody.setRotationPoint(0F, 0F, 0F);
+	      bipedBody.setTextureSize(64, 64);
+	      bipedBody.mirror = true;
+	      setRotation(bipedBody, 0F, 0F, 0F);
+	      bipedRightArm = new ModelRenderer(this, 0, 32);
+	      bipedRightArm.addBox(-2F, -1F, -1.5F, 3, 10, 3);
+	      bipedRightArm.setRotationPoint(-5F, 1F, 0F);
+	      bipedRightArm.setTextureSize(64, 64);
+	      bipedRightArm.mirror = true;
+	      setRotation(bipedRightArm, 0F, 0F, 0F);
+	      bipedLeftArm = new ModelRenderer(this, 12, 32);
+	      bipedLeftArm.addBox(-1F, -1F, -1.5F, 3, 10, 3);
+	      bipedLeftArm.setRotationPoint(5F, 1F, 0F);
+	      bipedLeftArm.setTextureSize(64, 64);
+	      bipedLeftArm.mirror = true;
+	      setRotation(bipedLeftArm, 0F, 0F, 0F);
+	      bipedRightLeg = new ModelRenderer(this, 48, 16);
+	      bipedRightLeg.addBox(-1F, 0F, -2F, 4, 14, 4);
+	      bipedRightLeg.setRotationPoint(-3F, 10F, 0F);
+	      bipedRightLeg.setTextureSize(64, 64);
+	      bipedRightLeg.mirror = true;
+	      setRotation(bipedRightLeg, 0F, 0F, 0F);
+	      bipedLeftLeg = new ModelRenderer(this, 32, 16);
+	      bipedLeftLeg.addBox(-2F, 0F, -2F, 4, 14, 4);
+	      bipedLeftLeg.setRotationPoint(2F, 10F, 0F);
+	      bipedLeftLeg.setTextureSize(64, 64);
+	      bipedLeftLeg.mirror = true;
+	      setRotation(bipedLeftLeg, 0F, 0F, 0F);
+	      box = new ModelRenderer(this, 32, 10);
+	      box.addBox(-3F, -2F, 0F, 6, 4, 2);
+	      box.setRotationPoint(0F, 8F, -4F);
+	      box.setTextureSize(64, 64);
+	      box.mirror = true;
+	      setRotation(box, 0F, 0F, 0F);
+	      bottom = new ModelRenderer(this, 0, 46);
+	      bottom.addBox(-4.5F, 0F, -2.5F, 9, 13, 5);
+	      bottom.setRotationPoint(0F, 8F, 0F);
+	      bottom.setTextureSize(64, 64);
+	      bottom.mirror = true;
+	      setRotation(bottom, 0F, 0F, 0F);
+	      bipedHead = new ModelRenderer(this, 0, 0);
+	      bipedHead.addBox(-4F, -8F, -4F, 8, 8, 8);
+	      bipedHead.setRotationPoint(0F, 0F, 0F);
+	      bipedHead.setTextureSize(64, 64);
+	      bipedHead.mirror = true;
+	      setRotation(bipedHead, 0F, 0F, 0F);
+	      longHair = new ModelRenderer(this, 24, 0);
+	      longHair.addBox(-4F, 0F, -3F, 8, 2, 3);
+	      longHair.setRotationPoint(0F, 0F, 4F);
+	      longHair.setTextureSize(64, 64);
+	      longHair.mirror = true;
+	      setRotation(longHair, 0F, 0F, 0F);
+	      Grass = new ModelRenderer(this, 48, 0);
+	      Grass.addBox(-4F, 0F, 0F, 8, 2, 1);
+	      Grass.setRotationPoint(0F, -3F, -4.2F);
+	      Grass.setTextureSize(64, 64);
+	      Grass.mirror = true;
+	      setRotation(Grass, 0F, 0F, 0F);
+	      
+	      bipedHead.addChild(longHair);
+	      bipedHead.addChild(Grass);
+	      bipedBody.addChild(box);
+	      bipedBody.addChild(bottom);
+    }
+  
+  public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+  {
+	    super.render(entity, f, f1, f2, f3, f4, f5);
+	    setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+	    bipedBody.render(f5);
+	    bipedRightArm.render(f5);
+	    //rightHand.render(f5);
+	    bipedLeftArm.render(f5);
+	    //leftHand.render(f5);
+	    bipedRightLeg.render(f5);
+	    bipedLeftLeg.render(f5);
+	    //skirtTop.render(f5);
+	    //skirtBottom.render(f5);
+	    bipedHead.render(f5);
+	    //longHair.render(f5);
+	    //leftBraid2.render(f5);
+	    //rightBraid.render(f5);
+	    //leftBraid.render(f5);
+	    //kaeruBase.render(f5);
+	    //kaeruEyeRight.render(f5);
+	    //kaeruEyeLeft.render(f5);
+	    
+	  //EntityDanmakuMob danmakuMob = (EntityDanmakuMob)entity;
+
+	  //スペルカードの宣言をする
+	  /*if(danmakuMob.getSpellCardMotion() < -15)
+	  {
+		  bipedRightArm.rotateAngleX = -0.7F - MathHelper.sin(danmakuMob.ticksExisted  / 10F) * 0.1F - MathHelper.sin((float)(30F + danmakuMob.getSpellCardMotion()) / 180F * 3.141593F) * 4F;
+	  }
+	  else if(danmakuMob.getSpellCardMotion() < 0)
+	  {
+		  bipedRightArm.rotateAngleX = -0.7F - MathHelper.sin(danmakuMob.ticksExisted  / 10F) * 0.1F - MathHelper.sin((float)(-danmakuMob.getSpellCardMotion()) / 180F * 3.141593F) * 4F;
+	  }
+	  else*/
+	  {
+		  bipedRightArm.rotateAngleX =  -12F / 180F * (float)Math.PI;
+		  bipedRightArm.rotateAngleY = -10F / 180F * (float)Math.PI;
+		  bipedRightArm.rotateAngleZ = 30F / 180F * (float)Math.PI;
+		  
+		  bipedLeftArm.rotateAngleX =  bipedRightArm.rotateAngleX;
+		  bipedLeftArm.rotateAngleY = -bipedRightArm.rotateAngleY;
+		  bipedLeftArm.rotateAngleZ = -bipedRightArm.rotateAngleZ;
+		  //bipedLeftArm.rotateAngleX = bipedRightArm.rotateAngleX;
+		  //bipedRightArm.rotateAngleY = 0.9F;
+		  //bipedRightArm.rotateAngleX = -0.8F - MathHelper.sin(danmakuMob.ticksExisted  / 10F) * 0.1F;
+		  //bipedRightArm.rotateAngleZ = 20F / 180F * (float)Math.PI;
+
+		  //bipedLeftArm.rotateAngleZ = -bipedRightArm.rotateAngleZ;
+		  
+	  }
+
+  }
+  
+  private void setRotation(ModelRenderer model, float rotateX, float rotateY, float rotateZ)
+  {
+	  model.rotateAngleX = rotateX;
+	  model.rotateAngleY = rotateY;
+	  model.rotateAngleZ = rotateZ;
+  }
+
+  public void setRotationAngles(float movement, float far, float f2, float f3, float f4, float f5, Entity entity)
+  {
+	  //super.setRotationAngles(movement, far, f2, f3, f4, f5, entity);
+	  //this.skirtTop.rotateAngleX = 0.0F;
+	  this.bipedHead.rotateAngleY = f3 / (180F / (float)Math.PI);
+	  this.bipedHead.rotateAngleX = f4 / (180F / (float)Math.PI);
+	  this.bipedBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt_float(onGround) * (float)Math.PI * 2.0F) * 0.2F;
+
+	  bipedRightLeg.rotateAngleX = MathHelper.cos(movement * 0.6662F) * 0.7F * far;
+	  bipedLeftLeg.rotateAngleX = MathHelper.cos(movement * 0.6662F + (float)Math.PI) * 0.7F * far;
+	  this.bipedRightLeg.rotateAngleY = 0.0F;
+      this.bipedLeftLeg.rotateAngleY = 0.0F;
+	  this.bipedRightLeg.rotateAngleZ = 0.0F;
+      this.bipedLeftLeg.rotateAngleZ = 0.0F;
+	  
+      this.bipedRightArm.rotateAngleX = MathHelper.cos(movement * 0.6662F + (float)Math.PI) * 2.0F * far * 0.5F;
+      this.bipedLeftArm.rotateAngleX = MathHelper.cos(movement * 0.6662F) * 2.0F * far * 0.5F;
+	  //bipedRightArm.rotateAngleY = -10F / 180F * (float)Math.PI;
+	  bipedRightArm.rotateAngleZ = 10F / 180F * (float)Math.PI;
+	  //bipedLeftArm.rotateAngleY = -bipedRightArm.rotateAngleY;
+	  bipedLeftArm.rotateAngleZ = -bipedRightArm.rotateAngleZ;
+	  
+      if (this.isRiding)
+      {
+          this.bipedRightArm.rotateAngleX = -((float)Math.PI / 5F);
+          this.bipedLeftArm.rotateAngleX = -((float)Math.PI / 5F);
+          this.bipedRightLeg.rotateAngleX = -((float)Math.PI * 2F / 5F);
+          this.bipedLeftLeg.rotateAngleX = -((float)Math.PI * 2F / 5F);
+          this.bipedRightLeg.rotateAngleY = ((float)Math.PI / 14F);
+          this.bipedLeftLeg.rotateAngleY = -((float)Math.PI / 14F);
+          this.bipedRightLeg.rotateAngleZ = ((float)Math.PI / 14F);
+          this.bipedLeftLeg.rotateAngleZ = -((float)Math.PI / 14F);
+          
+          //this.skirtTop.rotateAngleX += -((float)Math.PI / 5F);
+      }
+      
+      /*if (this.isSneak)
+      {
+          this.bipedBody.rotateAngleX = 0.5F;
+          this.bipedRightArm.rotateAngleX += 0.4F;
+          this.bipedLeftArm.rotateAngleX += 0.4F;
+          this.bipedRightLeg.rotationPointZ = 4.0F;
+          this.bipedLeftLeg.rotationPointZ = 4.0F;
+          this.bipedRightLeg.rotationPointY = 9.0F;
+          this.bipedLeftLeg.rotationPointY = 9.0F;
+          this.bipedHead.rotationPointY = 1.0F;
+          //this.bipedHeadwear.rotationPointY = 1.0F;
+      }
+      else
+      {
+          this.bipedBody.rotateAngleX = 0.0F;
+          this.bipedRightLeg.rotationPointZ = 0.1F;
+          this.bipedLeftLeg.rotationPointZ = 0.1F;
+          this.bipedRightLeg.rotationPointY = 12.0F;
+          this.bipedLeftLeg.rotationPointY = 12.0F;
+          this.bipedHead.rotationPointY = 0.0F;
+          //this.bipedHeadwear.rotationPointY = 0.0F;
+      }*/
+      
+      this.bipedRightArm.rotateAngleZ += MathHelper.cos(f2 * 0.09F) * 0.05F + 0.05F;
+      this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(f2 * 0.09F) * 0.05F + 0.05F;
+      this.bipedRightArm.rotateAngleX += MathHelper.sin(f2 * 0.067F) * 0.05F;
+      this.bipedLeftArm.rotateAngleX -= MathHelper.sin(f2 * 0.067F) * 0.05F;
+  }
+}

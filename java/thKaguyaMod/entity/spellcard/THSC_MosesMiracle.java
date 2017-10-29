@@ -1,43 +1,42 @@
-/*  1:   */ package thKaguyaMod.entity.spellcard;
-/*  2:   */ 
-/*  3:   */ import net.minecraft.entity.EntityLivingBase;
-/*  4:   */ import thKaguyaMod.THShotLib;
-/*  5:   */ 
-/*  6:   */ public class THSC_MosesMiracle
-/*  7:   */   extends THSpellCard
-/*  8:   */ {
-/*  9:   */   public THSC_MosesMiracle()
-/* 10:   */   {
-/* 11:12 */     setNeedLevel(2);
-/* 12:13 */     setRemoveTime(80);
-/* 13:14 */     setEndTime(180);
-/* 14:15 */     setOriginalUserName(41);
-/* 15:   */   }
-/* 16:   */   
-/* 17:   */   public void spellcard_main()
-/* 18:   */   {
-/* 19:21 */     if (this.time % 2 == 0) {
-/* 20:23 */       return;
-/* 21:   */     }
-/* 22:25 */     double angle = this.time * 6.0D;
-/* 23:26 */     float baseAngle = this.user.rotationYaw;
-/* 24:27 */     if (this.target != null) {
-/* 25:29 */       baseAngle = (float)Math.atan2(this.card.posX - this.target.posX, -(this.card.posZ - this.target.posZ)) / 3.141593F * 180.0F;
-/* 26:   */     }
-/* 27:32 */     for (int i = -5; i < 6; i++)
-/* 28:   */     {
-/* 29:34 */       double baseX = this.cardPosX - Math.sin(angle / 180.0D * 3.141592979431152D) * Math.cos(baseAngle / 180.0F * 3.141593F) * 3.0D;
-/* 30:35 */       double baseZ = this.cardPosZ + Math.cos(angle / 180.0D * 3.141592979431152D) * Math.sin(baseAngle / 180.0F * 3.141593F) * 3.0D;
-/* 31:36 */       double sideX = -Math.sin((baseAngle + 90.0F) / 180.0F * 3.141593F);
-/* 32:37 */       double sideZ = Math.cos((baseAngle + 90.0F) / 180.0F * 3.141593F);
-/* 33:38 */       THShotLib.createShot(this.user, this.user, pos(baseX + sideX * 2.5D, this.cardPosY + i, baseZ + sideZ * 2.5D), THShotLib.angle_ToPos(pos_Card(), THShotLib.pos_Living(this.target)), 0.0F, 0.9D, 0.9D, 0.0D, gravity_Zero(), shot(5, 1, 0.8F, 7.0F, 0, 50));
-/* 34:39 */       THShotLib.createShot(this.user, this.user, pos(baseX - sideX * 2.5D, this.cardPosY + i, baseZ - sideZ * 2.5D), THShotLib.angle_ToPos(pos_Card(), THShotLib.pos_Living(this.target)), 0.0F, 0.9D, 0.9D, 0.0D, gravity_Zero(), shot(5, 1, 0.8F, 7.0F, 0, 50));
-/* 35:   */     }
-/* 36:   */   }
-/* 37:   */ }
+package thKaguyaMod.entity.spellcard;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.entity.spellcard.THSC_MosesMiracle
- * JD-Core Version:    0.7.0.1
- */
+import static thKaguyaMod.DanmakuConstants.*;
+import thKaguyaMod.THShotLib;
+
+public class THSC_MosesMiracle extends THSpellCard
+{
+	//開海「モーゼの奇跡」
+	
+	public THSC_MosesMiracle()
+	{
+		this.setNeedLevel(2);
+		this.setRemoveTime(80);
+		this.setEndTime(180);
+		this.setOriginalUserName(SANAE);
+	}
+	
+	@Override
+	public void spellcard_main()
+	{
+		if(time % 2 == 0)
+		{
+			return;
+		}
+		double angle = (double)time * 6.0D;
+		float baseAngle = user.rotationYaw;
+		if(target != null)
+		{
+			baseAngle = (float)Math.atan2(card.posX - target.posX, -(card.posZ - target.posZ) ) / 3.141593F * 180F;
+		}
+		
+		for(int i = -5; i < 6; i++)
+		{
+			double baseX = cardPosX - Math.sin(angle / 180F * 3.141593F) * Math.cos(baseAngle / 180F * 3.141593F) * 3.0D;
+			double baseZ = cardPosZ + Math.cos(angle / 180F * 3.141593F) * Math.sin(baseAngle / 180F * 3.141593F) * 3.0D;
+			double sideX = -Math.sin((baseAngle + 90F) / 180F * 3.141593F);
+			double sideZ = Math.cos((baseAngle + 90F) / 180F * 3.141593F);
+			THShotLib.createShot(user, user,  pos(baseX + sideX * 2.5D, cardPosY + i, baseZ + sideZ * 2.5D), THShotLib.angle_ToPos(this.pos_Card(), THShotLib.pos_Living(target)), 0F, 0.9D, 0.9D, 0.0D, gravity_Zero(), shot(FORM_LIGHT, BLUE, 0.8F, 7.0F, 0, 50));
+			THShotLib.createShot(user, user,  pos(baseX - sideX * 2.5D, cardPosY + i, baseZ - sideZ * 2.5D), THShotLib.angle_ToPos(this.pos_Card(), THShotLib.pos_Living(target)), 0F, 0.9D, 0.9D, 0.0D, gravity_Zero(), shot(FORM_LIGHT, BLUE, 0.8F, 7.0F, 0, 50));
+		}
+	}
+}

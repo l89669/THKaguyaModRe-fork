@@ -1,234 +1,332 @@
-/*   1:    */ package thKaguyaMod.entity.item;
-/*   2:    */ 
-/*   3:    */ import java.util.List;
-/*   4:    */ import net.minecraft.entity.Entity;
-/*   5:    */ import net.minecraft.entity.EntityLivingBase;
-/*   6:    */ import net.minecraft.entity.item.EntityItemFrame;
-/*   7:    */ import net.minecraft.entity.item.EntityPainting;
-/*   8:    */ import net.minecraft.entity.monster.EntityCreeper;
-/*   9:    */ import net.minecraft.entity.monster.EntityGhast;
-/*  10:    */ import net.minecraft.entity.passive.EntityTameable;
-/*  11:    */ import net.minecraft.entity.player.EntityPlayer;
-/*  12:    */ import net.minecraft.entity.player.EntityPlayerMP;
-/*  13:    */ import net.minecraft.nbt.NBTTagCompound;
-/*  14:    */ import net.minecraft.network.NetHandlerPlayServer;
-/*  15:    */ import net.minecraft.util.AxisAlignedBB;
-/*  16:    */ import net.minecraft.util.MovingObjectPosition;
-/*  17:    */ import net.minecraft.world.World;
-/*  18:    */ import thKaguyaMod.THKaguyaLib;
-/*  19:    */ import thKaguyaMod.entity.spellcard.EntitySpellCard;
-/*  20:    */ import thKaguyaMod.init.THKaguyaItems;
-/*  21:    */ 
-/*  22:    */ public class EntitySakuyaStopWatch
-/*  23:    */   extends Entity
-/*  24:    */ {
-/*  25:    */   public EntityLivingBase user;
-/*  26:    */   private int count;
-/*  27:    */   private float watchRotation;
-/*  28:    */   
-/*  29:    */   public EntitySakuyaStopWatch(World world)
-/*  30:    */   {
-/*  31: 32 */     super(world);
-/*  32:    */     
-/*  33: 34 */     this.ignoreFrustumCheck = true;
-/*  34: 35 */     this.preventEntitySpawning = true;
-/*  35: 36 */     setSize(0.2F, 0.2F);
-/*  36: 37 */     this.yOffset = 0.0F;
-/*  37: 38 */     shouldRenderInPass(-2);
-/*  38:    */   }
-/*  39:    */   
-/*  40:    */   public EntitySakuyaStopWatch(World world, EntityLivingBase userLiving)
-/*  41:    */   {
-/*  42: 44 */     this(world);
-/*  43:    */     
-/*  44: 46 */     this.user = userLiving;
-/*  45: 47 */     THKaguyaLib.itemEffectFollowUser(this, this.user, 1.2D, -30.0F);
-/*  46:    */   }
-/*  47:    */   
-/*  48:    */   protected void entityInit() {}
-/*  49:    */   
-/*  50:    */   public boolean canBePushed()
-/*  51:    */   {
-/*  52: 62 */     return false;
-/*  53:    */   }
-/*  54:    */   
-/*  55:    */   public boolean canBeCollidedWith()
-/*  56:    */   {
-/*  57: 71 */     return false;
-/*  58:    */   }
-/*  59:    */   
-/*  60:    */   public void onUpdate()
-/*  61:    */   {
-/*  62: 80 */     super.onUpdate();
-/*  63: 83 */     if (this.ticksExisted > 40)
-/*  64:    */     {
-/*  65: 86 */       if (!this.worldObj.isRemote) {
-/*  66: 88 */         setDead();
-/*  67:    */       }
-/*  68: 90 */       return;
-/*  69:    */     }
-/*  70: 94 */     if (this.user == null)
-/*  71:    */     {
-/*  72: 97 */       if (!this.worldObj.isRemote) {
-/*  73: 99 */         setDead();
-/*  74:    */       }
-/*  75:101 */       return;
-/*  76:    */     }
-/*  77:107 */     if (this.user.hurtTime > 0)
-/*  78:    */     {
-/*  79:110 */       if (!this.worldObj.isRemote) {
-/*  80:112 */         setDead();
-/*  81:    */       }
-/*  82:114 */       return;
-/*  83:    */     }
-/*  84:119 */     THKaguyaLib.itemEffectFollowUser(this, this.user, 1.2D, -30.0F);
-/*  85:    */     
-/*  86:    */ 
-/*  87:122 */     int playerCount = 0;
-/*  88:123 */     MovingObjectPosition movingObjectPosition = new MovingObjectPosition(this);
-/*  89:124 */     Entity entity = null;
-/*  90:125 */     boolean dubbleWatch = false;
-/*  91:126 */     boolean pass = false;
-/*  92:127 */     double effectiveBoundary = 40.0D;
-/*  93:    */     
-/*  94:129 */     List<?> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(effectiveBoundary, effectiveBoundary, effectiveBoundary));
-/*  95:132 */     if ((list != null) && (list.size() > 0)) {
-/*  96:135 */       for (int j1 = 0; j1 < list.size(); j1++)
-/*  97:    */       {
-/*  98:137 */         entity = (Entity)list.get(j1);
-/*  99:140 */         if (entity != null) {
-/* 100:142 */           movingObjectPosition = new MovingObjectPosition(entity);
-/* 101:    */         }
-/* 102:146 */         if ((entity instanceof EntityPlayer)) {
-/* 103:148 */           playerCount++;
-/* 104:    */         }
-/* 105:152 */         if ((movingObjectPosition != null) && (movingObjectPosition.entityHit != this.user) && (movingObjectPosition.entityHit.riddenByEntity != this.user) && (!(movingObjectPosition.entityHit instanceof EntityItemFrame)) && (!(movingObjectPosition.entityHit instanceof EntityPainting)))
-/* 106:    */         {
-/* 107:156 */           pass = false;
-/* 108:158 */           if ((movingObjectPosition.entityHit instanceof EntitySakuyaWatch))
-/* 109:    */           {
-/* 110:160 */             EntitySakuyaWatch watch = (EntitySakuyaWatch)movingObjectPosition.entityHit;
-/* 111:    */             
-/* 112:162 */             THKaguyaLib.itemEffectFinish(watch, watch.userEntity, THKaguyaItems.sakuya_watch);
-/* 113:163 */             dubbleWatch = true;
-/* 114:    */           }
-/* 115:165 */           if ((movingObjectPosition.entityHit instanceof EntitySakuyaStopWatch))
-/* 116:    */           {
-/* 117:167 */             EntitySakuyaStopWatch watch = (EntitySakuyaStopWatch)movingObjectPosition.entityHit;
-/* 118:170 */             if (!watch.worldObj.isRemote) {
-/* 119:172 */               watch.setDead();
-/* 120:    */             }
-/* 121:174 */             dubbleWatch = true;
-/* 122:    */           }
-/* 123:176 */           if ((movingObjectPosition.entityHit instanceof EntitySpellCard))
-/* 124:    */           {
-/* 125:178 */             EntitySpellCard spellCard = (EntitySpellCard)movingObjectPosition.entityHit;
-/* 126:179 */             if ((spellCard.canMoveInTimeStop) && (spellCard.user.equals(this.user)))
-/* 127:    */             {
-/* 128:181 */               pass = true;
-/* 129:182 */               spellCard.specialProcessInTimeStop();
-/* 130:    */             }
-/* 131:    */           }
-/* 132:185 */           if (!pass) {
-/* 133:187 */             inPrivateSquare(movingObjectPosition);
-/* 134:    */           }
-/* 135:    */         }
-/* 136:    */       }
-/* 137:    */     }
-/* 138:194 */     if (playerCount == 0)
-/* 139:    */     {
-/* 140:197 */       if (!this.worldObj.isRemote) {
-/* 141:199 */         setDead();
-/* 142:    */       }
-/* 143:201 */       return;
-/* 144:    */     }
-/* 145:205 */     if (dubbleWatch)
-/* 146:    */     {
-/* 147:208 */       if (!this.worldObj.isRemote) {
-/* 148:210 */         setDead();
-/* 149:    */       }
-/* 150:212 */       return;
-/* 151:    */     }
-/* 152:217 */     this.count += 1;
-/* 153:219 */     if (this.count % 20 == 19)
-/* 154:    */     {
-/* 155:221 */       this.worldObj.playSoundAtEntity(this, "random.orb", 0.5F, 6.0F);
-/* 156:222 */       this.worldObj.playSoundAtEntity(this, "random.click", 0.5F, 4.0F);
-/* 157:    */     }
-/* 158:    */   }
-/* 159:    */   
-/* 160:    */   protected void writeEntityToNBT(NBTTagCompound nbtTagCompound)
-/* 161:    */   {
-/* 162:233 */     nbtTagCompound.setShort("count", (short)this.count);
-/* 163:    */   }
-/* 164:    */   
-/* 165:    */   protected void readEntityFromNBT(NBTTagCompound nbtTagCompound)
-/* 166:    */   {
-/* 167:243 */     this.count = nbtTagCompound.getShort("count");
-/* 168:    */   }
-/* 169:    */   
-/* 170:    */   public float getShadowSize()
-/* 171:    */   {
-/* 172:249 */     return 0.5F;
-/* 173:    */   }
-/* 174:    */   
-/* 175:    */   protected void inPrivateSquare(MovingObjectPosition movingObjectPosition)
-/* 176:    */   {
-/* 177:256 */     Entity hitEntity = movingObjectPosition.entityHit;
-/* 178:259 */     if (hitEntity.ticksExisted >= 2)
-/* 179:    */     {
-/* 180:264 */       hitEntity.setPosition(hitEntity.prevPosX, hitEntity.prevPosY, hitEntity.prevPosZ);
-/* 181:    */       
-/* 182:266 */       hitEntity.rotationYaw = hitEntity.prevRotationYaw;
-/* 183:267 */       hitEntity.rotationPitch = hitEntity.prevRotationPitch;
-/* 184:268 */       hitEntity.motionX = 0.0D;
-/* 185:271 */       if (!hitEntity.onGround) {
-/* 186:273 */         if (this.worldObj.isRemote) {
-/* 187:275 */           hitEntity.motionY = -0.0D;
-/* 188:    */         } else {
-/* 189:279 */           hitEntity.motionY = -0.0D;
-/* 190:    */         }
-/* 191:    */       }
-/* 192:283 */       hitEntity.motionZ = 0.0D;
-/* 193:    */       
-/* 194:285 */       hitEntity.setAir(0);
-/* 195:    */       
-/* 196:287 */       hitEntity.ticksExisted -= 1;
-/* 197:    */       
-/* 198:289 */       hitEntity.fallDistance -= 0.076865F;
-/* 199:292 */       if ((hitEntity instanceof EntityLivingBase))
-/* 200:    */       {
-/* 201:294 */         EntityLivingBase living = (EntityLivingBase)hitEntity;
-/* 202:295 */         living.rotationYawHead = living.prevRotationYawHead;
-/* 203:    */         
-/* 204:297 */         living.attackTime += 1;
-/* 205:300 */         if ((living instanceof EntityCreeper))
-/* 206:    */         {
-/* 207:302 */           EntityCreeper entityCreeper = (EntityCreeper)living;
-/* 208:    */           
-/* 209:304 */           entityCreeper.setCreeperState(-1);
-/* 210:    */         }
-/* 211:308 */         else if ((living instanceof EntityGhast))
-/* 212:    */         {
-/* 213:310 */           EntityGhast entityGhast = (EntityGhast)living;
-/* 214:    */           
-/* 215:312 */           entityGhast.attackCounter -= 1;
-/* 216:    */         }
-/* 217:316 */         if ((living instanceof EntityTameable)) {
-/* 218:318 */           living.motionY -= 1.0E-006D;
-/* 219:    */         }
-/* 220:322 */         if ((living instanceof EntityPlayerMP))
-/* 221:    */         {
-/* 222:324 */           EntityPlayerMP player = (EntityPlayerMP)living;
-/* 223:325 */           player.playerNetServerHandler.setPlayerLocation(player.prevPosX, player.prevPosY, player.prevPosZ, player.rotationYaw, player.rotationPitch);
-/* 224:    */         }
-/* 225:    */       }
-/* 226:    */     }
-/* 227:    */   }
-/* 228:    */ }
+package thKaguyaMod.entity.item;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.entity.item.EntitySakuyaStopWatch
- * JD-Core Version:    0.7.0.1
- */
+import java.util.List;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.entity.item.EntityPainting;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntityGhast;
+import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
+import thKaguyaMod.THKaguyaLib;
+import thKaguyaMod.entity.spellcard.EntitySpellCard;
+import thKaguyaMod.init.THKaguyaItems;
+
+/** 僅かな間、時間を停止させる空間 */
+public class EntitySakuyaStopWatch extends Entity
+{
+	/** 使用者 */
+	public EntityLivingBase user;
+	private int count;
+	private float watchRotation;
+	
+	/** ストップウォッチのコンストラクタ（引数Worldのみは必須） */
+    public EntitySakuyaStopWatch( World world )
+    {
+    	super(world);
+    	
+        ignoreFrustumCheck = true;		// 中心が画面から外れても描画される
+        preventEntitySpawning = true;
+        setSize(0.2F, 0.2F);			// サイズを設定　平面上の横と奥行きサイズ、高さ
+        yOffset = 0.0F;					// 高さを設定
+    	this.shouldRenderInPass(-2);
+    }
+
+    /** ストップウォッチのコンストラクタ */
+    public EntitySakuyaStopWatch( World world, EntityLivingBase userLiving )
+    {
+        this(world);
+        
+        user = userLiving;
+        THKaguyaLib.itemEffectFollowUser(this, user, 1.2D, -30F);
+    }
+    
+    /** 生成時に一度だけ呼ばれる処理 */
+    @Override
+	protected void entityInit()
+    {
+    }
+	
+	/**
+	 * 押すことができるか
+	 */
+    @Override
+    public boolean canBePushed()
+    {
+        return false;
+    }
+
+	/**
+	 * 他のEntityと衝突するか 右クリックできるかもこれで判定
+	 */
+    @Override
+    public boolean canBeCollidedWith()
+    {
+        return false;
+    }
+
+	/**
+	 * 毎tick行う処理
+	 */
+    @Override
+    public void onUpdate()
+    {
+        super.onUpdate();
+
+    	// 40ticksを超えている場合
+    	if( ticksExisted > 40 )
+    	{
+    		// 消滅させる
+    		if( !worldObj.isRemote )
+    		{
+    			setDead();
+    		}
+    		return;
+    	}
+    	
+    	// 使用者がいない場合
+    	if( user == null )
+    	{
+    		// 消滅させる
+    		if( !worldObj.isRemote )
+    		{
+    			setDead();
+    		}
+    		return;
+    	}
+    	// 使用者がいる場合
+    	else
+    	{
+    		// 使用者がダメージを受けた場合
+    		if( user.hurtTime > 0 )
+    		{
+    			// 消滅させる
+    			if(!worldObj.isRemote)
+    			{
+    					setDead();
+    			}
+    			return;
+    		}
+    	}
+
+    	// ストップウォッチを使用者に追尾させる
+    	THKaguyaLib.itemEffectFollowUser(this, user, 1.2D, -30F);
+    	
+    	// ***********停止空間（時計じゃなくてもっと大きな見えない壁）とEntityの当たり判定を取る**************** //
+    	int playerCount = 0;//停止空間内のプレイヤーの数を数える　誰もいなければ消滅させる
+    	MovingObjectPosition movingObjectPosition = new MovingObjectPosition(this);
+    	Entity entity = null;
+    	boolean dubbleWatch = false;
+    	boolean pass = false;
+    	double effectiveBoundary = 40.0D;//停止空間の有効範囲
+    	// 停止空間内のEntityを全て取得
+    	List<?> list = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.expand(effectiveBoundary, effectiveBoundary, effectiveBoundary));
+
+    	// 取得したリストにEntityがいる場合
+        if (list != null && list.size() > 0)
+        {
+        	// 取得したEntityリストを全て見る
+            for ( int j1 = 0; j1 < list.size(); j1++ )
+            {
+                entity = (Entity)list.get(j1);//entityに取得したリストのEntityを代入
+                
+                // Entityがいる場合
+            	if (entity != null )
+            	{
+            		movingObjectPosition = new MovingObjectPosition(entity);//MovingObjectPositionにEntityを登録
+        		}
+            	
+            	// Entityがプレイヤーの場合
+            	if( entity instanceof EntityPlayer )
+            	{
+            		playerCount++;//範囲内のプレイヤー数カウントを増加
+            	}
+            	
+            	//movingObjectPositionがあり、それが使用者でない場合
+        		if (	movingObjectPosition != null && movingObjectPosition.entityHit != user && movingObjectPosition.entityHit.riddenByEntity != user
+        			&& !(movingObjectPosition.entityHit instanceof EntityItemFrame)
+        			&& !(movingObjectPosition.entityHit instanceof EntityPainting))
+        		{
+        			pass = false;
+        			//時計が同時に２つ出現しているときの処理。全ての時計を無効化しアイテムに戻す。
+        			if( movingObjectPosition.entityHit instanceof EntitySakuyaWatch )
+        			{
+        				EntitySakuyaWatch watch = (EntitySakuyaWatch)movingObjectPosition.entityHit;
+        				//アイテム化させる
+        	    		THKaguyaLib.itemEffectFinish(watch, watch.user, THKaguyaItems.sakuya_watch);
+        	    		dubbleWatch = true;
+        			}
+        			if( movingObjectPosition.entityHit instanceof EntitySakuyaStopWatch )
+        			{
+        				EntitySakuyaStopWatch watch = (EntitySakuyaStopWatch)movingObjectPosition.entityHit;
+        				//アイテム化させる
+        	    		//THKaguyaLib.itemEffectFinish(watch, watch.user, THKaguyaItems.sakuya_watch);
+        				if( !watch.worldObj.isRemote )
+        				{
+        					watch.setDead();
+        				}
+        	    		dubbleWatch = true;
+        			}
+        			if(movingObjectPosition.entityHit instanceof EntitySpellCard)
+        			{
+        				EntitySpellCard spellCard = (EntitySpellCard)movingObjectPosition.entityHit;
+        				if(spellCard.canMoveInTimeStop && spellCard.user.equals(this.user))
+        				{
+        					pass = true;
+        					spellCard.specialProcessInTimeStop();
+        				}
+        			}
+        			if(!pass)
+        			{
+        				inPrivateSquare(movingObjectPosition);//時間操作空間の処理
+        			}
+        		}
+            }
+        }
+
+        // 範囲内にプレイヤーが一人もいない場合
+    	if( playerCount == 0 )
+    	{
+    		// 消滅させる
+    		if( !worldObj.isRemote )
+    		{
+    			setDead();
+    		}
+    		return;
+    	}
+    	
+    	// 時計が２つ以上出現している場合
+    	if( dubbleWatch )
+    	{
+    		// 消滅させる
+    		if( !worldObj.isRemote )
+    		{
+    			setDead();
+    		}
+    		return;
+    	}
+
+        // ************************************************************************************ //
+
+		count ++;
+
+		if(count % 20 == 19)//20フレーム周期で音を出す
+    	{
+    		worldObj.playSoundAtEntity(this, "random.orb", 0.5F, 6.0F);
+    		worldObj.playSoundAtEntity(this, "random.click", 0.5F, 4.0F);
+    	}
+    }
+
+    /**
+	 * 保存するデータの書き込み
+	 * @param nbtTagCompound : NTBタグ
+	 */
+    @Override
+    protected void writeEntityToNBT(NBTTagCompound nbtTagCompound)
+    {
+    	nbtTagCompound.setShort("count", (short)count);
+    }
+
+    /**
+	 * 保存したデータの読み込み
+	 * @param nbtTagCompound : NBTタグ
+	 */
+    @Override
+    protected void readEntityFromNBT(NBTTagCompound nbtTagCompound)
+    {
+    	count = nbtTagCompound.getShort("count");
+    }
+
+    @Override
+    public float getShadowSize()
+    {
+        return 0.5F;
+    }
+
+
+	// 時間操作空間に入っていた時の処理
+	protected void inPrivateSquare( MovingObjectPosition movingObjectPosition )
+    {
+    	Entity hitEntity = (Entity)movingObjectPosition.entityHit;
+
+    	//Entityが誕生してから２フレーム経過したもののみ判定
+    	if( hitEntity.ticksExisted >= 2 )
+    	{
+    		//====時間停止空間処理====//
+
+    		//Entityを１フレーム前の状態に、できる限りもっていく処理
+	    	hitEntity.setPosition( hitEntity.prevPosX, hitEntity.prevPosY, hitEntity.prevPosZ);
+    			
+	    	hitEntity.rotationYaw = hitEntity.prevRotationYaw;
+	    	hitEntity.rotationPitch = hitEntity.prevRotationPitch;
+	    	hitEntity.motionX = 0.0D;//*= -1.0D;
+	    	
+	    	// 空間内のEntityが空中にいる場合
+	    	if( !hitEntity.onGround )
+	    	{
+	    		if(worldObj.isRemote)
+	    		{
+	    			hitEntity.motionY = -0.0D;
+	    		}
+	    		else
+	    		{
+	    			hitEntity.motionY = -0.0D;//*= -1.0D;
+	    		}
+	    	}
+	    	
+	    	hitEntity.motionZ = 0.0D;//*= -1.0D;
+
+	    	hitEntity.setAir(0);
+	    		
+	    	hitEntity.ticksExisted--;//誕生してからのカウントを増やさない
+
+	    	hitEntity.fallDistance -= 0.076865F;//落下距離を変動しないように　この値はフレームに比例するが、どこに書いてあるかわからん（一応かなり近い値ではある）
+    		
+	    	// 範囲内のEntityが生物の場合
+	    	if( hitEntity instanceof EntityLivingBase )
+    		{
+    			EntityLivingBase living = (EntityLivingBase)hitEntity;
+    			living.rotationYawHead = living.prevRotationYawHead;
+
+    			living.attackTime++;
+
+    			// クリーパーに属している場合
+    			if( living instanceof EntityCreeper )
+    			{
+    				EntityCreeper entityCreeper = (EntityCreeper)living;
+
+    				entityCreeper.setCreeperState(-1);//爆発のカウントを戻す
+
+    			}
+    			// ガストに属している場合
+    			else if( living instanceof EntityGhast )
+    			{
+    				EntityGhast entityGhast = (EntityGhast)living;
+    			
+    				entityGhast.attackCounter--;//攻撃のカウントを戻す
+    			}
+
+    			// テイム可能な場合
+    			if( living instanceof EntityTameable )
+    			{
+    				living.motionY-=0.000001D;//座っている動物は重力がなくなると立つみたい　わからない程度に重力をかける処理
+    			}
+    				
+    			// プレイヤーの場合
+    			if( living instanceof EntityPlayerMP )
+    			{
+    				EntityPlayerMP player = (EntityPlayerMP)living;
+    				player.playerNetServerHandler.setPlayerLocation(player.prevPosX, player.prevPosY, player.prevPosZ, player.rotationYaw, player.rotationPitch);
+    			}
+    		}
+    	}
+    }
+	
+}
+

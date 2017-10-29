@@ -1,33 +1,43 @@
-/*  1:   */ package thKaguyaMod;
-/*  2:   */ 
-/*  3:   */ import cpw.mods.fml.relauncher.Side;
-/*  4:   */ import cpw.mods.fml.relauncher.SideOnly;
-/*  5:   */ import net.minecraft.creativetab.CreativeTabs;
-/*  6:   */ import net.minecraft.item.Item;
-/*  7:   */ import thKaguyaMod.init.THKaguyaItems;
-/*  8:   */ 
-/*  9:   */ public class CreativeTabSpellCard
-/* 10:   */   extends CreativeTabs
-/* 11:   */ {
-/* 12:   */   public CreativeTabSpellCard(String type)
-/* 13:   */   {
-/* 14:16 */     super(type);
-/* 15:   */   }
-/* 16:   */   
-/* 17:   */   @SideOnly(Side.CLIENT)
-/* 18:   */   public String getTranslatedTabLabel()
-/* 19:   */   {
-/* 20:35 */     return "SpellCard";
-/* 21:   */   }
-/* 22:   */   
-/* 23:   */   public Item getTabIconItem()
-/* 24:   */   {
-/* 25:41 */     return THKaguyaItems.spell_card;
-/* 26:   */   }
-/* 27:   */ }
+package thKaguyaMod;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.CreativeTabSpellCard
- * JD-Core Version:    0.7.0.1
- */
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import thKaguyaMod.init.THKaguyaItems;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+/** スペルカードのクリエイティブタブ */
+public class CreativeTabSpellCard extends CreativeTabs
+{
+	//新しいクリエイティブタグ"SpellCard"の設定
+
+    public CreativeTabSpellCard(String type)
+    {
+        super(type);
+    }
+
+	//@Override
+    //@SideOnly(Side.CLIENT)
+    /**
+     * the itemID for the item to be displayed on the tab
+     */
+    /*public int getTabIconItemIndex()
+    {
+        return mod_thKaguya.spellCardItem.itemID;
+    }*/
+	
+
+    /** タブの表示名称 */
+	@Override
+	@SideOnly(Side.CLIENT)
+	public String getTranslatedTabLabel()
+	{
+		return "SpellCard";
+	}
+
+	/** タブの画像(既に設定しているアイテムから選択) */
+	@Override
+	public Item getTabIconItem() {
+		return THKaguyaItems.spell_card;
+	}
+}

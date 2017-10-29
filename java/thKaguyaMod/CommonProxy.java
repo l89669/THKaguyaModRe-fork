@@ -104,6 +104,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CommonProxy
 {
+	static int nextID= 20+EntityRegistry.findGlobalUniqueEntityId();
 	public void registerTextures()
 	{
 	}
@@ -211,8 +212,7 @@ public class CommonProxy
 	/** エンティティを登録する */
 	public void registerEntitys()
 	{
-		
-		
+
 		/*
 		 サーバーとクライアントのエンティティを同期させるメソッド
 		 各引数はそれぞれ以下のとおり
@@ -259,6 +259,39 @@ public class CommonProxy
 		EntityRegistry.registerModEntity( EntityDivineSpirit.class				, "DivineSpirit"			, 32, THKaguyaCore.instance, 80, 1, true	);
 		EntityRegistry.registerModEntity( EntitySpellCardCircle.class			, "SpellCardCircle"			, 33, THKaguyaCore.instance, 80, 1, true	);
 		EntityRegistry.registerModEntity( EntityCursedDecoyDoll.class			, "CursedDecoyDoll"			, 34, THKaguyaCore.instance, 60, 5, false	);
+		
+		EntityRegistry.registerModEntity( EntityTHFairy.class					, "THFairy"					,  64, THKaguyaCore.instance, 80, 1, true	);
+		EntityRegistry.registerModEntity( EntityCirno.class       				, "Cirno"      				,  65, THKaguyaCore.instance, 80, 1, true	);
+		EntityRegistry.registerModEntity( EntityRumia.class     				, "Rumia"     				,  66, THKaguyaCore.instance, 80, 1, true	);
+		EntityRegistry.registerModEntity( EntityToziko.class     				, "Toziko"     				,  67, THKaguyaCore.instance, 80, 1, true	);
+		EntityRegistry.registerModEntity( EntityTHPhantom.class					, "THPhantom"				,  68, THKaguyaCore.instance, 80, 1, true	);
+		EntityRegistry.registerModEntity( EntitySanae.class            			, "Sanae"					,  69, THKaguyaCore.instance, 80, 1, true	);
+		EntityRegistry.registerModEntity( EntityReimu.class            			, "Reimu"					,  70, THKaguyaCore.instance, 80, 1, true	);
+		EntityRegistry.registerModEntity( EntityMiko.class            			, "Miko"					,  71, THKaguyaCore.instance, 80, 1, true	);
+		EntityRegistry.registerModEntity( EntityWriggle.class            		, "Wriggle"					,  72, THKaguyaCore.instance, 80, 1, true	);
+		EntityRegistry.registerModEntity( EntitySakuya.class            		, "Sakuya"					,  73, THKaguyaCore.instance, 80, 1, true	);
+		EntityRegistry.registerModEntity( EntityRinnosuke.class					, "Rinnosuke"     			,  90, THKaguyaCore.instance, 80, 1, true	);
+		EntityRegistry.registerModEntity( EntitySunFlowerFairy.class			, "SunFlowerFairy"			,  98, THKaguyaCore.instance, 80, 1, true	);
+		EntityRegistry.registerModEntity( EntityFamiliar.class					, "Familiar"				,  99, THKaguyaCore.instance, 80, 1, true	);
+		EntityRegistry.registerModEntity( EntityDanmakuCreeper.class			, "Hanabeeper"     			, 100, THKaguyaCore.instance, 80, 1, true	);
+		
+		EntityRegistry.registerGlobalEntityID( EntityTHFairy.class			,"THFairy" 			, nextID++		, 0xFFFF80, 0xC0C000	);
+		EntityRegistry.registerGlobalEntityID( EntitySunFlowerFairy.class	,"SunflowerFairy"	, nextID++	, 0xDDDD60, 0xA0A000	);
+		EntityRegistry.registerGlobalEntityID( EntityTHPhantom.class		,"THPhantom" 		, nextID++		, 0xFFFFF0, 0xFFFFFF	);
+		EntityRegistry.registerGlobalEntityID( EntityFamiliar.class			,"Familiar" 		, nextID++									);
+		EntityRegistry.registerGlobalEntityID( EntityCirno.class			,"Cirno"   			, nextID++			, 0x00FFE0, 0x00E0E0	);
+		EntityRegistry.registerGlobalEntityID( EntityRumia.class			,"Rumia"			, nextID++			, 0x671503, 0xC0C010	);
+		EntityRegistry.registerGlobalEntityID( EntityToziko.class			,"Toziko"			, nextID++			, 0x60D683, 0x376E91	);
+		EntityRegistry.registerGlobalEntityID( EntitySanae.class			,"Sanae" 			, nextID++		, 0x6BD245, 0x2937E0	);
+		EntityRegistry.registerGlobalEntityID( EntityDanmakuCreeper.class	,"Hanabeeper"		, nextID++	, 0x0FF080, 0xC0C000	);
+		EntityRegistry.registerGlobalEntityID( EntityRinnosuke.class		,"Rinnosuke"		, nextID++	, 0x373737, 0x2D2DE0	);
+		EntityRegistry.registerGlobalEntityID( EntityWriggle.class			,"Wriggle"			, nextID++		, 0x15224F, 0x83C826	);
+		EntityRegistry.registerGlobalEntityID( EntitySakuya.class			,"Sakuya"			, nextID++		, 0xC1C1D6, 0x3053E7	);
+		
+		//EntityRegistry.registerGlobalEntityID( EntityReimu.class			,"Reimu"			, THKaguyaConfig.entityIdReimu, 0x373737, 0x2D2DE0									);
+		EntityRegistry.registerGlobalEntityID( EntityReimu.class			,"Reimu"			, THKaguyaConfig.entityIdReimu									);
+		EntityRegistry.registerGlobalEntityID( EntityMiko.class				,"Miko"				, THKaguyaConfig.entityIdReimu + 1								);
+		
 	}
 	
 	/**

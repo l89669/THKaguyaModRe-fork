@@ -1,175 +1,193 @@
-/*   1:    */ package thKaguyaMod.client.render;
-/*   2:    */ 
-/*   3:    */ import cpw.mods.fml.relauncher.Side;
-/*   4:    */ import cpw.mods.fml.relauncher.SideOnly;
-/*   5:    */ import net.minecraft.client.model.ModelBase;
-/*   6:    */ import net.minecraft.client.renderer.Tessellator;
-/*   7:    */ import net.minecraft.client.renderer.entity.Render;
-/*   8:    */ import net.minecraft.entity.Entity;
-/*   9:    */ import net.minecraft.util.ResourceLocation;
-/*  10:    */ import org.lwjgl.opengl.GL11;
-/*  11:    */ import thKaguyaMod.client.model.ModelPrivateSquare;
-/*  12:    */ import thKaguyaMod.entity.item.EntitySakuyaStopWatch;
-/*  13:    */ import thKaguyaMod.init.THKaguyaConfig;
-/*  14:    */ 
-/*  15:    */ @SideOnly(Side.CLIENT)
-/*  16:    */ public class RenderSakuyaStopWatch
-/*  17:    */   extends Render
-/*  18:    */ {
-/*  19: 22 */   private static final ResourceLocation sakuyaWatchTexture = new ResourceLocation("thkaguyamod", "textures/SakuyaStopWatchTexture.png");
-/*  20: 23 */   ResourceLocation darkTexture = new ResourceLocation("thkaguyamod", "textures/DarkTexture.png");
-/*  21:    */   protected ModelBase modelPrivateSquare;
-/*  22:    */   
-/*  23:    */   public RenderSakuyaStopWatch()
-/*  24:    */   {
-/*  25: 29 */     this.shadowSize = 0.5F;
-/*  26: 30 */     this.modelPrivateSquare = new ModelPrivateSquare();
-/*  27:    */   }
-/*  28:    */   
-/*  29:    */   public void doRender(Entity entity, double x, double y, double z, float yaw, float pitch)
-/*  30:    */   {
-/*  31: 36 */     renderPrivateSquare((EntitySakuyaStopWatch)entity, x, y, z, yaw, pitch);
-/*  32:    */   }
-/*  33:    */   
-/*  34:    */   public void renderPrivateSquare(EntitySakuyaStopWatch privateSquare, double x, double y, double z, float yaw, float pitch)
-/*  35:    */   {
-/*  36: 42 */     GL11.glPushMatrix();
-/*  37:    */     
-/*  38: 44 */     GL11.glTranslatef((float)x, (float)y, (float)z);
-/*  39:    */     
-/*  40: 46 */     GL11.glScalef(0.3F, 0.3F, 0.3F);
-/*  41:    */     
-/*  42: 48 */     Tessellator tessellator = Tessellator.instance;
-/*  43:    */     
-/*  44: 50 */     GL11.glEnable(32826);
-/*  45: 51 */     GL11.glDisable(2884);
-/*  46:    */     
-/*  47: 53 */     GL11.glDepthMask(false);
-/*  48: 54 */     GL11.glDepthFunc(515);
-/*  49:    */     
-/*  50: 56 */     GL11.glEnable(3042);
-/*  51:    */     
-/*  52:    */ 
-/*  53: 59 */     GL11.glBlendFunc(775, 0);
-/*  54:    */     
-/*  55:    */ 
-/*  56:    */ 
-/*  57:    */ 
-/*  58: 64 */     bindTexture(this.darkTexture);
-/*  59: 65 */     double size = privateSquare.ticksExisted * 12;
-/*  60: 66 */     float alpha = 1.0F;
-/*  61: 67 */     if (size > 240.0D) {
-/*  62: 69 */       size = 240.0D;
-/*  63:    */     }
-/*  64: 73 */     if (privateSquare.ticksExisted > 20) {
-/*  65: 75 */       alpha -= (privateSquare.ticksExisted - 20) * 0.05F;
-/*  66:    */     }
-/*  67: 77 */     if (THKaguyaConfig.useTimeStopEffect) {
-/*  68: 79 */       renderDark(tessellator, size, (float)size, 0.0D, 1.0F, 0);
-/*  69:    */     }
-/*  70: 83 */     GL11.glDisable(3042);
-/*  71:    */     
-/*  72:    */ 
-/*  73: 86 */     GL11.glDepthMask(true);
-/*  74: 87 */     GL11.glEnable(2884);
-/*  75: 88 */     GL11.glDisable(32826);
-/*  76:    */     
-/*  77: 90 */     bindEntityTexture(privateSquare);
-/*  78: 91 */     GL11.glRotatef(180.0F - yaw + privateSquare.ticksExisted * 7.0F, 0.0F, 1.0F, 0.0F);
-/*  79: 92 */     this.modelPrivateSquare.render(privateSquare, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-/*  80: 93 */     GL11.glPopMatrix();
-/*  81:    */   }
-/*  82:    */   
-/*  83:    */   protected void renderDark(Tessellator tessellator, double length, float width, double zPos, float alpha, int time)
-/*  84:    */   {
-/*  85:100 */     float maxWidth = width / 2.0F;
-/*  86:    */     
-/*  87:102 */     int zAngleDivNum = 18;
-/*  88:103 */     float zSpan = 360.0F / zAngleDivNum;
-/*  89:104 */     double angleZ = 0.0D;
-/*  90:105 */     double angleSpanZ = 6.283185307179586D / zAngleDivNum;
-/*  91:    */     
-/*  92:107 */     int zDivNum = 9;
-/*  93:108 */     double zLength = width;
-/*  94:109 */     double zDivLength = zLength / (zDivNum - 1);
-/*  95:110 */     double zLength2 = zLength / 2.0D;
-/*  96:    */     
-/*  97:    */ 
-/*  98:113 */     zPos = Math.sin(-1.570796326794897D) * maxWidth;
-/*  99:114 */     double zPosOld = zPos;
-/* 100:    */     
-/* 101:116 */     float xPos = 0.0F;
-/* 102:117 */     float yPos = 0.0F;
-/* 103:118 */     float xPos2 = 0.0F;
-/* 104:119 */     float yPos2 = 0.0F;
-/* 105:    */     
-/* 106:121 */     float xPosOld = xPos;
-/* 107:122 */     float yPosOld = yPos;
-/* 108:123 */     float xPos2Old = xPos2;
-/* 109:124 */     float yPos2Old = yPos2;
-/* 110:    */     
-/* 111:126 */     float angle = -1.570796F;
-/* 112:127 */     float angleSpan = 3.141593F / zDivNum;
-/* 113:128 */     angle += angleSpan;
-/* 114:    */     
-/* 115:    */ 
-/* 116:131 */     float widthOld = 0.0F;
-/* 117:135 */     for (int j = 0; j < zDivNum; j++)
-/* 118:    */     {
-/* 119:138 */       zPos = Math.sin(angle) * maxWidth;
-/* 120:139 */       width = (float)Math.cos(angle) * maxWidth;
-/* 121:    */       
-/* 122:    */ 
-/* 123:142 */       xPos = width;
-/* 124:143 */       yPos = 0.0F;
-/* 125:144 */       angleZ = 0.0D;
-/* 126:145 */       xPosOld = (float)Math.cos(angleZ) * width;
-/* 127:146 */       yPosOld = (float)Math.sin(angleZ) * width;
-/* 128:147 */       xPos2Old = (float)Math.cos(angleZ) * widthOld;
-/* 129:148 */       yPos2Old = (float)Math.sin(angleZ) * widthOld;
-/* 130:    */       
-/* 131:150 */       angleZ = angleSpanZ;
-/* 132:152 */       for (int i = 1; i <= zAngleDivNum; i++)
-/* 133:    */       {
-/* 134:154 */         xPos = (float)Math.cos(angleZ) * width;
-/* 135:155 */         yPos = (float)Math.sin(angleZ) * width;
-/* 136:156 */         xPos2 = (float)Math.cos(angleZ) * widthOld;
-/* 137:157 */         yPos2 = (float)Math.sin(angleZ) * widthOld;
-/* 138:    */         
-/* 139:159 */         double colorVar = 0.0D;
-/* 140:160 */         if (time != 0) {
-/* 141:162 */           colorVar = (time + j) / 10.0D;
-/* 142:    */         }
-/* 143:164 */         tessellator.startDrawingQuads();
-/* 144:165 */         tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, alpha);
-/* 145:166 */         tessellator.setNormal(0.0F, 1.0F, 0.0F);
-/* 146:167 */         tessellator.addVertexWithUV(xPos, yPos, zPos, 1.0D, 0.0D);
-/* 147:168 */         tessellator.addVertexWithUV(xPosOld, yPosOld, zPos, 0.0D, 0.0D);
-/* 148:169 */         tessellator.addVertexWithUV(xPos2Old, yPos2Old, zPosOld, 0.0D, 1.0D);
-/* 149:170 */         tessellator.addVertexWithUV(xPos2, yPos2, zPosOld, 1.0D, 1.0D);
-/* 150:    */         
-/* 151:172 */         tessellator.draw();
-/* 152:    */         
-/* 153:174 */         xPosOld = xPos;
-/* 154:175 */         yPosOld = yPos;
-/* 155:176 */         xPos2Old = xPos2;
-/* 156:177 */         yPos2Old = yPos2;
-/* 157:178 */         angleZ += angleSpanZ;
-/* 158:    */       }
-/* 159:181 */       zPosOld = zPos;
-/* 160:182 */       angle += angleSpan;
-/* 161:183 */       widthOld = width;
-/* 162:    */     }
-/* 163:    */   }
-/* 164:    */   
-/* 165:    */   protected ResourceLocation getEntityTexture(Entity entity)
-/* 166:    */   {
-/* 167:191 */     return sakuyaWatchTexture;
-/* 168:    */   }
-/* 169:    */ }
+package thKaguyaMod.client.render;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.client.render.RenderSakuyaStopWatch
- * JD-Core Version:    0.7.0.1
- */
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
+import thKaguyaMod.client.model.ModelPrivateSquare;
+import thKaguyaMod.entity.item.EntitySakuyaStopWatch;
+import thKaguyaMod.init.THKaguyaConfig;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+/** ストップウォッチの描画 */
+@SideOnly(Side.CLIENT)
+public class RenderSakuyaStopWatch extends Render
+{
+	private static final ResourceLocation sakuyaWatchTexture = new ResourceLocation("thkaguyamod", "textures/SakuyaStopWatchTexture.png");
+	ResourceLocation darkTexture = new ResourceLocation("thkaguyamod", "textures/DarkTexture.png");
+	protected ModelBase modelPrivateSquare;
+
+	/** ストップウォッチの描画のコンストラクタ */
+    public RenderSakuyaStopWatch()
+    {
+        shadowSize = 0.5F;//多分影のサイズ
+        modelPrivateSquare = new ModelPrivateSquare();
+    }
+    
+    @Override
+    public void doRender(Entity entity, double x, double y, double z, float yaw, float pitch)
+    {
+        renderPrivateSquare((EntitySakuyaStopWatch)entity, x, y, z, yaw, pitch);
+    }
+
+  
+    public void renderPrivateSquare(EntitySakuyaStopWatch privateSquare, double x, double y, double z, float yaw, float pitch)
+    {
+        GL11.glPushMatrix();
+        
+        GL11.glTranslatef((float)x, (float)y, (float)z);
+    	
+        GL11.glScalef(0.3F, 0.3F, 0.3F);//倍率　縦方向 高さ　幅
+        
+        Tessellator tessellator = Tessellator.instance;
+        
+        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        GL11.glDisable(GL11.GL_CULL_FACE);//表綿描画
+        //GL11.glDepthFunc(GL11.GL_ALWAYS);
+        GL11.glDepthMask(false);
+        GL11.glDepthFunc(GL11.GL_LEQUAL);
+        //GL11.glDepthFunc(GL11.GL_GEQUAL);
+        GL11.glEnable(GL11.GL_BLEND);
+        
+    	
+        GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ZERO);
+        
+        //GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_SRC_COLOR);
+        
+        //GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_SRC_COLOR);
+    	this.bindTexture(darkTexture);
+    	double size = privateSquare.ticksExisted * 12;
+    	float alpha = 1.0F;
+    	if(size > 240.0D)
+    	{
+    		size = 240.0D;
+    	}
+    	//if(privateSquare.ticksExisted <= 40)
+    	{
+    		if(privateSquare.ticksExisted > 20)
+    		{
+    			alpha -= (privateSquare.ticksExisted - 20) * 0.05F;
+    		}
+    		if(THKaguyaConfig.useTimeStopEffect)
+    		{
+    			renderDark(tessellator, size, (float)size, 0.0D, 1.0F, 0);
+    		}
+    	}
+    	//GL11.glDepthFunc(GL11.GL_LEQUAL);
+    	GL11.glDisable(GL11.GL_BLEND);
+    	//GL11.glDepthFunc(GL11.GL_EQUAL);
+
+    	GL11.glDepthMask(true);
+    	GL11.glEnable(GL11.GL_CULL_FACE);//表綿描画
+    	GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+    	
+    	bindEntityTexture(privateSquare);
+    	GL11.glRotatef(180F - yaw + privateSquare.ticksExisted * 7F, 0.0F, 1.0F, 0.0F);
+    	modelPrivateSquare.render(privateSquare, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);//最後の引数以外関係ない？　最後の引数は大きさの倍率
+        GL11.glPopMatrix();
+    }
+    
+	//暗闇の描画をする
+	protected void renderDark(Tessellator tessellator, double length, float width, double zPos, float alpha, int time)
+	{
+		
+		float maxWidth = (float)width / 2.0F;//最大の太さをmaxWidthとして保存
+		
+    	int zAngleDivNum = 18;//Z軸回転の分割数
+    	float zSpan = 360F / zAngleDivNum;
+    	double angleZ = 0F;//Z軸回転変数
+    	double angleSpanZ = Math.PI * 2.0D / (double)zAngleDivNum;//Z軸回転の変化量
+    	
+    	int zDivNum = 9;//レーザーの奥方向への分割数。必ず奇数
+    	double zLength = width;//レーザーの長さ（Z方向の長さ、奥行き）
+    	double zDivLength = zLength / (double)(zDivNum - 1);//Z方向へ分割したときの1分割分の長さ
+    	double zLength2 = zLength / 2.0D;//長さの半分
+		//double zPos = 0.0D;
+    	//double zPos = -zLength2;//奥行き方向の現在の描画位置
+    	zPos = Math.sin(-Math.PI / 2.0D) * maxWidth;
+    	double zPosOld = zPos;//ひとつ前の描画位置
+		//初期のXとYの座標（レーザーの始点は点）
+    	float xPos = 0F;
+    	float yPos = 0F;
+    	float xPos2 = 0F;
+    	float yPos2 = 0F;
+    	//初期のXとYの座標
+    	float xPosOld = xPos;
+    	float yPosOld = yPos;
+    	float xPos2Old = xPos2;
+    	float yPos2Old = yPos2;
+    	//半円を描くようにレーザーが太くなるための変数。cos0 ~ cos180で処理
+    	float angle = -(float)Math.PI / 2.0F;
+    	float angleSpan = (float)Math.PI / (float)(zDivNum);
+    	angle += angleSpan;
+    	//レーザーの太さ。Z軸方向への進行で２つ必要
+    	//width = (float)Math.cos(angle) * maxWidth;
+    	float widthOld = 0.0F;
+    	
+    	//奥行きが長さの半分に達するまで（奥行きの初期値は長さの半分のマイナス値）
+    	//while(zPos < zLength2)
+		for(int j = 0; j < zDivNum; j++)
+		{
+    		//zPos += Math.sin(angle)* zDivLength;//奥行きを１段階増やす
+			zPos = Math.sin(angle) * maxWidth;
+    		width = (float)Math.cos(angle) * maxWidth;
+    		
+    		//XとY座標は初期値、0度のときの座標に戻る。
+    		xPos = width;
+    		yPos = 0F;//(float)width;
+    		angleZ = 0F;
+    		xPosOld = (float)Math.cos(angleZ) * width;
+			yPosOld = (float)Math.sin(angleZ) * width;
+			xPos2Old = (float)Math.cos(angleZ) * widthOld;
+			yPos2Old = (float)Math.sin(angleZ) * widthOld;
+    		//Z軸回転の始点
+    		angleZ = angleSpanZ;
+    		
+    		for(int i = 1; i <= zAngleDivNum; i++)
+    		{
+	    		xPos = (float)Math.cos(angleZ) * width;
+	    		yPos = (float)Math.sin(angleZ) * width;
+	    		xPos2 = (float)Math.cos(angleZ) * widthOld;
+	    		yPos2 = (float)Math.sin(angleZ) * widthOld;
+	    		
+    			double colorVar = 0.0D;
+    			if(time != 0)
+    			{
+    				colorVar = (time + j) / 10.0D;
+    			}
+    			tessellator.startDrawingQuads();
+	    		tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F , alpha);
+	    		tessellator.setNormal(0.0F, 1.0F, 0.0F);
+	    		tessellator.addVertexWithUV(  xPos    , yPos    , zPos   , 1.0F, 0.0F);
+	    		tessellator.addVertexWithUV(  xPosOld , yPosOld , zPos   , 0.0F, 0.0F);
+	    		tessellator.addVertexWithUV(  xPos2Old, yPos2Old, zPosOld, 0.0F, 1.0F);
+	        	tessellator.addVertexWithUV(  xPos2   , yPos2   , zPosOld, 1.0F, 1.0F);
+	        	
+	    		tessellator.draw();
+    			
+    			xPosOld = xPos;
+    			yPosOld = yPos;
+    			xPos2Old = xPos2;
+    			yPos2Old = yPos2;
+    			angleZ += angleSpanZ;
+    			
+    		}
+    		zPosOld = zPos;//古い奥行きを今の奥行きに更新
+    		angle += angleSpan;//レーザーの描く半円の角度を更新
+    		widthOld = width;
+    		
+    	}
+	}
+
+    //テクスチャを返す
+	@Override
+	protected ResourceLocation getEntityTexture(Entity entity) {
+		return sakuyaWatchTexture;
+	}
+}

@@ -1,22 +1,21 @@
-/*  1:   */ package thKaguyaMod.event;
-/*  2:   */ 
-/*  3:   */ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-/*  4:   */ import net.minecraft.entity.Entity;
-/*  5:   */ import net.minecraft.world.World;
-/*  6:   */ import net.minecraftforge.event.entity.EntityEvent;
-/*  7:   */ 
-/*  8:   */ public class THKaguyaTimeStopEventHandler
-/*  9:   */ {
-/* 10:   */   @SubscribeEvent
-/* 11:   */   public void CanUpdate(EntityEvent event)
-/* 12:   */   {
-/* 13:13 */     Entity entity = event.entity;
-/* 14:14 */     if (entity.worldObj.isRemote) {}
-/* 15:   */   }
-/* 16:   */ }
+package thKaguyaMod.event;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.event.THKaguyaTimeStopEventHandler
- * JD-Core Version:    0.7.0.1
- */
+import net.minecraft.entity.Entity;
+import net.minecraftforge.event.entity.EntityEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+
+/** Entityが時を止められているときの処理 */
+public class THKaguyaTimeStopEventHandler
+{
+	
+	@SubscribeEvent
+	public void CanUpdate(EntityEvent event) {
+		Entity entity = event.entity;
+		if(entity.worldObj.isRemote) {
+			//return;
+		}
+		//entity.posY += 0.2D;
+		//entity.motionY = 0.5D;
+		//event.
+	}
+}

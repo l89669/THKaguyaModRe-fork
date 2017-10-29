@@ -1,36 +1,53 @@
-/*  1:   */ package thKaguyaMod.client.model;
-/*  2:   */ 
-/*  3:   */ import cpw.mods.fml.relauncher.Side;
-/*  4:   */ import cpw.mods.fml.relauncher.SideOnly;
-/*  5:   */ import net.minecraft.client.model.ModelBase;
-/*  6:   */ import net.minecraft.client.model.ModelRenderer;
-/*  7:   */ import net.minecraft.entity.Entity;
-/*  8:   */ 
-/*  9:   */ @SideOnly(Side.CLIENT)
-/* 10:   */ public class ModelKinkakuzi
-/* 11:   */   extends ModelBase
-/* 12:   */ {
-/* 13:   */   public ModelRenderer kinkakuzi;
-/* 14:   */   
-/* 15:   */   public ModelKinkakuzi()
-/* 16:   */   {
-/* 17:36 */     this.kinkakuzi = new ModelRenderer(this, 0, 0);
-/* 18:   */     
-/* 19:   */ 
-/* 20:39 */     this.kinkakuzi.addBox(-15.0F, -15.0F, -2.0F, 30, 30, 2, 0.0F);
-/* 21:40 */     this.kinkakuzi.rotateAngleX = 1.570796F;
-/* 22:   */   }
-/* 23:   */   
-/* 24:   */   public void render(Entity entity, float movement, float far, float tick, float yaw, float pitch, float size)
-/* 25:   */   {
-/* 26:46 */     this.kinkakuzi.render(size);
-/* 27:   */   }
-/* 28:   */   
-/* 29:   */   public void setRotationAngles(float movement, float far, float tick, float yaw, float pitch, float size, Entity entity) {}
-/* 30:   */ }
+package thKaguyaMod.client.model;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.client.model.ModelKinkakuzi
- * JD-Core Version:    0.7.0.1
- */
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.entity.Entity;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
+public class ModelKinkakuzi extends ModelBase
+{
+	
+    public ModelRenderer kinkakuzi;
+
+    public ModelKinkakuzi()
+    {
+    	/*Minecraftのモデルの基本事項
+    	基本的にテクスチャに64x32の画像を使用
+    	ボックスタイプのモデルしか扱えない
+    	ボックスのサイズ＝テクスチャのサイズと考えていい
+    	例えば横幅が10の箱ならば、そこに設定されるテクスチャも10ドット分使用する
+    	横幅6、高さ4、奥行き3の箱を考えたとき、イメージとしてはテクスチャはこのようになる
+    	000000111111222222000000
+    	000000111111222222000000
+    	000000111111222222000000
+    	333333444444555555666666
+    	333333444444555555666666
+    	333333444444555555666666
+    	333333444444555555666666
+    	0は未使用部と考えて、ボックス型は6面存在するためこのように６つの部分に分けれれることになる。
+    	この配置は人間の頭で言うと、
+    	1は頭の上　2は頭の下　3は頭右　4は顔　5は頭左　6は頭後ろにあたる
+    	一番左上にあたる座標はModelRenderer(this,x,y)で設定可能。
+    	*/
+    	
+        kinkakuzi = new ModelRenderer(this, 0, 0);//テクスチャ座標0,0を左上にする
+    	//addBox(X座標、Z座標、Y座標、X方向のサイズ、Z方向のサイズ、Y方向のサイズ、？（倍率？）)
+    	//サイズはテクスチャのサイズそのもの
+    	kinkakuzi.addBox(-15, -15, -2, 30,30 , 2, 0.0F);
+        kinkakuzi.rotateAngleX = ((float)Math.PI / 2F);
+    }
+
+    @Override
+    public void render(Entity entity, float movement, float far, float tick, float yaw, float pitch, float size)
+    {
+    	kinkakuzi.render(size);
+    }
+
+    @Override
+    public void setRotationAngles(float movement, float far, float tick, float yaw, float pitch, float size, Entity entity)
+    {
+    }
+}

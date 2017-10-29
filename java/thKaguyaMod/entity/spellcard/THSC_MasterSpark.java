@@ -1,82 +1,85 @@
-/*  1:   */ package thKaguyaMod.entity.spellcard;
-/*  2:   */ 
-/*  3:   */ import net.minecraft.entity.EntityLivingBase;
-/*  4:   */ import net.minecraft.util.MathHelper;
-/*  5:   */ import net.minecraft.util.Vec3;
-/*  6:   */ import net.minecraft.world.World;
-/*  7:   */ import thKaguyaMod.ShotData;
-/*  8:   */ import thKaguyaMod.THShotLib;
-/*  9:   */ import thKaguyaMod.entity.item.EntityMiniHakkero;
-/* 10:   */ 
-/* 11:   */ public class THSC_MasterSpark
-/* 12:   */   extends THSpellCard
-/* 13:   */ {
-/* 14:   */   private Vec3 tgVec;
-/* 15:   */   
-/* 16:   */   public THSC_MasterSpark()
-/* 17:   */   {
-/* 18:19 */     setSpellCardName("");
-/* 19:20 */     setIconName("MasterSpark");
-/* 20:21 */     setNeedLevel(5);
-/* 21:22 */     setRemoveTime(99);
-/* 22:23 */     setEndTime(109);
-/* 23:24 */     setOriginalUserName(1);
-/* 24:   */   }
-/* 25:   */   
-/* 26:   */   public void spellcard_main()
-/* 27:   */   {
-/* 28:30 */     if (this.time == 1)
-/* 29:   */     {
-/* 30:32 */       this.tgVec = this.user.getLookVec();
-/* 31:   */       
-/* 32:   */ 
-/* 33:35 */       EntityMiniHakkero miniHakkero = new EntityMiniHakkero(this.world, this.user, this.target);
-/* 34:36 */       if (!this.world.isRemote) {
-/* 35:38 */         this.world.spawnEntityInWorld(miniHakkero);
-/* 36:   */       }
-/* 37:   */     }
-/* 38:41 */     if ((this.time >= 30) && (this.time < 99))
-/* 39:   */     {
-/* 40:44 */       double angleXZ = 0.0D;double angleY = 0.0D;
-/* 41:45 */       Vec3 lookAt = this.tgVec;
-/* 42:46 */       lookAt.xCoord = (-MathHelper.sin(this.card.rotationYaw / 180.0F * 3.141593F) * MathHelper.cos((this.card.rotationPitch + 90.0F) / 180.0F * 3.141593F));
-/* 43:47 */       lookAt.yCoord = (-MathHelper.sin((this.card.rotationPitch + 90.0F) / 180.0F * 3.141593F));
-/* 44:48 */       lookAt.zCoord = (MathHelper.cos(this.card.rotationYaw / 180.0F * 3.141593F) * MathHelper.cos((this.card.rotationPitch + 90.0F) / 180.0F * 3.141593F));
-/* 45:49 */       lookAt.rotateAroundY(6.283186F);
-/* 46:50 */       float angle = this.time * 6.0F;
-/* 47:51 */       float angleSpan = 51.42857F;
-/* 48:   */       
-/* 49:53 */       double gRate = 0.034D + 0.03D * Math.sin(angle / 180.0F * 3.141593F);
-/* 50:   */       
-/* 51:55 */       double xVectorG = -MathHelper.sin(this.card.rotationYaw / 180.0F * 3.141593F) * MathHelper.cos(this.card.rotationPitch / 180.0F * 3.141593F) * gRate;
-/* 52:56 */       double yVectorG = -MathHelper.sin(this.card.rotationPitch / 180.0F * 3.141593F) * gRate;
-/* 53:57 */       double zVectorG = MathHelper.cos(this.card.rotationYaw / 180.0F * 3.141593F) * MathHelper.cos(this.card.rotationPitch / 180.0F * 3.141593F) * gRate;
-/* 54:59 */       for (int i = 0; i < 7; i++)
-/* 55:   */       {
-/* 56:61 */         angleXZ = angle;
-/* 57:62 */         angleY = 0.0D;
-/* 58:   */         
-/* 59:64 */         double X1 = Math.sin(angleXZ / 180.0D * 3.141592653589793D) * Math.cos(this.card.rotationYaw / 180.0F * 3.141592653589793D);
-/* 60:65 */         double Z1 = Math.sin(angleXZ / 180.0D * 3.141592653589793D) * Math.sin(this.card.rotationYaw / 180.0F * 3.141592653589793D);
-/* 61:66 */         double X2 = Math.cos(angleXZ / 180.0D * 3.141592653589793D) * Math.sin(angleY / 180.0D * 3.141592653589793D) * Math.sin((this.card.rotationPitch + 90.0F) / 180.0F * 3.141592653589793D) * Math.sin(this.card.rotationYaw / 180.0F * 3.141592653589793D);
-/* 62:67 */         double Z2 = Math.cos(angleXZ / 180.0D * 3.141592653589793D) * Math.sin(angleY / 180.0D * 3.141592653589793D) * Math.sin((this.card.rotationPitch + 90.0F) / 180.0F * 3.141592653589793D) * Math.cos(this.card.rotationYaw / 180.0F * 3.141592653589793D);
-/* 63:   */         
-/* 64:69 */         double yVector = -Math.cos(angleXZ / 180.0D * 3.141592653589793D) * Math.sin((this.card.rotationPitch + 90.0F - angleY) / 180.0D * 3.141592653589793D);
-/* 65:70 */         double xVector = Math.cos(angleXZ / 180.0D * 3.141592653589793D) * Math.cos(angleY / 180.0D * 3.141592653589793D) * lookAt.xCoord + X1 - X2;
-/* 66:71 */         double zVector = Math.cos(angleXZ / 180.0D * 3.141592653589793D) * Math.cos(angleY / 180.0D * 3.141592653589793D) * lookAt.zCoord + Z1 + Z2;
-/* 67:   */         
-/* 68:73 */         ShotData shot = ShotData.shot(9, this.time % 7, 0.4F, 8.0F, 0, 55);
-/* 69:74 */         THShotLib.createShot(this.user, this.card, pos_Card(), angle(xVector, yVector, zVector), 0.0F, 0.2D, 0.3D, 0.05D, THShotLib.gravity(xVectorG, yVectorG, zVectorG), shot);
-/* 70:   */         
-/* 71:   */ 
-/* 72:77 */         angle += angleSpan;
-/* 73:   */       }
-/* 74:   */     }
-/* 75:   */   }
-/* 76:   */ }
+package thKaguyaMod.entity.spellcard;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.entity.spellcard.THSC_MasterSpark
- * JD-Core Version:    0.7.0.1
- */
+import static thKaguyaMod.DanmakuConstants.*;
+import static thKaguyaMod.THShotLib.*;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
+import thKaguyaMod.ShotData;
+import thKaguyaMod.THShotLib;
+import thKaguyaMod.entity.item.EntityMiniHakkero;
+
+public class THSC_MasterSpark extends THSpellCard
+{
+	//恋符「マスタースパーク」
+	
+	private Vec3 tgVec;
+	
+	public THSC_MasterSpark()
+	{
+		setSpellCardName("");
+		setIconName("MasterSpark");
+		this.setNeedLevel(5);
+		this.setRemoveTime(99);
+		this.setEndTime(109);
+		this.setOriginalUserName(MARISA);
+	}
+	
+	@Override
+	public void spellcard_main()
+	{
+		if(time == 1)
+		{
+			tgVec = user.getLookVec();
+			EntityMiniHakkero miniHakkero;
+    			
+    		miniHakkero = new EntityMiniHakkero(world, user, target);
+       		if(!world.isRemote)
+       		{
+        			world.spawnEntityInWorld(miniHakkero);//ミニ八卦炉を出す
+       		}
+		}
+		if(time >= 30 && time < 99)
+		{
+			//EntityTHShot[] entityTHShot = new EntityTHShot[7];
+    		double xVector, yVector, zVector, xVectorG, yVectorG, zVectorG, gRate, angleXZ = 0, angleY = 0, X1, Z1, X2, Z2;
+			Vec3 lookAt = tgVec;
+			lookAt.xCoord = -MathHelper.sin(card.rotationYaw / 180F * 3.141593F) * MathHelper.cos((card.rotationPitch + 90F) / 180F * 3.141593F);
+    		lookAt.yCoord =	-MathHelper.sin((card.rotationPitch + 90F) / 180F * 3.141593F);
+    		lookAt.zCoord =	 MathHelper.cos(card.rotationYaw / 180F * 3.141593F) * MathHelper.cos((card.rotationPitch + 90F) / 180F * 3.141593F);
+			lookAt.rotateAroundY((float)Math.PI * 2);
+			float angle = (float)time * 6F ;
+			float angleSpan = 360F / 7F;
+			//gRate = (double)(ticksExisted % 9) / 9D + 0.1D;
+			gRate = 0.034 + 0.03D * Math.sin(angle / 180F *3.141593F);
+			
+			xVectorG = -MathHelper.sin(card.rotationYaw / 180F * 3.141593F) * MathHelper.cos(card.rotationPitch / 180F * 3.141593F) * gRate;
+    		yVectorG = -MathHelper.sin(card.rotationPitch / 180F * 3.141593F) * gRate;
+    		zVectorG =  MathHelper.cos(card.rotationYaw / 180F * 3.141593F) * MathHelper.cos(card.rotationPitch / 180F * 3.141593F) * gRate;
+			
+    		for(int i = 0; i < 7; i++)
+    		{
+				angleXZ = angle;//横の角度　0=正面　+1ごとに左にずれていき360で正面に戻る
+				angleY = 0;//縦の角度　0=正面　+1ごとに上にずれていき360で正面に戻る
+
+				X1 =  Math.sin(angleXZ/ 180.0F * Math.PI) * Math.cos(card.rotationYaw/ 180.0F * Math.PI);
+				Z1 =  Math.sin(angleXZ/ 180.0F * Math.PI) * Math.sin(card.rotationYaw/ 180.0F * Math.PI);
+				X2 =  Math.cos(angleXZ/ 180.0F * Math.PI) * Math.sin(angleY/ 180.0F * Math.PI) * Math.sin((card.rotationPitch + 90F)/ 180.0F * Math.PI) * Math.sin(card.rotationYaw/ 180.0F * Math.PI);
+				Z2 =  Math.cos(angleXZ/ 180.0F * Math.PI) * Math.sin(angleY/ 180.0F * Math.PI) * Math.sin((card.rotationPitch + 90F)/ 180.0F * Math.PI) * Math.cos(card.rotationYaw/ 180.0F * Math.PI);
+						
+				yVector = -Math.cos(angleXZ/ 180.0F * Math.PI) * Math.sin((card.rotationPitch + 90F - angleY)/ 180.0F * Math.PI);//Y方向　上下
+				xVector =  Math.cos(angleXZ/ 180.0F * Math.PI) * Math.cos(angleY/ 180.0F * Math.PI) * lookAt.xCoord + X1 - X2;//X方向　水平方向
+				zVector =  Math.cos(angleXZ/ 180.0F * Math.PI) * Math.cos(angleY/ 180.0F * Math.PI) * lookAt.zCoord + Z1 + Z2;//Z方向　水平方向
+
+				ShotData shot = ShotData.shot(FORM_STAR, time % 7, 0.4F, 8.0F, 0, 55);
+				THShotLib.createShot(user, card, pos_Card(), angle(xVector, yVector, zVector), 0F, 0.2D, 0.3D, 0.05D, gravity(xVectorG, yVectorG, zVectorG), shot);
+    			/*entityTHShot[i] = new EntityTHShot(world, user, card, xVector, yVector, zVector,
+    				0.2D, 0.3D, 0.05D, xVectorG, yVectorG, zVectorG, 8, THShotLib.STAR[0] + time % 7, 0.4F, 55);*/
+    			angle += angleSpan;
+    			/*if(!world.isRemote)
+    			{
+    				world.spawnEntityInWorld(entityTHShot[i]);
+    			}*/
+    		}
+		}
+	}
+}

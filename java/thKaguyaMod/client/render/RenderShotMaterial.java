@@ -1,70 +1,76 @@
-/*  1:   */ package thKaguyaMod.client.render;
-/*  2:   */ 
-/*  3:   */ import cpw.mods.fml.relauncher.Side;
-/*  4:   */ import cpw.mods.fml.relauncher.SideOnly;
-/*  5:   */ import java.util.Random;
-/*  6:   */ import net.minecraft.client.renderer.Tessellator;
-/*  7:   */ import net.minecraft.client.renderer.entity.Render;
-/*  8:   */ import net.minecraft.client.renderer.entity.RenderManager;
-/*  9:   */ import net.minecraft.entity.Entity;
-/* 10:   */ import net.minecraft.util.ResourceLocation;
-/* 11:   */ import org.lwjgl.opengl.GL11;
-/* 12:   */ import thKaguyaMod.entity.EntityShotMaterial;
-/* 13:   */ 
-/* 14:   */ @SideOnly(Side.CLIENT)
-/* 15:   */ public class RenderShotMaterial
-/* 16:   */   extends Render
-/* 17:   */ {
-/* 18:22 */   private Random random = new Random();
-/* 19:   */   
-/* 20:   */   public void doRender(Entity entity, double x, double y, double z, float yaw, float pitch)
-/* 21:   */   {
-/* 22:30 */     renderShotMaterial((EntityShotMaterial)entity, x, y, z, yaw, pitch);
-/* 23:   */   }
-/* 24:   */   
-/* 25:   */   public void renderShotMaterial(EntityShotMaterial shotMaterial, double x, double y, double z, float yaw, float pitch)
-/* 26:   */   {
-/* 27:36 */     GL11.glPushMatrix();
-/* 28:37 */     bindEntityTexture(shotMaterial);
-/* 29:38 */     GL11.glTranslatef((float)x, (float)y, (float)z);
-/* 30:39 */     GL11.glDisable(2896);
-/* 31:40 */     float sizeRate = 1.0F;
-/* 32:41 */     GL11.glScalef(sizeRate, sizeRate, sizeRate);
-/* 33:42 */     Tessellator tessellator = Tessellator.instance;
-/* 34:43 */     int color2 = 0;
-/* 35:44 */     float rvl = 0.0F;
-/* 36:45 */     float rul = 0.0F;
-/* 37:46 */     float rvr = 1.0F;
-/* 38:47 */     float rur = 1.0F;
-/* 39:48 */     GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-/* 40:49 */     GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-/* 41:   */     
-/* 42:   */ 
-/* 43:52 */     tessellator.startDrawingQuads();
-/* 44:53 */     tessellator.setNormal(0.0F, 1.0F, 0.0F);
-/* 45:54 */     tessellator.addVertexWithUV(-0.2000000029802322D, 0.2000000029802322D, 0.0D, rvl, rul);
-/* 46:55 */     tessellator.addVertexWithUV(0.2000000029802322D, 0.2000000029802322D, 0.0D, rvr, rul);
-/* 47:56 */     tessellator.addVertexWithUV(0.2000000029802322D, -0.2000000029802322D, 0.0D, rvr, rur);
-/* 48:57 */     tessellator.addVertexWithUV(-0.2000000029802322D, -0.2000000029802322D, 0.0D, rvl, rur);
-/* 49:58 */     tessellator.draw();
-/* 50:   */     
-/* 51:60 */     GL11.glEnable(2896);
-/* 52:61 */     GL11.glPopMatrix();
-/* 53:   */   }
-/* 54:   */   
-/* 55:   */   protected ResourceLocation getEntityTexture(Entity entity)
-/* 56:   */   {
-/* 57:69 */     return getEntityTexture((EntityShotMaterial)entity);
-/* 58:   */   }
-/* 59:   */   
-/* 60:   */   protected ResourceLocation getEntityTexture(EntityShotMaterial shotMaterial)
-/* 61:   */   {
-/* 62:74 */     return new ResourceLocation("thkaguyamod", "textures/items/material/ShotMaterial.png");
-/* 63:   */   }
-/* 64:   */ }
+package thKaguyaMod.client.render;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.client.render.RenderShotMaterial
- * JD-Core Version:    0.7.0.1
- */
+import java.util.Random;
+
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.opengl.GL11;
+
+import thKaguyaMod.entity.EntityShotMaterial;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
+public class RenderShotMaterial extends Render
+{
+	
+	//弾の素の描画
+	
+	private Random random = new Random();
+
+    public RenderShotMaterial()
+    {
+    }
+    
+    public void doRender(Entity entity, double x, double y, double z, float yaw, float pitch)
+    {
+        renderShotMaterial((EntityShotMaterial)entity, x, y, z, yaw, pitch);
+    }
+
+
+    public void renderShotMaterial(EntityShotMaterial shotMaterial, double x, double y, double z, float yaw, float pitch)
+    {
+        GL11.glPushMatrix();
+        bindEntityTexture(shotMaterial);
+        GL11.glTranslatef((float)x, (float)y, (float)z);
+    	GL11.glDisable(GL11.GL_LIGHTING);
+        float sizeRate = 1.0F;
+        GL11.glScalef(sizeRate, sizeRate, sizeRate);
+        Tessellator tessellator = Tessellator.instance;
+    	int color2 = 0;
+    	float rvl = 0.0F;
+    	float rul = 0.0F;
+    	float rvr = 1.00F;
+    	float rur = 1.00F;
+		GL11.glRotatef(-renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+    	GL11.glRotatef( renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+    	
+    	//表面
+    	tessellator.startDrawingQuads();
+    	tessellator.setNormal(0.0F, 1.0F, 0.0F);
+        tessellator.addVertexWithUV( -0.2F,  0.2F, 0.0D, rvl, rul);
+        tessellator.addVertexWithUV(  0.2F,  0.2F, 0.0D, rvr, rul);
+        tessellator.addVertexWithUV(  0.2F, -0.2F, 0.0D, rvr, rur);
+        tessellator.addVertexWithUV( -0.2F, -0.2F, 0.0D, rvl, rur);
+        tessellator.draw();
+
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glPopMatrix();
+    }
+    
+
+
+ 
+	@Override
+	protected ResourceLocation getEntityTexture(Entity entity) {
+		return getEntityTexture((EntityShotMaterial)entity);
+	}
+	
+    protected ResourceLocation getEntityTexture(EntityShotMaterial shotMaterial)
+    {
+    	return new ResourceLocation("thkaguyamod", "textures/items/material/ShotMaterial.png");
+    }
+}

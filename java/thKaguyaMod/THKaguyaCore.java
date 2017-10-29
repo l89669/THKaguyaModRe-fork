@@ -92,10 +92,7 @@ public class THKaguyaCore
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 		
 		//エンティティの登録
-		new EntityLoader();
-		
 		proxy.registerEntitys();
-		
 		
 		//妖精などの弾幕パターンを登録
 		proxy.registerDanmakuPattern();
@@ -108,8 +105,8 @@ public class THKaguyaCore
 	{	
 		rinnosuke = new VillagerRinnosuke();
 		//VillagerRegistry.instance().registerVillagerId(villagerRinnosukeId);
-		VillagerRegistry.instance().registerVillageTradeHandler(villagerRinnosukeId,rinnosuke);
-	
+		VillagerRegistry.instance().registerVillageTradeHandler(villagerRinnosukeId, rinnosuke);
+		
 		//スポーン設定
 		proxy.registerEntitySpawn();
 		

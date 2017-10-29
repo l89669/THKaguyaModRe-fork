@@ -1,24 +1,30 @@
-/*  1:   */ package thKaguyaMod.client;
-/*  2:   */ 
-/*  3:   */ import net.minecraft.client.renderer.entity.RenderManager;
-/*  4:   */ import net.minecraft.client.settings.GameSettings;
-/*  5:   */ import org.lwjgl.opengl.GL11;
-/*  6:   */ 
-/*  7:   */ public class THKaguyaRenderLib
-/*  8:   */ {
-/*  9:   */   public static final void getGLRotatefByTherdPersonView(RenderManager renderManager)
-/* 10:   */   {
-/* 11:17 */     GL11.glRotatef(180.0F - renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-/* 12:20 */     if (renderManager.options.thirdPersonView == 2) {
-/* 13:22 */       GL11.glRotatef(renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-/* 14:   */     } else {
-/* 15:27 */       GL11.glRotatef(-renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-/* 16:   */     }
-/* 17:   */   }
-/* 18:   */ }
+package thKaguyaMod.client;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.client.THKaguyaRenderLib
- * JD-Core Version:    0.7.0.1
- */
+import net.minecraft.client.renderer.entity.RenderManager;
+
+import org.lwjgl.opengl.GL11;
+
+/** 五つの難題MOD+用の描画補助ライブラリ */
+public class THKaguyaRenderLib 
+{
+    /** カメラの位置で描画角度を変える。
+     * 主に常時正面を向いている必要のある描画処理向け
+     *	@param RenderManager : レンダーマネージャー。Render継承クラスならrenderManagerと指定すればOKだと思う
+     */
+    public static final void getGLRotatefByTherdPersonView(RenderManager renderManager)
+    {
+    	// 共通処理
+    	GL11.glRotatef(180 - renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+    	
+    	// 正面にカメラがある場合
+		if(renderManager.options.thirdPersonView == 2)
+		{
+			GL11.glRotatef(renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+		}
+		// 後方にカメラがある場合
+		else
+		{
+			GL11.glRotatef(-renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+		}
+    }
+}

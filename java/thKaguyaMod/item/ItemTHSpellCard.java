@@ -31,6 +31,7 @@ public class ItemTHSpellCard extends Item
     private IIcon[] icon_lv;
 	
     /** スペルカードのコンストラクタ */
+    
 	public ItemTHSpellCard()
 	{
 		super();
@@ -65,7 +66,6 @@ public class ItemTHSpellCard extends Item
 	 */
     public IIcon getIconFromDamage(int damage)
     {
-
 		return icon[damage];
     }
 	
@@ -102,7 +102,8 @@ public class ItemTHSpellCard extends Item
 	@SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister iconRegister)
     {
-		icon =new IIcon[1024];icon_lv =new IIcon[5];
+this.icon = new IIcon[1024];
+this.icon_lv = new IIcon[5];
 		THSpellCard spell;
 		int spellcardID;
 		int i = 0;

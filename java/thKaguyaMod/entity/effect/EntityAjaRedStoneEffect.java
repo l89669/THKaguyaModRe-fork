@@ -1,129 +1,168 @@
-/*   1:    */ package thKaguyaMod.entity.effect;
-/*   2:    */ 
-/*   3:    */ import net.minecraft.entity.DataWatcher;
-/*   4:    */ import net.minecraft.entity.Entity;
-/*   5:    */ import net.minecraft.entity.EntityLivingBase;
-/*   6:    */ import net.minecraft.entity.player.EntityPlayer;
-/*   7:    */ import net.minecraft.nbt.NBTTagCompound;
-/*   8:    */ import net.minecraft.world.World;
-/*   9:    */ import thKaguyaMod.LaserData;
-/*  10:    */ import thKaguyaMod.THShotLib;
-/*  11:    */ 
-/*  12:    */ public class EntityAjaRedStoneEffect
-/*  13:    */   extends Entity
-/*  14:    */ {
-/*  15:    */   public EntityLivingBase user;
-/*  16:    */   public int lightLevel;
-/*  17: 19 */   private double length = 1.2D;
-/*  18:    */   
-/*  19:    */   public EntityAjaRedStoneEffect(World world)
-/*  20:    */   {
-/*  21: 23 */     super(world);
-/*  22: 24 */     setSize(2.0F, 0.0F);
-/*  23: 25 */     this.yOffset = 0.0F;
-/*  24: 26 */     this.lightLevel = 0;
-/*  25: 27 */     setLightPower(0);
-/*  26:    */   }
-/*  27:    */   
-/*  28:    */   public EntityAjaRedStoneEffect(World world, EntityLivingBase entityLiving)
-/*  29:    */   {
-/*  30: 32 */     this(world);
-/*  31:    */     
-/*  32: 34 */     this.user = entityLiving;
-/*  33: 35 */     this.posX = (this.user.posX - Math.sin(this.user.rotationYaw / 180.0F * 3.141593F) * Math.cos(this.user.rotationPitch / 180.0F * 3.141593F) * this.length);
-/*  34: 36 */     this.posY = (this.user.posY - Math.sin(this.user.rotationPitch / 180.0F * 3.141593F) * this.length + this.user.getEyeHeight());
-/*  35: 37 */     this.posZ = (this.user.posZ + Math.cos(this.user.rotationYaw / 180.0F * 3.141593F) * Math.cos(this.user.rotationPitch / 180.0F * 3.141593F) * this.length);
-/*  36: 38 */     setPositionAndRotation(this.posX, this.posY, this.posZ, this.user.rotationYaw, this.user.rotationPitch);
-/*  37:    */   }
-/*  38:    */   
-/*  39:    */   protected void entityInit()
-/*  40:    */   {
-/*  41: 45 */     this.dataWatcher.addObject(19, new Integer(0));
-/*  42:    */   }
-/*  43:    */   
-/*  44:    */   public boolean canBeCollidedWith()
-/*  45:    */   {
-/*  46: 55 */     return false;
-/*  47:    */   }
-/*  48:    */   
-/*  49:    */   public void onUpdate()
-/*  50:    */   {
-/*  51: 65 */     if ((!this.worldObj.isRemote) && (this.user == null))
-/*  52:    */     {
-/*  53: 68 */       setDead();
-/*  54: 69 */       return;
-/*  55:    */     }
-/*  56: 71 */     super.onUpdate();
-/*  57: 74 */     if (this.user != null) {
-/*  58: 76 */       if ((this.user instanceof EntityPlayer))
-/*  59:    */       {
-/*  60: 78 */         EntityPlayer userEntity_p = (EntityPlayer)this.user;
-/*  61: 79 */         if (!userEntity_p.isUsingItem())
-/*  62:    */         {
-/*  63: 81 */           int damage = (int)(this.lightLevel / 40.0D);
-/*  64: 82 */           if (damage > 30) {
-/*  65: 84 */             damage = 30;
-/*  66:    */           }
-/*  67: 87 */           if (damage > 0)
-/*  68:    */           {
-/*  69: 90 */             THShotLib.createLaserA(this.user, this, THShotLib.pos(this.posX, this.posY, this.posZ), THShotLib.angle(this.user.rotationYaw, this.user.rotationPitch), 0.1D, 4.0D, 0.3D, THShotLib.gravity_Zero(), 
-/*  70: 91 */               LaserData.laser(0, damage * 0.01F, damage * 0.3F, damage, 0, 60, 351));
-/*  71: 92 */             if (!this.worldObj.isRemote) {
-/*  72: 94 */               setDead();
-/*  73:    */             }
-/*  74:    */           }
-/*  75:    */         }
-/*  76:    */       }
-/*  77:101 */       else if (!this.worldObj.isRemote)
-/*  78:    */       {
-/*  79:103 */         setDead();
-/*  80:    */       }
-/*  81:    */     }
-/*  82:109 */     setLightPower(this.worldObj.getBlockLightValue((int)this.posX, (int)this.posY, (int)this.posZ));
-/*  83:110 */     this.lightLevel += getLightPower();
-/*  84:113 */     if (this.user != null)
-/*  85:    */     {
-/*  86:115 */       this.posX = (this.user.posX - Math.sin(this.user.rotationYaw / 180.0F * 3.141593F) * Math.cos(this.user.rotationPitch / 180.0F * 3.141593F) * this.length);
-/*  87:116 */       this.posY = (this.user.posY - Math.sin(this.user.rotationPitch / 180.0F * 3.141593F) * this.length + this.user.getEyeHeight());
-/*  88:117 */       this.posZ = (this.user.posZ + Math.cos(this.user.rotationYaw / 180.0F * 3.141593F) * Math.cos(this.user.rotationPitch / 180.0F * 3.141593F) * this.length);
-/*  89:    */       
-/*  90:    */ 
-/*  91:120 */       this.rotationYaw = this.user.rotationYawHead;
-/*  92:121 */       this.rotationPitch = this.user.rotationPitch;
-/*  93:122 */       setPosition(this.posX, this.posY, this.posZ);
-/*  94:    */     }
-/*  95:125 */     if (this.rotationYaw > 180.0F) {
-/*  96:125 */       this.rotationYaw -= 360.0F;
-/*  97:    */     }
-/*  98:126 */     if (this.rotationYaw < -180.0F) {
-/*  99:126 */       this.rotationYaw += 360.0F;
-/* 100:    */     }
-/* 101:127 */     if (this.rotationPitch > 180.0F) {
-/* 102:127 */       this.rotationPitch -= 360.0F;
-/* 103:    */     }
-/* 104:128 */     if (this.rotationPitch < -180.0F) {
-/* 105:128 */       this.rotationPitch += 360.0F;
-/* 106:    */     }
-/* 107:130 */     setRotation(this.rotationYaw, this.rotationPitch);
-/* 108:    */   }
-/* 109:    */   
-/* 110:    */   public void setLightPower(int lightPower)
-/* 111:    */   {
-/* 112:139 */     this.dataWatcher.updateObject(19, Integer.valueOf(lightPower));
-/* 113:    */   }
-/* 114:    */   
-/* 115:    */   public int getLightPower()
-/* 116:    */   {
-/* 117:148 */     return this.dataWatcher.getWatchableObjectInt(19);
-/* 118:    */   }
-/* 119:    */   
-/* 120:    */   protected void writeEntityToNBT(NBTTagCompound nbtTagCompound) {}
-/* 121:    */   
-/* 122:    */   protected void readEntityFromNBT(NBTTagCompound nbtTagCompound) {}
-/* 123:    */ }
+package thKaguyaMod.entity.effect;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.entity.effect.EntityAjaRedStoneEffect
- * JD-Core Version:    0.7.0.1
- */
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import thKaguyaMod.LaserData;
+import thKaguyaMod.THShotLib;
+import thKaguyaMod.item.ItemAjaRedStone;
+
+/** エイジャの赤石の光のエフェクト */
+public class EntityAjaRedStoneEffect extends Entity
+{
+	/** 使用者 */
+	public EntityLivingBase user;
+	/** 取り込んだ光の量 */
+	public int lightLevel;
+	private double length = 1.2D;
+
+    public EntityAjaRedStoneEffect(World world)
+    {
+        super(world);
+        setSize(2.0F, 0.0F);//サイズを設定　平面上の横と奥行きサイズ、高さ
+        yOffset = 0.0F;//高さを設定
+    	lightLevel = 0;
+    	setLightPower(0);
+    }
+
+    public EntityAjaRedStoneEffect(World world, EntityLivingBase entityLiving)
+    {
+        this(world);
+
+    	user = entityLiving;
+    	posX = user.posX - Math.sin((user.rotationYaw) / 180F * 3.141593F) * Math.cos(user.rotationPitch / 180F * 3.141593F) * length;
+    	posY = user.posY - Math.sin(user.rotationPitch / 180F * 3.141593F) * length + (double)user.getEyeHeight();
+    	posZ = user.posZ + Math.cos((user.rotationYaw) / 180F * 3.141593F) * Math.cos(user.rotationPitch / 180F * 3.141593F) * length;
+    	this.setPositionAndRotation(posX, posY, posZ, user.rotationYaw, user.rotationPitch);
+    }
+    
+	/** 生成時に呼ばれる */
+    @Override
+    protected void entityInit()
+    {
+    	dataWatcher.addObject(19, new Integer(0));
+    }
+
+	/**
+	 * 当たり判定を取るか返す
+	 * falseだと右クリックの選択ですらできない。trueならsetSize()で設定したボックスの当たり判定が出現する
+	 */
+	@Override
+    public boolean canBeCollidedWith()
+    {
+        return false;
+    }
+
+	/**
+	 * 毎tick行う処理
+	 */
+	@Override
+    public void onUpdate()
+    {
+    	//エイジャの赤石の使用者がいないなら
+    	if(!worldObj.isRemote && user == null )
+    	{
+    		//消滅させる
+    		setDead();
+    		return;
+    	}
+    	super.onUpdate();
+
+    	//使用者がいるなら
+    	if(user != null)
+    	{
+    		if(user instanceof EntityPlayer)
+    		{
+    			EntityPlayer userEntity_p = (EntityPlayer)user;
+    			if(!userEntity_p.isUsingItem())
+    			{
+	    			int damage = (int)((double)lightLevel / 40.0);
+	    			if(damage > 30)//最大ダメージはハート15個分。頑張ってもそこまで
+	    			{
+	    				damage = 30;
+	    			}
+
+    				if(damage > 0)//ダメージがあるなら
+    				{
+    					//レーザーを発射する
+    					THShotLib.createLaserA(user, this, THShotLib.pos(posX, posY, posZ), THShotLib.angle(user.rotationYaw, user.rotationPitch), 0.1D, 4.0D, 0.3D, THShotLib.gravity_Zero(), 
+    							LaserData.laser(THShotLib.RED, (float)damage * 0.01F, (float)damage * 0.3F, damage, 0, 60, ItemAjaRedStone.SPECIAL_AJA_REDSTONE));
+    					if(!worldObj.isRemote)//サーバーなら
+    					{
+    						setDead();//光のエフェクトを消滅させる
+    					}
+    				}
+    			}
+    		}
+    		else
+    		{
+    			if(!worldObj.isRemote)
+    			{
+    				setDead();
+    			}
+    		}
+    	}
+
+    	//今ある場所の光レベルに合わせて光の量を増やす
+    	setLightPower( worldObj.getBlockLightValue((int)posX, (int)posY, (int)posZ));
+    	lightLevel += getLightPower();
+
+    	//使用者がいれば目の前に行くようにする
+    	if(user != null)
+    	{	
+    		posX = user.posX - Math.sin((user.rotationYaw) / 180F * 3.141593F) * Math.cos(user.rotationPitch / 180F * 3.141593F) * length;
+    		posY = user.posY - Math.sin(user.rotationPitch / 180F * 3.141593F) * length + user.getEyeHeight();
+    		posZ = user.posZ + Math.cos((user.rotationYaw) / 180F * 3.141593F) * Math.cos(user.rotationPitch / 180F * 3.141593F) * length;
+    		//thKaguyaLib.itemEffectFollowUser(this, userEntity, 0.8D, 0F);
+    		//rotationYaw = userEntity.rotationYaw;
+    		rotationYaw = user.rotationYawHead;
+    		rotationPitch = user.rotationPitch;
+    		setPosition(posX, posY, posZ);
+    	}
+
+    	if(rotationYaw >  180F)rotationYaw -= 360F;
+    	if(rotationYaw < -180F)rotationYaw += 360F;
+    	if(rotationPitch >  180F)rotationPitch -= 360F;
+    	if(rotationPitch < -180F)rotationPitch += 360F;
+
+    	setRotation(rotationYaw, rotationPitch);
+    }
+
+	/**
+	 * 取り込んでいる光の量を設定
+	 * @param lightPower 設定する光レベル
+	 */
+	public void setLightPower(int lightPower)
+	{
+		dataWatcher.updateObject(19, Integer.valueOf(lightPower));
+	}
+
+	/**
+	 * 取り込んでいる光の量を返す
+	 * @return 溜め込んだ光レベル
+	 */
+	public int getLightPower()
+	{
+		return dataWatcher.getWatchableObjectInt(19);
+	}
+
+	/**
+	 * 保存するデータの書き込み
+	 * @param nbtTagCompound : NTBタグ
+	 */
+	@Override
+	protected void writeEntityToNBT(NBTTagCompound nbtTagCompound)
+    {
+    }
+
+	/**
+	 * 保存したデータの読み込み
+	 * @param nbtTagCompound : NBTタグ
+	 */
+	@Override
+    protected void readEntityFromNBT(NBTTagCompound nbtTagCompound)
+    {
+    }
+}

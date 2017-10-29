@@ -1,50 +1,67 @@
-/*  1:   */ package thKaguyaMod.client.model;
-/*  2:   */ 
-/*  3:   */ import cpw.mods.fml.relauncher.Side;
-/*  4:   */ import cpw.mods.fml.relauncher.SideOnly;
-/*  5:   */ import net.minecraft.client.model.ModelBase;
-/*  6:   */ import net.minecraft.client.model.ModelRenderer;
-/*  7:   */ import net.minecraft.entity.Entity;
-/*  8:   */ 
-/*  9:   */ @SideOnly(Side.CLIENT)
-/* 10:   */ public class ModelSilverKnife
-/* 11:   */   extends ModelBase
-/* 12:   */ {
-/* 13:   */   public ModelRenderer[] knife;
-/* 14:   */   
-/* 15:   */   public ModelSilverKnife()
-/* 16:   */   {
-/* 17:37 */     this.knife = new ModelRenderer[3];
-/* 18:   */     
-/* 19:39 */     this.knife[0] = new ModelRenderer(this, 0, 0);
-/* 20:   */     
-/* 21:   */ 
-/* 22:   */ 
-/* 23:   */ 
-/* 24:44 */     this.knife[0].addBox(-4.0F, -5.0F, -1.0F, 7, 1, 3, 0.0F);
-/* 25:45 */     this.knife[0].rotateAngleX = 1.570796F;
-/* 26:   */     
-/* 27:   */ 
-/* 28:48 */     this.knife[1] = new ModelRenderer(this, 0, 16);
-/* 29:49 */     this.knife[1].addBox(-2.0F, -9.0F, 0.0F, 3, 14, 1, 0.0F);
-/* 30:50 */     this.knife[1].rotateAngleX = 1.570796F;
-/* 31:   */     
-/* 32:   */ 
-/* 33:53 */     this.knife[2] = new ModelRenderer(this, 32, 16);
-/* 34:54 */     this.knife[2].addBox(-1.0F, 5.0F, 0.0F, 1, 1, 1, 0.0F);
-/* 35:55 */     this.knife[2].rotateAngleX = 1.570796F;
-/* 36:   */   }
-/* 37:   */   
-/* 38:   */   public void render(Entity entity, float movement, float far, float tick, float yaw, float pitch, float size)
-/* 39:   */   {
-/* 40:62 */     for (int i = 0; i < 3; i++) {
-/* 41:64 */       this.knife[i].render(size);
-/* 42:   */     }
-/* 43:   */   }
-/* 44:   */ }
+package thKaguyaMod.client.model;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.client.model.ModelSilverKnife
- * JD-Core Version:    0.7.0.1
- */
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.entity.Entity;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
+public class ModelSilverKnife extends ModelBase
+{
+	//銀のナイフのモデル
+	
+    public ModelRenderer knife[];
+
+    public ModelSilverKnife()
+    {
+    	/*Minecraftのモデルの基本事項
+    	基本的にテクスチャに64x32の画像を使用
+    	ボックスタイプのモデルしか扱えない
+    	ボックスのサイズ＝テクスチャのサイズと考えていい
+    	例えば横幅が10の箱ならば、そこに設定されるテクスチャも10ドット分使用する
+    	横幅6、高さ4、奥行き3の箱を考えたとき、イメージとしてはテクスチャはこのようになる
+    	000000111111222222000000
+    	000000111111222222000000
+    	000000111111222222000000
+    	333333444444555555666666
+    	333333444444555555666666
+    	333333444444555555666666
+    	333333444444555555666666
+    	0は未使用部と考えて、ボックス型は6面存在するためこのように６つの部分に分けれれることになる。
+    	この配置は人間の頭で言うと、
+    	1は頭の上　2は頭の下　3は頭右　4は顔　5は頭左　6は頭後ろにあたる
+    	一番左上にあたる座標はModelRenderer(this,x,y)で設定可能。
+    	*/
+    	
+        knife = new ModelRenderer[3];
+    	//鍔
+        knife[0] = new ModelRenderer(this, 0, 0);//テクスチャ座標0,0を左上にする
+    	
+    	//ボックスを追加する。
+    	//addBox(X座標、Z座標、Y座標、X方向のサイズ、Z方向のサイズ、Y方向のサイズ、？（倍率？）)
+    	//サイズはテクスチャのサイズそのもの
+    	knife[0].addBox(-4, -5, -1, 7,1 , 3, 0.0F);
+    	knife[0].rotateAngleX = ((float)Math.PI / 2F);
+    	
+    	//柄
+    	knife[1] = new ModelRenderer(this, 0, 16);
+    	knife[1].addBox(-2, -9,  0, 3,14 , 1, 0.0F);
+    	knife[1].rotateAngleX = ((float)Math.PI / 2F);
+    	
+    	//刃部　小
+    	knife[2] = new ModelRenderer(this, 32, 16);
+    	knife[2].addBox(-1, 5, 0, 1, 1 , 1, 0.0F);
+        knife[2].rotateAngleX = ((float)Math.PI / 2F);
+        
+    }
+
+    @Override
+    public void render(Entity entity, float movement, float far, float tick, float yaw, float pitch, float size)
+    {
+        for (int i = 0; i < 3; i++)
+    	{
+    		knife[i].render(size);//描画　par7は気にしなくていいと思う
+    	}
+    }
+}

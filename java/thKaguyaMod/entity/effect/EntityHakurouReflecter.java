@@ -1,230 +1,333 @@
-/*   1:    */ package thKaguyaMod.entity.effect;
-/*   2:    */ 
-/*   3:    */ import java.util.List;
-/*   4:    */ import java.util.Random;
-/*   5:    */ import net.minecraft.entity.DataWatcher;
-/*   6:    */ import net.minecraft.entity.Entity;
-/*   7:    */ import net.minecraft.entity.player.EntityPlayer;
-/*   8:    */ import net.minecraft.nbt.NBTTagCompound;
-/*   9:    */ import net.minecraft.util.AxisAlignedBB;
-/*  10:    */ import net.minecraft.util.DamageSource;
-/*  11:    */ import net.minecraft.util.MovingObjectPosition;
-/*  12:    */ import net.minecraft.util.Vec3;
-/*  13:    */ import net.minecraft.world.World;
-/*  14:    */ import thKaguyaMod.ShotData;
-/*  15:    */ import thKaguyaMod.THShotLib;
-/*  16:    */ import thKaguyaMod.entity.shot.EntityTHLaser;
-/*  17:    */ import thKaguyaMod.entity.shot.EntityTHShot;
-/*  18:    */ 
-/*  19:    */ public class EntityHakurouReflecter
-/*  20:    */   extends Entity
-/*  21:    */ {
-/*  22:    */   public EntityPlayer user;
-/*  23:    */   public int damage;
-/*  24:    */   public int count;
-/*  25:    */   public double xVec;
-/*  26:    */   public double yVec;
-/*  27:    */   public double zVec;
-/*  28:    */   
-/*  29:    */   public EntityHakurouReflecter(World world)
-/*  30:    */   {
-/*  31: 32 */     super(world);
-/*  32:    */     
-/*  33: 34 */     setSize(1.5F, 1.5F);
-/*  34: 35 */     this.yOffset = 0.0F;
-/*  35: 36 */     this.count = 4;
-/*  36:    */   }
-/*  37:    */   
-/*  38:    */   public EntityHakurouReflecter(World world, EntityPlayer entityPlayer)
-/*  39:    */   {
-/*  40: 42 */     this(world);
-/*  41: 43 */     setSize(1.5F, 1.5F);
-/*  42: 44 */     this.yOffset = 0.0F;
-/*  43: 45 */     this.user = entityPlayer;
-/*  44: 46 */     Vec3 vec3 = THShotLib.getVecFromAngle(this.user.rotationYaw, this.user.rotationPitch, 1.0D);
-/*  45: 47 */     setPosition(this.user.posX + vec3.xCoord, this.user.posY + vec3.yCoord + this.user.getEyeHeight(), this.user.posZ + vec3.zCoord);
-/*  46: 48 */     setRotation(-this.user.rotationYaw, this.user.rotationPitch);
-/*  47: 49 */     Vec3 vec3_2 = THShotLib.getVecFromAngle(this.rotationYaw, this.rotationPitch, 0.18D);
-/*  48: 50 */     this.xVec = vec3_2.xCoord;
-/*  49: 51 */     this.zVec = vec3_2.zCoord;
-/*  50: 52 */     this.yVec = vec3_2.yCoord;
-/*  51: 53 */     this.count = 0;
-/*  52:    */   }
-/*  53:    */   
-/*  54:    */   public boolean canBePushed()
-/*  55:    */   {
-/*  56: 87 */     return false;
-/*  57:    */   }
-/*  58:    */   
-/*  59:    */   protected void entityInit()
-/*  60:    */   {
-/*  61: 94 */     this.dataWatcher.addObject(19, new Integer(0));
-/*  62:    */   }
-/*  63:    */   
-/*  64:    */   public boolean canBeCollidedWith()
-/*  65:    */   {
-/*  66:101 */     return true;
-/*  67:    */   }
-/*  68:    */   
-/*  69:    */   public void onUpdate()
-/*  70:    */   {
-/*  71:108 */     super.onUpdate();
-/*  72:112 */     if (!this.worldObj.isRemote)
-/*  73:    */     {
-/*  74:114 */       if ((this.user == null) || (this.user.isDead)) {
-/*  75:116 */         setDead();
-/*  76:    */       }
-/*  77:118 */       if (this.ticksExisted >= 20) {
-/*  78:120 */         setDead();
-/*  79:    */       }
-/*  80:    */     }
-/*  81:125 */     this.motionX = this.xVec;
-/*  82:126 */     this.motionY = this.yVec;
-/*  83:127 */     this.motionZ = this.zVec;
-/*  84:    */     
-/*  85:129 */     this.posX -= this.motionX;
-/*  86:130 */     this.posY += this.motionY;
-/*  87:131 */     this.posZ += this.motionZ;
-/*  88:    */     
-/*  89:    */ 
-/*  90:    */ 
-/*  91:    */ 
-/*  92:    */ 
-/*  93:    */ 
-/*  94:    */ 
-/*  95:    */ 
-/*  96:    */ 
-/*  97:141 */     double speedRate = (4 - this.count) * 0.2D;
-/*  98:    */     
-/*  99:    */ 
-/* 100:    */ 
-/* 101:    */ 
-/* 102:    */ 
-/* 103:    */ 
-/* 104:    */ 
-/* 105:149 */     double width = 0.5D;
-/* 106:150 */     double length = 0.5D;
-/* 107:    */     
-/* 108:152 */     Vec3 vec3d = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
-/* 109:    */     
-/* 110:    */ 
-/* 111:155 */     Vec3 vec3d1 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-/* 112:    */     
-/* 113:    */ 
-/* 114:158 */     MovingObjectPosition movingObjectPosition = this.worldObj.rayTraceBlocks(vec3d, vec3d1, false);
-/* 115:    */     
-/* 116:    */ 
-/* 117:161 */     vec3d = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
-/* 118:162 */     vec3d1 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-/* 119:165 */     if (movingObjectPosition != null)
-/* 120:    */     {
-/* 121:168 */       vec3d1 = Vec3.createVectorHelper(movingObjectPosition.hitVec.xCoord, movingObjectPosition.hitVec.yCoord, movingObjectPosition.hitVec.zCoord);
-/* 122:169 */       if (movingObjectPosition.entityHit == null) {
-/* 123:171 */         if (!this.worldObj.isRemote) {
-/* 124:173 */           setDead();
-/* 125:    */         }
-/* 126:    */       }
-/* 127:    */     }
-/* 128:179 */     Entity entity = null;
-/* 129:180 */     double d = 0.0D;
-/* 130:    */     
-/* 131:182 */     double xLength = this.motionX - Math.sin(this.rotationYaw / 180.0F * 3.141593F) * Math.cos(this.rotationPitch / 180.0F * 3.141593F) * length;
-/* 132:183 */     double yLength = this.motionY - Math.sin(this.rotationPitch / 180.0F * 3.141593F) * length;
-/* 133:184 */     double zLength = this.motionZ + Math.cos(this.rotationYaw / 180.0F * 3.141593F) * Math.cos(this.rotationPitch / 180.0F * 3.141593F) * length;
-/* 134:    */     
-/* 135:186 */     xLength -= xLength;
-/* 136:187 */     zLength -= zLength;
-/* 137:188 */     List list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.addCoord(xLength, yLength, zLength).expand(width * 2.0D, width * 2.0D, width * 2.0D));
-/* 138:190 */     for (int j = 0; j < list.size(); j++)
-/* 139:    */     {
-/* 140:192 */       Entity entity1 = (Entity)list.get(j);
-/* 141:194 */       if (((entity1 instanceof EntityTHShot)) && (!(entity1 instanceof EntityTHLaser)))
-/* 142:    */       {
-/* 143:197 */         EntityTHShot shot = (EntityTHShot)entity1;
-/* 144:    */         
-/* 145:199 */         AxisAlignedBB axisalignedbb = entity1.boundingBox.expand(shot.getShotSize(), shot.getShotSize(), shot.getShotSize());
-/* 146:200 */         MovingObjectPosition movingObjectPosition1 = axisalignedbb.calculateIntercept(vec3d, vec3d1);
-/* 147:    */         
-/* 148:    */ 
-/* 149:    */ 
-/* 150:204 */         movingObjectPosition = new MovingObjectPosition(entity1);
-/* 151:219 */         if ((this.user != null) && (this.user != shot.user))
-/* 152:    */         {
-/* 153:221 */           ShotData reflectShot = ShotData.shot(6, 5, THShotLib.SIZE[6], 3.0F, 0, 40, 0);
-/* 154:222 */           THShotLib.createShot(this.user, THShotLib.pos_Entity(shot), THShotLib.angle(-this.rotationYaw, this.rotationPitch), 0.3D, 0.7D, 0.05D, reflectShot);
-/* 155:224 */           if (!this.worldObj.isRemote) {
-/* 156:226 */             entity1.setDead();
-/* 157:    */           }
-/* 158:229 */           this.worldObj.playSoundAtEntity(shot, "random.bow", 0.5F, 0.4F / (this.rand.nextFloat() * 4.0F + 0.8F));
-/* 159:    */         }
-/* 160:235 */         if (movingObjectPosition != null) {
-/* 161:237 */           onImpact(movingObjectPosition);
-/* 162:    */         }
-/* 163:    */       }
-/* 164:    */     }
-/* 165:244 */     setPosition(this.posX, this.posY, this.posZ);
-/* 166:245 */     setRotation(this.rotationYaw, this.rotationPitch);
-/* 167:    */     
-/* 168:247 */     this.count += 1;
-/* 169:    */   }
-/* 170:    */   
-/* 171:    */   protected void onImpact(MovingObjectPosition movingObjectPosition)
-/* 172:    */   {
-/* 173:253 */     if ((!this.worldObj.isRemote) && (movingObjectPosition.entityHit != null))
-/* 174:    */     {
-/* 175:256 */       Entity hitEntity = movingObjectPosition.entityHit;
-/* 176:259 */       if (hitEntity != null) {
-/* 177:262 */         if (!(hitEntity instanceof EntityTHShot))
-/* 178:    */         {
-/* 179:271 */           double slope = (this.posX + this.xVec - (this.posX - this.xVec)) / (this.posZ + this.zVec - (this.posZ - this.zVec));
-/* 180:272 */           double height = this.posX - slope * this.posZ;
-/* 181:274 */           if (hitEntity.posX > hitEntity.posZ * slope + height)
-/* 182:    */           {
-/* 183:276 */             hitEntity.motionX = (-Math.sin(this.rotationYaw / 180.0D * 3.141592653589793D));
-/* 184:277 */             hitEntity.motionZ = (-Math.cos(this.rotationYaw / 180.0D * 3.141592653589793D));
-/* 185:    */           }
-/* 186:    */           else
-/* 187:    */           {
-/* 188:281 */             hitEntity.motionX = Math.sin(this.rotationYaw / 180.0D * 3.141592653589793D);
-/* 189:282 */             hitEntity.motionZ = Math.cos(this.rotationYaw / 180.0D * 3.141592653589793D);
-/* 190:    */           }
-/* 191:285 */           if (hitEntity.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, this.user), 1.0F)) {}
-/* 192:    */         }
-/* 193:291 */         else if (!this.worldObj.isRemote)
-/* 194:    */         {
-/* 195:293 */           hitEntity.setDead();
-/* 196:    */         }
-/* 197:    */       }
-/* 198:    */     }
-/* 199:300 */     else if (!this.worldObj.isRemote)
-/* 200:    */     {
-/* 201:302 */       setDead();
-/* 202:303 */       return;
-/* 203:    */     }
-/* 204:    */   }
-/* 205:    */   
-/* 206:    */   public boolean attackEntityFrom(DamageSource par1DamageSource, float par2)
-/* 207:    */   {
-/* 208:313 */     return true;
-/* 209:    */   }
-/* 210:    */   
-/* 211:    */   public void setParasolMode(int mode)
-/* 212:    */   {
-/* 213:318 */     this.dataWatcher.updateObject(19, Integer.valueOf(mode));
-/* 214:    */   }
-/* 215:    */   
-/* 216:    */   public int getParasolMode()
-/* 217:    */   {
-/* 218:323 */     return this.dataWatcher.getWatchableObjectInt(19);
-/* 219:    */   }
-/* 220:    */   
-/* 221:    */   protected void writeEntityToNBT(NBTTagCompound par1NBTTagCompound) {}
-/* 222:    */   
-/* 223:    */   protected void readEntityFromNBT(NBTTagCompound par1NBTTagCompound) {}
-/* 224:    */ }
+package thKaguyaMod.entity.effect;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.entity.effect.EntityHakurouReflecter
- * JD-Core Version:    0.7.0.1
- */
+import java.util.List;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
+import thKaguyaMod.ShotData;
+import thKaguyaMod.THShotLib;
+import thKaguyaMod.entity.shot.EntityTHLaser;
+import thKaguyaMod.entity.shot.EntityTHShot;
+
+/** 白楼剣の跳ね返すシールド */
+public class EntityHakurouReflecter extends Entity
+{
+	/** 使用者 */
+	public EntityPlayer user;
+	public int damage;
+	public int count;
+	public double xVec;
+	public double yVec;
+	public double zVec;
+
+	//ワールド読み込み時に呼び出されるコンストラクト
+    public EntityHakurouReflecter(World world)
+    {
+        super(world);
+        //preventEntitySpawning = true;
+        setSize(1.5F, 1.5F);//サイズを設定　平面上の横と奥行きサイズ、高さ
+        yOffset = 0.0F;//高さを設定*/
+        count = 4;
+    }
+
+	//出現時に呼び出されるコンストラクト
+    public EntityHakurouReflecter(World world, EntityPlayer entityPlayer)
+    {
+        this(world);
+    	setSize(1.5F, 1.5F);//ワールド読み込み時のコンストラクトと同じ
+        yOffset = 0.0F;//同上
+    	user = entityPlayer;
+    	Vec3 vec3 = THShotLib.getVecFromAngle(user.rotationYaw, user.rotationPitch, 1.0D);
+        setPosition(user.posX + vec3.xCoord, user.posY + vec3.yCoord + user.getEyeHeight(), user.posZ + vec3.zCoord);//初期位置を設定(x,y,z)
+    	setRotation(-user.rotationYaw,  user.rotationPitch);
+    	Vec3 vec3_2 = THShotLib.getVecFromAngle(rotationYaw, rotationPitch, 0.18D);
+		xVec = vec3_2.xCoord;
+		zVec = vec3_2.zCoord;
+		yVec = vec3_2.yCoord;
+    	count = 0;
+    }
+
+	//他の物体と衝突したときのその物体の当たり判定？
+    /*public AxisAlignedBB getCollisionBox(Entity entity)
+    {
+		double width = 0.75D;
+		double length = 3.0D;
+		double xLength = motionX + Math.sin(rotationYaw / 180F * 3.141593F) * Math.cos(rotationPitch / 180F * 3.141593F) * width;
+		double yLength = motionY + Math.sin(rotationPitch / 180F * 3.141593F) * length;
+		double zLength = motionZ + Math.cos(rotationYaw / 180F * 3.141593F) * Math.cos(rotationPitch / 180F * 3.141593F) * width;
+		
+		xLength -= xLength;
+		zLength -= zLength;
+        return entity.boundingBox.addCoord(xLength * 2D, yLength, zLength * 2D).expand(width * 2D, length, width * 2D);//指定範囲内のEntityをリストに登録;
+    }
+
+	//当たり判定を設定
+    public AxisAlignedBB getBoundingBox()
+    {
+        double width = 0.75D;
+		double length = 3.0D;
+		double xLength = motionX + Math.sin(rotationYaw / 180F * 3.141593F) * Math.cos(rotationPitch / 180F * 3.141593F) * width;
+		double yLength = motionY + Math.sin(rotationPitch / 180F * 3.141593F) * length;
+		double zLength = motionZ + Math.cos(rotationYaw / 180F * 3.141593F) * Math.cos(rotationPitch / 180F * 3.141593F) * width;
+		
+		xLength -= xLength;
+		zLength -= zLength;
+        return boundingBox.addCoord(xLength * 2D, yLength, zLength * 2D).expand(width * 2D, length, width * 2D);//指定範囲内のEntityをリストに登録;;
+    }*/
+
+	//押すことができるかどうか
+    public boolean canBePushed()
+    {
+        return false;
+    }
+
+	/** 生成時に一度だけ呼ばれる */
+    @Override
+    protected void entityInit()
+    {
+    	dataWatcher.addObject(19, new Integer(0));
+    }
+
+	//当たり判定の有無　falseだと右クリックの選択ですらできない。trueならsetSize()で設定したボックスの当たり判定が出現する
+	@Override
+    public boolean canBeCollidedWith()
+    {
+        return true;
+    }
+
+	//Entityが存在する限り毎フレーム呼び出されるメソッド
+	@Override
+    public void onUpdate()
+    {
+    	super.onUpdate();
+
+    	//AxisAlignedBB getCollisionBox(this);
+    	//使用者がいないなら終了処理
+    	if(!worldObj.isRemote)
+    	{
+    		if(user == null || user.isDead)
+    		{
+    			setDead();
+    		}
+    		if(ticksExisted >= 20)
+    		{
+    			setDead();
+    		}
+    	}
+    	
+    	
+    	motionX = xVec;
+    	motionY = yVec;
+    	motionZ = zVec;
+    	
+    	posX -= motionX;
+    	posY += motionY;
+    	posZ += motionZ;
+    	
+    	
+    	
+
+    	/*if(damage >= ItemYuukaParasol.PARASOL_MAX_DAMAGE)//ダメージが武器の耐久を越したら
+    	{
+    		setDead();//消滅
+    	}*/
+    	
+    	double speedRate = (double)(4 - count) * 0.2D;
+    	
+    	/*if(count < 4)
+    	{
+    		this.posX -= Math.sin((double)rotationYaw / 180.0D * Math.PI) * speedRate;
+    		this.posZ += Math.cos((double)rotationYaw / 180.0D * Math.PI) * speedRate;
+    	}*/
+    	
+		double width = 0.5D;
+		double length = 0.5D;
+	    //始点（現在地）
+    	Vec3 vec3d = Vec3.createVectorHelper(posX , posY, posZ);
+    	//終点（現在地に移動量を足した点）
+    	//Vec3 vec3d1 = Vec3.createVectorHelper(posX + motionX + xVec * width, posY + motionY + yVec * length, posZ + motionZ + zVec * width);
+    	Vec3 vec3d1 = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
+        //始点と終点からブロックとの当たりを取得
+    	//MovingObjectPosition movingObjectPosition = worldObj.rayTraceBlocks_do_do(vec3d, vec3d1, false, true);
+    	MovingObjectPosition movingObjectPosition = worldObj.rayTraceBlocks(vec3d, vec3d1, false);
+    	//vec3d = Vec3.createVectorHelper(posX, posY, posZ);
+    	//vec3d1 = Vec3.createVectorHelper(posX + motionX + xVec * width, posY + motionY + yVec * length, posZ + motionZ + zVec * width);
+    	vec3d = Vec3.createVectorHelper(posX , posY, posZ);
+    	vec3d1 = Vec3.createVectorHelper(posX + motionX, posY + motionY, posZ + motionZ);
+    	
+    	//何らかのブロックに当たっているなら
+        if (movingObjectPosition != null)
+        {
+        	//終点を当たった点に変更
+        	vec3d1 = Vec3.createVectorHelper(movingObjectPosition.hitVec.xCoord, movingObjectPosition.hitVec.yCoord, movingObjectPosition.hitVec.zCoord);
+        	if(movingObjectPosition.entityHit == null)
+        	{
+        		if(!worldObj.isRemote)
+        		{
+        			setDead();
+        		}
+        	}
+        }
+    	
+    	
+        Entity entity = null;//実際に当たったことにするEntity
+    	double d = 0.0D;//そのEntityまでの仮の距離
+    	//ここから移動量分の線分を作り、それに弾の大きさの２倍の肉付けをし直方体を作る。それに当たったEntityをリスト化する
+		double xLength = motionX - Math.sin(rotationYaw / 180F * 3.141593F) * Math.cos(rotationPitch / 180F * 3.141593F) * length;
+		double yLength = motionY - Math.sin(rotationPitch / 180F * 3.141593F) * length;
+		double zLength = motionZ + Math.cos(rotationYaw / 180F * 3.141593F) * Math.cos(rotationPitch / 180F * 3.141593F) * length;
+		
+		xLength -= xLength;
+		zLength -= zLength;
+        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.addCoord(xLength, yLength, zLength).expand(width * 2D, width * 2D, width * 2D));//指定範囲内のEntityをリストに登録
+
+    	for (int j = 0; j < list.size(); j++)
+        {
+            Entity entity1 = (Entity)list.get(j);//entity1にリストの先端のentityを保存
+        	//entity1が、当たり判定を取らない　または　entity1が使用者　または　飛んで25カウント以下？　または　EntityTHShotならパス
+            if ( entity1 instanceof EntityTHShot && !(entity1 instanceof EntityTHLaser))
+            {
+        		//float f2 = 0.3F;
+            	EntityTHShot shot = (EntityTHShot)entity1;
+        		//判定を弾の大きさに変更
+            	AxisAlignedBB axisalignedbb = entity1.boundingBox.expand(shot.getShotSize(), shot.getShotSize(), shot.getShotSize());
+            	MovingObjectPosition movingObjectPosition1 = axisalignedbb.calculateIntercept(vec3d, vec3d1);
+        		//この判定で何も当たっていないならパス
+            	//if (movingObjectPosition1 != null)
+            	{
+            		movingObjectPosition = new MovingObjectPosition(entity1);
+            		//double xVec = -Math.sin(player.rotationYaw / 180F * 3.141593F) * Math.cos(player.rotationPitch / 180F * 3.141593F);
+            		//double yVec = -Math.sin(player.rotationPitch / 180F * 3.141593F);
+            		//double zVec =  Math.cos(player.rotationYaw / 180F * 3.141593F) * Math.cos(player.rotationPitch / 180F * 3.141593F);
+            		//指定範囲内のEntityのリストを取得
+            		//List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.addCoord(xVec, yVec, zVec).expand(size, size, size));
+            		//double d = 0.0D;
+            		//for (int j = 0; j < list.size(); j++)
+            		//{
+            			//Entity entity1 = (Entity)list.get(j);
+            			//if(entity1 instanceof EntityTHShot && !(entity1 instanceof EntityTHLaser))
+            			//{
+            				
+            				//if(entity1.getDistanceSq(player.posX, player.posY + player.getEyeHeight(), player.posZ) < size * 2.0D + shot.getShotSize())
+            				
+            					if(user != null && user != shot.user)
+            					{
+            						ShotData reflectShot = ShotData.shot(THShotLib.FORM_SCALE, THShotLib.AQUA, THShotLib.SIZE[THShotLib.FORM_SCALE], 3.0F, 0, 40, 0);
+            						THShotLib.createShot(user, THShotLib.pos_Entity(shot), THShotLib.angle(-rotationYaw, rotationPitch), 0.3D, 0.7D, 0.05D, reflectShot);
+            					
+	            					if(!worldObj.isRemote)
+	            					{
+	            						entity1.setDead();
+	            					}
+	            					//hit = true;
+	            					worldObj.playSoundAtEntity(shot, "random.bow", 0.5F, 0.4F / (rand.nextFloat() * 4F + 0.8F));//音を出す
+            					}
+            				//}
+            				
+            			//}
+            		//}
+            		if(movingObjectPosition != null)
+            		{
+            			onImpact(movingObjectPosition);
+            		}
+            	}
+        	
+            }
+        }
+
+    	setPosition(posX, posY, posZ);
+    	setRotation(rotationYaw, rotationPitch);
+    	
+    	count ++;
+    }
+	
+	//ブロックやEntityに当たった時の処理
+    protected void onImpact(MovingObjectPosition movingObjectPosition)
+    {
+    	if(!worldObj.isRemote && movingObjectPosition.entityHit != null)
+    	{
+    	//当たった時の処理
+    	Entity hitEntity = movingObjectPosition.entityHit;
+        
+    	//当たったEntityがいるなら
+    	if ( hitEntity != null )
+    	{
+        	//それがEntityTHShotに属していないなら
+        	if(hitEntity instanceof EntityTHShot == false)
+        	{
+        		
+        		//double angleXZ = Math.atan2(hitEntity.posX - hitEntity.lastTickPosX, hitEntity.posZ - hitEntity.lastTickPosZ);
+        		//hitEntity.motionX = -hitEntity.motionX * 2.0D;
+        		//hitEntity.motionY = -Math.sin(hitEntity.rotationPitch / 180.0D * Math.PI) * 2.0D;
+        		//hitEntity.motionZ = -hitEntity.motionZ * 2.0D;
+        		//指定したダメージ分の魔法ダメージを与える
+
+           		double slope = ((this.posX + this.xVec) - (this.posX - this.xVec)) / ((this.posZ + this.zVec) - (this.posZ - this.zVec));
+        		double height = this.posX - slope * this.posZ;
+        		
+        		if(hitEntity.posX > hitEntity.posZ * slope + height)
+        		{
+        			hitEntity.motionX = -Math.sin(this.rotationYaw / 180.0D * Math.PI);
+        			hitEntity.motionZ = -Math.cos(this.rotationYaw / 180.0D * Math.PI);
+        		}
+        		else
+        		{
+        			hitEntity.motionX = Math.sin(this.rotationYaw / 180.0D * Math.PI);
+        			hitEntity.motionZ = Math.cos(this.rotationYaw / 180.0D * Math.PI);
+        		}
+        		
+        		if (!hitEntity.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, user), 1.0F));
+        		
+        	}
+        	//EntityTHShotに属しているなら
+        	else
+        	{
+        		if(!worldObj.isRemote)
+        		{
+        			hitEntity.setDead();
+        		}
+        	}
+		}
+    	}
+    	else
+    	{
+    		if(!worldObj.isRemote)
+    		{
+    			setDead();
+    			return;
+    		}
+    	}
+    	
+    }
+
+	//Entityに攻撃されたときに呼び出されるメソッド　破壊とか関係なしに攻撃されれば呼び出される
+	@Override
+	public boolean attackEntityFrom(DamageSource par1DamageSource, float par2)
+    {
+        return true;
+    }
+
+    public void setParasolMode(int mode)
+	{
+		dataWatcher.updateObject(19, Integer.valueOf(mode));
+	}
+
+	public int getParasolMode()
+	{
+		return dataWatcher.getWatchableObjectInt(19);
+	}
+
+	protected void writeEntityToNBT(NBTTagCompound par1NBTTagCompound)
+    {
+    }
+
+    protected void readEntityFromNBT(NBTTagCompound par1NBTTagCompound)
+    {
+    }
+}

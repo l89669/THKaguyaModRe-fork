@@ -88,8 +88,7 @@ public class ItemSakuyaWatch extends Item
 	//public void onPlayerStoppedUsing(ItemStack itemStack, World world, EntityPlayer player, int usedTime)
 	public ItemStack onEaten(ItemStack itemStack, World world, EntityPlayer player)
 	{
-		//int usedTime = 24;
-		int usedTime = getMaxItemUseDuration(itemStack) - player.getItemInUseCount();
+		int usedTime = 24;
 		
         /*ArrowLooseEvent event = new ArrowLooseEvent(player, itemStack, usedTime);
         MinecraftForge.EVENT_BUS.post(event);
@@ -163,7 +162,7 @@ public class ItemSakuyaWatch extends Item
        		{
        			itemStack.stackSize--;
        		}
-    	}
+    	} 
     	return itemStack;
 	}
 	

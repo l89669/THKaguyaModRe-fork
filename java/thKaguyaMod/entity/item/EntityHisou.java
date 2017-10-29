@@ -1,183 +1,274 @@
-/*   1:    */ package thKaguyaMod.entity.item;
-/*   2:    */ 
-/*   3:    */ import net.minecraft.entity.DataWatcher;
-/*   4:    */ import net.minecraft.entity.Entity;
-/*   5:    */ import net.minecraft.entity.EntityLivingBase;
-/*   6:    */ import net.minecraft.nbt.NBTTagCompound;
-/*   7:    */ import net.minecraft.world.World;
-/*   8:    */ import thKaguyaMod.ShotData;
-/*   9:    */ import thKaguyaMod.THKaguyaLib;
-/*  10:    */ import thKaguyaMod.THShotLib;
-/*  11:    */ import thKaguyaMod.init.THKaguyaConfig;
-/*  12:    */ import thKaguyaMod.init.THKaguyaItems;
-/*  13:    */ 
-/*  14:    */ public class EntityHisou
-/*  15:    */   extends Entity
-/*  16:    */ {
-/*  17:    */   public EntityLivingBase userEntity;
-/*  18:    */   private Entity motherEntity;
-/*  19:    */   private int count;
-/*  20:    */   public int num;
-/*  21:    */   private int damage;
-/*  22:    */   private int spellCardUsedTime;
-/*  23:    */   
-/*  24:    */   public EntityHisou(World world)
-/*  25:    */   {
-/*  26: 28 */     super(world);
-/*  27: 29 */     setSize(4.4F, 4.4F);
-/*  28: 30 */     this.yOffset = 0.0F;
-/*  29:    */   }
-/*  30:    */   
-/*  31:    */   public EntityHisou(World world, EntityLivingBase entityLivingBase, Entity mother, int n, int da)
-/*  32:    */   {
-/*  33: 35 */     this(world);
-/*  34:    */     
-/*  35: 37 */     this.userEntity = entityLivingBase;
-/*  36: 38 */     this.prevPosX = this.userEntity.posX;
-/*  37: 39 */     this.prevPosY = this.userEntity.posY;
-/*  38: 40 */     this.prevPosZ = this.userEntity.posZ;
-/*  39: 41 */     setPosition(this.userEntity.posX - Math.sin(this.userEntity.rotationYaw / 180.0F * 3.141593F) * Math.cos(this.userEntity.rotationPitch / 180.0F * 3.141593F) * 1.2D, this.userEntity.posY - 
-/*  40: 42 */       Math.sin(this.userEntity.rotationPitch / 180.0F * 3.141593F) * 1.2D + this.userEntity.getEyeHeight() - 0.7D, this.userEntity.posZ + 
-/*  41: 43 */       Math.cos(this.userEntity.rotationYaw / 180.0F * 3.141593F) * Math.cos(this.userEntity.rotationPitch / 180.0F * 3.141593F) * 1.2D);
-/*  42: 44 */     this.rotationYaw = this.userEntity.rotationYaw;
-/*  43: 45 */     this.ridingEntity = this.userEntity;
-/*  44: 46 */     this.motherEntity = mother;
-/*  45: 47 */     this.count = 0;
-/*  46: 48 */     this.num = n;
-/*  47: 49 */     setNum(n);
-/*  48: 50 */     this.damage = da;
-/*  49: 51 */     this.spellCardUsedTime = 0;
-/*  50: 52 */     this.worldObj.playSoundAtEntity(this, "thkaguyamod:masterspark", THKaguyaConfig.HisoutenVol, 1.0F);
-/*  51:    */   }
-/*  52:    */   
-/*  53:    */   protected void entityInit()
-/*  54:    */   {
-/*  55: 59 */     this.dataWatcher.addObject(17, new Integer(0));
-/*  56: 60 */     this.dataWatcher.addObject(18, new Integer(0));
-/*  57:    */   }
-/*  58:    */   
-/*  59:    */   public boolean canBePushed()
-/*  60:    */   {
-/*  61: 69 */     return false;
-/*  62:    */   }
-/*  63:    */   
-/*  64:    */   public boolean canBeCollidedWith()
-/*  65:    */   {
-/*  66: 78 */     return false;
-/*  67:    */   }
-/*  68:    */   
-/*  69:    */   public void onUpdate()
-/*  70:    */   {
-/*  71: 87 */     super.onUpdate();
-/*  72: 89 */     if ((!this.worldObj.isRemote) && (this.userEntity == null))
-/*  73:    */     {
-/*  74: 91 */       if (this.num == 8) {
-/*  75: 93 */         THKaguyaLib.itemEffectFinish(this, this.userEntity, THKaguyaItems.hisou_sword, this.damage);
-/*  76:    */       } else {
-/*  77: 97 */         setDead();
-/*  78:    */       }
-/*  79: 99 */       return;
-/*  80:    */     }
-/*  81:102 */     setAngle(getAngle() + (this.count + getNum() / 3.0F) * 39.0F);
-/*  82:    */     
-/*  83:104 */     THKaguyaLib.itemEffectFollowUser(this, this.userEntity, 1.2D, 0.0F);
-/*  84:105 */     if (this.userEntity != null)
-/*  85:    */     {
-/*  86:121 */       this.rotationYaw = this.userEntity.rotationYaw;
-/*  87:122 */       this.rotationPitch = this.userEntity.rotationPitch;
-/*  88:    */     }
-/*  89:    */     else
-/*  90:    */     {
-/*  91:133 */       if (getNum() == 8) {
-/*  92:135 */         THKaguyaLib.itemEffectFinish(this, this.userEntity, THKaguyaItems.hisou_sword, this.damage);
-/*  93:    */       }
-/*  94:137 */       if (!this.worldObj.isRemote) {
-/*  95:139 */         setDead();
-/*  96:    */       }
-/*  97:    */     }
-/*  98:144 */     if ((this.ticksExisted > this.spellCardUsedTime) && (this.userEntity != null) && (getNum() == 8))
-/*  99:    */     {
-/* 100:174 */       ShotData shot = ShotData.shot(31, 0, 0.5F, 6.0F, 3, 60, 700);
-/* 101:175 */       THShotLib.createRandomRingShot(this.userEntity, this, THShotLib.pos_Entity(this), this.userEntity.getLookVec(), 0.0F, 9999, 0.1D, 0.8D, 0.05D, THShotLib.gravity_Zero(), shot, this.num, 0.1D, 30.0F);
-/* 102:    */     }
-/* 103:179 */     if (this.ticksExisted > this.spellCardUsedTime) {
-/* 104:181 */       this.spellCardUsedTime = this.ticksExisted;
-/* 105:    */     }
-/* 106:185 */     if (this.ticksExisted >= 100)
-/* 107:    */     {
-/* 108:187 */       if (getNum() == 8) {
-/* 109:189 */         THKaguyaLib.itemEffectFinish(this, this.userEntity, THKaguyaItems.hisou_sword, this.damage);
-/* 110:    */       }
-/* 111:191 */       if (!this.worldObj.isRemote) {
-/* 112:193 */         setDead();
-/* 113:    */       }
-/* 114:    */     }
-/* 115:    */   }
-/* 116:    */   
-/* 117:    */   public void updateRidden()
-/* 118:    */   {
-/* 119:203 */     if ((this.ridingEntity != null) && (getNum() == 8))
-/* 120:    */     {
-/* 121:205 */       this.ridingEntity.rotationYaw = (this.ridingEntity.prevRotationYaw + (this.ridingEntity.rotationYaw - this.ridingEntity.prevRotationYaw) * 0.3F);
-/* 122:206 */       this.ridingEntity.rotationPitch = (this.ridingEntity.prevRotationPitch + (this.ridingEntity.rotationPitch - this.ridingEntity.prevRotationPitch) * 0.3F);
-/* 123:207 */       this.ridingEntity.motionX *= 0.1D;
-/* 124:208 */       this.ridingEntity.motionY *= 0.1D;
-/* 125:209 */       this.ridingEntity.motionZ *= 0.1D;
-/* 126:    */     }
-/* 127:    */   }
-/* 128:    */   
-/* 129:    */   protected void writeEntityToNBT(NBTTagCompound nbtTagCompound)
-/* 130:    */   {
-/* 131:220 */     nbtTagCompound.setShort("count", (short)this.count);
-/* 132:221 */     nbtTagCompound.setShort("damage", (short)this.damage);
-/* 133:222 */     nbtTagCompound.setByte("number", (byte)this.num);
-/* 134:    */   }
-/* 135:    */   
-/* 136:    */   protected void readEntityFromNBT(NBTTagCompound nbtTagCompound)
-/* 137:    */   {
-/* 138:232 */     this.count = nbtTagCompound.getShort("count");
-/* 139:233 */     this.damage = nbtTagCompound.getShort("damage");
-/* 140:234 */     this.num = nbtTagCompound.getByte("number");
-/* 141:    */   }
-/* 142:    */   
-/* 143:    */   public float getShadowSize()
-/* 144:    */   {
-/* 145:239 */     return 0.5F;
-/* 146:    */   }
-/* 147:    */   
-/* 148:    */   public void setNum(int num)
-/* 149:    */   {
-/* 150:244 */     this.dataWatcher.updateObject(17, Integer.valueOf(num));
-/* 151:    */   }
-/* 152:    */   
-/* 153:    */   public int getNum()
-/* 154:    */   {
-/* 155:249 */     return this.dataWatcher.getWatchableObjectInt(17);
-/* 156:    */   }
-/* 157:    */   
-/* 158:    */   public void setAngle(float angle)
-/* 159:    */   {
-/* 160:254 */     this.dataWatcher.updateObject(18, Integer.valueOf((int)(angle * 1000.0F)));
-/* 161:    */   }
-/* 162:    */   
-/* 163:    */   public float getAngle()
-/* 164:    */   {
-/* 165:259 */     return this.dataWatcher.getWatchableObjectInt(18) / 1000.0F;
-/* 166:    */   }
-/* 167:    */   
-/* 168:    */   protected boolean isValidLightLevel()
-/* 169:    */   {
-/* 170:264 */     return true;
-/* 171:    */   }
-/* 172:    */   
-/* 173:    */   public float getBrightness(float par1)
-/* 174:    */   {
-/* 175:272 */     return 1.0F;
-/* 176:    */   }
-/* 177:    */ }
+package thKaguyaMod.entity.item;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.entity.item.EntityHisou
- * JD-Core Version:    0.7.0.1
- */
+import static thKaguyaMod.DanmakuConstants.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import thKaguyaMod.ShotData;
+import thKaguyaMod.THKaguyaLib;
+import thKaguyaMod.THShotLib;
+import thKaguyaMod.entity.spellcard.THSC_Zenzinrui_no_Hisouten;
+import thKaguyaMod.init.THKaguyaConfig;
+import thKaguyaMod.init.THKaguyaItems;
+
+/** 緋想の剣 */
+public class EntityHisou extends Entity
+{
+	/** 使用者 */
+	public EntityLivingBase userEntity;
+	private Entity motherEntity;
+	private int count;
+	public int num;
+	private int damage;
+	private int spellCardUsedTime;
+
+    public EntityHisou(World world)
+    {
+        super(world);
+        setSize(4.4F, 4.4F);//サイズを設定　平面上の横と奥行きサイズ、高さ
+        yOffset = 0.0F;//-0.8F;//高さを設定
+    }
+
+	public EntityHisou(World world,EntityLivingBase entityLivingBase, Entity mother, int n, int da)
+    {
+        this(world);
+
+    	userEntity = entityLivingBase;//使用者をshootingEntityに保存
+    	prevPosX = userEntity.posX;
+        prevPosY = userEntity.posY;
+        prevPosZ = userEntity.posZ;
+        setPosition(userEntity.posX - Math.sin(userEntity.rotationYaw / 180F * (float)Math.PI) * Math.cos(userEntity.rotationPitch / 180F * (float)Math.PI) * 1.2D,
+        			userEntity.posY - Math.sin(userEntity.rotationPitch / 180F * (float)Math.PI) * 1.2D +  userEntity.getEyeHeight() - 0.7D,
+        			userEntity.posZ + Math.cos(userEntity.rotationYaw / 180F * (float)Math.PI) * Math.cos(userEntity.rotationPitch / 180F * (float)Math.PI) * 1.2D);//初期位置を設定(x,y,z)
+    	rotationYaw = userEntity.rotationYaw;
+    	ridingEntity = userEntity;
+    	motherEntity = mother; //残像に対して本物
+    	count = 0;
+    	num = n;
+    	setNum(n);
+    	damage = da;
+    	spellCardUsedTime = 0;
+    	worldObj.playSoundAtEntity(this, "thkaguyamod:masterspark", THKaguyaConfig.HisoutenVol, 1.0F);
+    }
+
+	/** 生成時に一度だけ呼ばれる */
+	@Override
+    protected void entityInit()
+    {
+    	dataWatcher.addObject(17, new Integer(0));
+    	dataWatcher.addObject(18, new Integer(0));
+    }
+
+    /**
+     * Returns true if this entity should push and be pushed by other entities when colliding.
+     */
+	@Override
+    public boolean canBePushed()
+    {
+        return false;
+    }
+
+    /**
+     * Returns true if other Entities should be prevented from moving through this Entity.
+     */
+	@Override
+    public boolean canBeCollidedWith()
+    {
+    	return false;
+    }
+
+	/**
+	 * 毎tick行う処理
+	 */
+	@Override
+    public void onUpdate()
+    {
+    	super.onUpdate();
+
+    	if(!worldObj.isRemote && userEntity == null)
+    	{
+    		if(num == 8)
+    		{
+    			THKaguyaLib.itemEffectFinish(this, userEntity, THKaguyaItems.hisou_sword, damage);
+    		}
+    		else
+    		{
+    			setDead();
+    		}
+    		return;
+    	}
+
+    	setAngle(getAngle() + ((float)count+(float)getNum()/3.0F) * 39.0F);
+
+    	THKaguyaLib.itemEffectFollowUser(this, userEntity, 1.2D, 0F);
+    	if(userEntity != null)//shootingEntityが存在するなら、それをぬるぬる追尾する
+    	{
+    		/*float angleXZ,angleY, speed;
+    		float disXZ;
+    		double px, py, pz;
+    		px = userEntity.posX - Math.sin(userEntity.rotationYaw / 180F * (float)Math.PI) * Math.cos(userEntity.rotationPitch / 180F * (float)Math.PI)* 1.2D;
+    		py = userEntity.posY - Math.sin(userEntity.rotationPitch / 180F * (float)Math.PI) * 1.2D + userEntity.getEyeHeight();
+    		pz = userEntity.posZ + Math.cos(userEntity.rotationYaw / 180F * (float)Math.PI) * Math.cos(userEntity.rotationPitch / 180F * (float)Math.PI) * 1.2D;
+    		disXZ = (float)Math.sqrt( (px-posX)*(px-posX) + (pz-posZ)*(pz-posZ) );
+    		angleXZ = (float)Math.atan2(pz-posZ, px-posX);
+    		angleY  = (float)Math.atan2(disXZ, py-posY);
+    		speed = (0.25F+((float)num * 0.1F)) * (float)Math.sqrt( (px-posX)*(px-posX) + (py-posY)*(py-posY) + (pz-posZ)*(pz-posZ) );//離れるほど速くなる
+    		motionX = userEntity.motionX;
+    		motionY = userEntity.motionY;
+    		motionZ = userEntity.motionZ;
+    		setPosition(px, py, pz);*/
+    		rotationYaw = userEntity.rotationYaw;
+    		rotationPitch = userEntity.rotationPitch;
+    		/*if(getNum() == 8)
+    		{
+    			shootingEntity.motionX -= (shootingEntity.posX - shootingEntity.prevPosX)*0.6D;
+    			shootingEntity.motionZ -= (shootingEntity.posZ - shootingEntity.prevPosZ)*0.6D;
+    			shootingEntity.rotationYawHead = shootingEntity.prevRotationYawHead + (shootingEntity.rotationYawHead - shootingEntity.prevRotationYawHead)*0.2F;
+    			shootingEntity.rotationYaw = shootingEntity.prevRotationYaw + (shootingEntity.rotationYaw - shootingEntity.prevRotationYaw)*0.2F;
+    		}*/
+    	}
+    	//else//使用者がいないならその場でアイテム化
+    	else{
+    		if(getNum() == 8)
+    		{
+				THKaguyaLib.itemEffectFinish(this, userEntity, THKaguyaItems.hisou_sword, damage);
+    		}
+    		if(!worldObj.isRemote)
+    		{
+    			setDead();
+    		}
+    	}
+
+	//****気質弾の発射****//
+	if(ticksExisted > spellCardUsedTime && userEntity != null && getNum() == 8)
+	{
+		/*double vecX, vecY, vecZ, dx, dy, dz;
+		float angleXZ, angleY;
+
+		dx = posX - userEntity.posX;
+		dy = posY - (userEntity.posY + userEntity.getEyeHeight());
+		dz = posZ - userEntity.posZ;
+
+		angleXZ  = (float)Math.atan2(dz, dx);
+		angleY = (float)Math.atan2( dy, Math.sqrt(dx * dx + dz * dz));
+
+		EntityTHShot entityTHShot;
+		for(int i = 0; i < 12; i++)
+		{
+			angleXZ = (userEntity.rotationYaw + rand.nextFloat() * 30F - 15F)/180F * (float)Math.PI;
+			angleY = (userEntity.rotationPitch + rand.nextFloat() * 30F - 15F)/180F * (float)Math.PI;
+			vecX = -Math.sin(angleXZ) * Math.cos(angleY);//X方向　水平方向
+			vecY = -Math.sin(angleY);//Y方向　上下
+			vecZ =  Math.cos(angleXZ) * Math.cos(angleY);//Z方向　水平方向
+			entityTHShot = new EntityTHShot(worldObj, userEntity, this,
+				this.posX, this.posY, this.posZ,
+				vecX, vecY, vecZ, 0F, 0.0D, 1.0D, 0.0D,
+				0.1D, 0.8D, 0.05D,
+				0.0D, 0.0D, 0.0D, 6, THShotLib.KISHITU[THShotLib.RED], 0.5F, 60, 3, THShotLib.KISHITU01);
+			if(!worldObj.isRemote)
+			{
+				worldObj.spawnEntityInWorld(entityTHShot);
+			}
+		}*/
+		ShotData shot = ShotData.shot(FORM_KISHITU, RED, 0.5F, 6.0F, 3, 60, THSC_Zenzinrui_no_Hisouten.SPECIAL_HISOUTEN01);
+		THShotLib.createRandomRingShot(userEntity, this, THShotLib.pos_Entity(this), userEntity.getLookVec(), 0F, 9999, 0.1D, 0.8D, 0.05D, THShotLib.gravity_Zero(), shot, num, 0.1D, 30F);
+	}
+	//********//
+
+    if(ticksExisted > spellCardUsedTime)
+    {
+    	spellCardUsedTime = ticksExisted;
+    }
+
+		//時間で消滅
+	if(ticksExisted >= 100)
+	{
+		if(getNum() == 8)
+		{
+			THKaguyaLib.itemEffectFinish(this, userEntity, THKaguyaItems.hisou_sword, damage);
+		}
+    	if(!worldObj.isRemote)
+    	{
+			setDead();
+    	}
+	}
+}
+
+    //乗っているEntityの処理
+    //ここでは使用者の処理。使用者のmotionXなどは恐らくここでしかまともに操作できない
+    @Override
+    public void updateRidden()
+	{
+		if(ridingEntity != null && getNum() == 8)
+		{
+			ridingEntity.rotationYaw = ridingEntity.prevRotationYaw + (ridingEntity.rotationYaw - ridingEntity.prevRotationYaw) * 0.3F;
+			ridingEntity.rotationPitch = ridingEntity.prevRotationPitch + (ridingEntity.rotationPitch - ridingEntity.prevRotationPitch) * 0.3F;
+			ridingEntity.motionX *= 0.1D;
+			ridingEntity.motionY *= 0.1D;
+			ridingEntity.motionZ *= 0.1D;
+		}
+	}
+
+    /**
+	 * 保存するデータの書き込み
+	 * @param nbtTagCompound : NTBタグ
+	 */
+    @Override
+    protected void writeEntityToNBT(NBTTagCompound nbtTagCompound)
+    {
+    	nbtTagCompound.setShort("count", (short)count);
+    	nbtTagCompound.setShort("damage", (short)damage);
+    	nbtTagCompound.setByte("number", (byte)num);
+    }
+
+    /**
+	 * 保存したデータの読み込み
+	 * @param nbtTagCompound : NBTタグ
+	 */
+    @Override
+    protected void readEntityFromNBT(NBTTagCompound nbtTagCompound)
+    {
+    	count = nbtTagCompound.getShort("count");
+    	damage = nbtTagCompound.getShort("damage");
+    	num = (int)nbtTagCompound.getByte("number");
+    }
+
+    public float getShadowSize()
+    {
+        return 0.5F;
+    }
+
+	public void setNum(int num)
+	{
+		dataWatcher.updateObject(17, Integer.valueOf(num));
+	}
+
+	public int getNum()
+	{
+		return dataWatcher.getWatchableObjectInt(17);
+	}
+
+	public void setAngle(float angle)
+	{
+		dataWatcher.updateObject(18, Integer.valueOf((int)(angle * 1000F)));
+	}
+
+	public float getAngle()
+	{
+		return (float)dataWatcher.getWatchableObjectInt(18) / 1000F;
+	}
+
+    protected boolean isValidLightLevel()
+    {
+        return true;
+    }
+
+    /**
+     * Gets how bright this entity is.
+     */
+    public float getBrightness(float par1)
+    {
+        return 1.0F;
+    }
+}

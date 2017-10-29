@@ -1,121 +1,163 @@
-/*   1:    */ package thKaguyaMod.entity.item;
-/*   2:    */ 
-/*   3:    */ import java.util.List;
-/*   4:    */ import net.minecraft.entity.Entity;
-/*   5:    */ import net.minecraft.entity.EntityLivingBase;
-/*   6:    */ import net.minecraft.entity.passive.EntityAnimal;
-/*   7:    */ import net.minecraft.entity.passive.EntityVillager;
-/*   8:    */ import net.minecraft.nbt.NBTTagCompound;
-/*   9:    */ import net.minecraft.util.AxisAlignedBB;
-/*  10:    */ import net.minecraft.util.MovingObjectPosition;
-/*  11:    */ import net.minecraft.util.Vec3;
-/*  12:    */ import net.minecraft.world.World;
-/*  13:    */ import thKaguyaMod.THKaguyaLib;
-/*  14:    */ import thKaguyaMod.THShotLib;
-/*  15:    */ import thKaguyaMod.entity.shot.EntityTHShot;
-/*  16:    */ 
-/*  17:    */ public class EntitySpiritualStrikeTalisman
-/*  18:    */   extends Entity
-/*  19:    */ {
-/*  20:    */   public EntityLivingBase userEntity;
-/*  21:    */   private int count;
-/*  22:    */   
-/*  23:    */   public EntitySpiritualStrikeTalisman(World world)
-/*  24:    */   {
-/*  25: 29 */     super(world);
-/*  26: 30 */     this.ignoreFrustumCheck = true;
-/*  27: 31 */     this.preventEntitySpawning = true;
-/*  28: 32 */     setSize(0.2F, 0.2F);
-/*  29: 33 */     this.yOffset = 0.0F;
-/*  30:    */   }
-/*  31:    */   
-/*  32:    */   public EntitySpiritualStrikeTalisman(World world, EntityLivingBase living)
-/*  33:    */   {
-/*  34: 39 */     this(world);
-/*  35:    */     
-/*  36: 41 */     this.userEntity = living;
-/*  37: 42 */     THKaguyaLib.itemEffectFollowUser(this, this.userEntity, 2.0D, 30.0F);
-/*  38:    */   }
-/*  39:    */   
-/*  40:    */   protected void entityInit() {}
-/*  41:    */   
-/*  42:    */   public boolean canBePushed()
-/*  43:    */   {
-/*  44: 58 */     return false;
-/*  45:    */   }
-/*  46:    */   
-/*  47:    */   public boolean canBeCollidedWith()
-/*  48:    */   {
-/*  49: 67 */     return false;
-/*  50:    */   }
-/*  51:    */   
-/*  52:    */   public void onUpdate()
-/*  53:    */   {
-/*  54: 74 */     super.onUpdate();
-/*  55: 77 */     if (this.ticksExisted > 3) {
-/*  56: 79 */       if (!this.worldObj.isRemote) {
-/*  57: 81 */         setDead();
-/*  58:    */       }
-/*  59:    */     }
-/*  60: 86 */     MovingObjectPosition movingObjectPosition = new MovingObjectPosition(this);
-/*  61: 87 */     Entity entity = null;
-/*  62: 88 */     double effectiveBoundary = this.ticksExisted * 4.0D;
-/*  63:    */     
-/*  64: 90 */     List<?> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(effectiveBoundary, effectiveBoundary, effectiveBoundary));
-/*  65: 92 */     if ((list != null) && (list.size() > 0)) {
-/*  66: 94 */       for (int j1 = 0; j1 < list.size(); j1++)
-/*  67:    */       {
-/*  68: 96 */         entity = (Entity)list.get(j1);
-/*  69: 97 */         if (entity != null) {
-/*  70: 99 */           movingObjectPosition = new MovingObjectPosition(entity);
-/*  71:    */         }
-/*  72:102 */         if ((movingObjectPosition != null) && (movingObjectPosition.entityHit != this.userEntity) && (movingObjectPosition.entityHit.riddenByEntity != this.userEntity))
-/*  73:    */         {
-/*  74:104 */           double distance = entity.getDistanceToEntity(this);
-/*  75:105 */           if (distance <= effectiveBoundary)
-/*  76:    */           {
-/*  77:107 */             Vec3 angle = THShotLib.angle_ToPos(THShotLib.pos_Entity(this), 
-/*  78:108 */               THShotLib.pos(entity.posX, entity.posY, entity.posZ));
-/*  79:109 */             double effectivePower = (effectiveBoundary - distance) * 0.1D;
-/*  80:111 */             if ((entity instanceof EntityLivingBase))
-/*  81:    */             {
-/*  82:113 */               if ((!(entity instanceof EntityAnimal)) && (!(entity instanceof EntityVillager)))
-/*  83:    */               {
-/*  84:115 */                 entity.motionX = (angle.xCoord * effectivePower);
-/*  85:116 */                 entity.motionY = (0.5D * effectivePower);
-/*  86:117 */                 entity.motionZ = (angle.zCoord * effectivePower);
-/*  87:    */               }
-/*  88:    */             }
-/*  89:120 */             else if ((entity instanceof EntityTHShot))
-/*  90:    */             {
-/*  91:122 */               EntityTHShot shot = (EntityTHShot)entity;
-/*  92:    */               
-/*  93:124 */               shot.shotFinishBonus();
-/*  94:    */             }
-/*  95:    */           }
-/*  96:    */         }
-/*  97:    */       }
-/*  98:    */     }
-/*  99:    */   }
-/* 100:    */   
-/* 101:    */   protected void writeEntityToNBT(NBTTagCompound nbtTagCompound)
-/* 102:    */   {
-/* 103:142 */     nbtTagCompound.setShort("count", (short)this.count);
-/* 104:    */   }
-/* 105:    */   
-/* 106:    */   protected void readEntityFromNBT(NBTTagCompound nbtTagCompound)
-/* 107:    */   {
-/* 108:153 */     this.count = nbtTagCompound.getShort("count");
-/* 109:    */   }
-/* 110:    */   
-/* 111:    */   public float getShadowSize()
-/* 112:    */   {
-/* 113:160 */     return 0.5F;
-/* 114:    */   }
-/* 115:    */ }
+package thKaguyaMod.entity.item;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.entity.item.EntitySpiritualStrikeTalisman
- * JD-Core Version:    0.7.0.1
+import java.util.List;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
+import thKaguyaMod.THKaguyaLib;
+import thKaguyaMod.THShotLib;
+import thKaguyaMod.entity.shot.EntityTHShot;
+
+/** 霊撃札 
+ *  霊撃により相手を吹き飛ばし、弾も消し飛ばす
  */
+public class EntitySpiritualStrikeTalisman extends Entity
+{
+	/** 使用者 */
+	public EntityLivingBase userEntity;
+	
+	private int count;
+	
+	public EntitySpiritualStrikeTalisman(World world)
+    {
+        super(world);
+        ignoreFrustumCheck = true;//中心が画面から外れても描画される
+        preventEntitySpawning = true;
+        setSize(0.2F, 0.2F);//サイズを設定　平面上の横と奥行きサイズ、高さ
+        yOffset = 0.0F;//高さを設定
+
+    }
+	
+    public EntitySpiritualStrikeTalisman(World world,EntityLivingBase living)
+    {
+        this(world);
+
+    	userEntity = living;//使用者をuserEntityに保存
+    	THKaguyaLib.itemEffectFollowUser(this, userEntity, 2.0D, 30F);
+
+    }
+    
+    /** 生成時に一度だけ呼ばれる処理 */
+    @Override
+	protected void entityInit()
+    {
+    }
+	
+	/**
+	 * 押すことができるか
+	 */
+    @Override
+    public boolean canBePushed()
+    {
+        return false;
+    }
+
+	/**
+	 * 他のEntityと衝突するか 右クリックできるかもこれで判定
+	 */
+    @Override
+    public boolean canBeCollidedWith()
+    {
+        return false;
+    }
+
+	/** 毎tick呼ばれる処理 */
+    @Override
+    public void onUpdate()
+    {
+        super.onUpdate();
+    	
+    	//10ticksで消滅
+    	if(ticksExisted > 3)
+    	{
+    		if(!worldObj.isRemote)
+    		{
+    			setDead();
+    		}
+    	}
+    	
+    	//***************************//
+    	MovingObjectPosition movingObjectPosition = new MovingObjectPosition(this);
+    	Entity entity = null;
+    	double effectiveBoundary = (double)ticksExisted * 4.0D;//有効範囲
+    	//効果範囲内のEntityを全て取得
+    	List<?> list = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.expand(effectiveBoundary, effectiveBoundary, effectiveBoundary));
+
+        if (list != null && list.size() > 0)//取得したリストにEntityがいるなら
+        {
+            for (int j1 = 0; j1 < list.size(); j1++)//取得したEntityリストの最初から最後まで見る
+            {
+                entity = (Entity)list.get(j1);//entityに取得したリストのEntityを代入
+            	if (entity != null )//Entityがいるなら
+        		{
+            		movingObjectPosition = new MovingObjectPosition(entity);//MovingObjectPositionにEntityを登録
+        		}
+            	//movingObjectPositionがあり、それが使用者でないなら
+        		if (movingObjectPosition != null && movingObjectPosition.entityHit != userEntity && movingObjectPosition.entityHit.riddenByEntity != userEntity)
+        		{
+        			double distance = entity.getDistanceToEntity(this);
+        			if(distance <= effectiveBoundary)
+        			{
+        				Vec3 angle = THShotLib.angle_ToPos(THShotLib.pos_Entity(this),
+        													THShotLib.pos(entity.posX,  entity.posY,  entity.posZ));
+        				double effectivePower = (effectiveBoundary - distance) * 0.1D;
+        				
+        				if(entity instanceof EntityLivingBase)
+        				{
+        					if(entity instanceof EntityAnimal == false && entity instanceof EntityVillager == false)
+        					{
+        						entity.motionX = angle.xCoord * effectivePower;
+        						entity.motionY = (/*angle.yCoord +*/ 0.5D) * effectivePower;
+        						entity.motionZ = angle.zCoord * effectivePower;
+        					}
+        				}
+        				else if(entity instanceof EntityTHShot)
+        				{
+        					EntityTHShot shot = (EntityTHShot)entity;
+        					
+        					shot.shotFinishBonus();
+        				}
+        			}
+        		}
+            }
+        }
+
+        //************************************************************************************//
+
+    }
+
+    /**
+	 * 保存するデータの書き込み
+	 * @param nbtTagCompound : NTBタグ
+	 */
+    @Override
+    protected void writeEntityToNBT(NBTTagCompound nbtTagCompound)
+    {
+    	nbtTagCompound.setShort("count", (short)count);
+    	//nbtTagCompound.setBoolean("isSpellCard", isSpellCard);
+    }
+
+    /**
+	 * 保存したデータの読み込み
+	 * @param nbtTagCompound : NBTタグ
+	 */
+    @Override
+    protected void readEntityFromNBT(NBTTagCompound nbtTagCompound)
+    {
+    	count = nbtTagCompound.getShort("count");
+    	//isSpellCard = nbtTagCompound.getBoolean("isSpellCard");
+    }
+
+    @Override
+    public float getShadowSize()
+    {
+        return 0.5F;
+    }
+
+}

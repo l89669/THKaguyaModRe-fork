@@ -1,43 +1,61 @@
-/*  1:   */ package thKaguyaMod.client.model;
-/*  2:   */ 
-/*  3:   */ import cpw.mods.fml.relauncher.Side;
-/*  4:   */ import cpw.mods.fml.relauncher.SideOnly;
-/*  5:   */ import net.minecraft.client.model.ModelBase;
-/*  6:   */ import net.minecraft.client.model.ModelRenderer;
-/*  7:   */ import net.minecraft.entity.Entity;
-/*  8:   */ 
-/*  9:   */ @SideOnly(Side.CLIENT)
-/* 10:   */ public class ModelMiniHakkero
-/* 11:   */   extends ModelBase
-/* 12:   */ {
-/* 13:   */   public ModelRenderer[] miniHakkero;
-/* 14:   */   
-/* 15:   */   public ModelMiniHakkero()
-/* 16:   */   {
-/* 17:36 */     this.miniHakkero = new ModelRenderer[2];
-/* 18:   */     
-/* 19:38 */     this.miniHakkero[0] = new ModelRenderer(this, 0, 15);
-/* 20:   */     
-/* 21:   */ 
-/* 22:   */ 
-/* 23:   */ 
-/* 24:43 */     this.miniHakkero[0].addBox(-8.0F, -8.0F, 0.0F, 16, 16, 1, 0.0F);
-/* 25:44 */     this.miniHakkero[1] = new ModelRenderer(this, 0, 15);
-/* 26:45 */     this.miniHakkero[1].addBox(-8.0F, -8.0F, 5.0F, 16, 16, 1, 0.0F);
-/* 27:   */   }
-/* 28:   */   
-/* 29:   */   public void render(Entity entity, float movement, float far, float tick, float yaw, float pitch, float size)
-/* 30:   */   {
-/* 31:51 */     for (int i = 0; i < 2; i++) {
-/* 32:53 */       this.miniHakkero[i].render(size);
-/* 33:   */     }
-/* 34:   */   }
-/* 35:   */   
-/* 36:   */   public void setRotationAngles(float movement, float far, float tick, float yaw, float pitch, float size, Entity entity) {}
-/* 37:   */ }
+package thKaguyaMod.client.model;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.client.model.ModelMiniHakkero
- * JD-Core Version:    0.7.0.1
- */
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.entity.Entity;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
+public class ModelMiniHakkero extends ModelBase
+{
+	
+    public ModelRenderer miniHakkero[];
+
+    public ModelMiniHakkero()
+    {
+       /*Minecraftのモデルの基本事項
+       基本的にテクスチャに64x32の画像を使用
+       ボックスタイプのモデルしか扱えない
+       ボックスのサイズ＝テクスチャのサイズと考えていい
+       例えば横幅が10の箱ならば、そこに設定されるテクスチャも10ドット分使用する
+       横幅6、高さ4、奥行き3の箱を考えたとき、イメージとしてはテクスチャはこのようになる
+       000000111111222222000000
+       000000111111222222000000
+       000000111111222222000000
+       333333444444555555666666
+       333333444444555555666666
+       333333444444555555666666
+       333333444444555555666666
+       0は未使用部と考えて、ボックス型は6面存在するためこのように６つの部分に分けれれることになる。
+       この配置は人間の頭で言うと、
+       1は頭の上　2は頭の下　3は頭右　4は顔　5は頭左　6は頭後ろにあたる
+       一番左上にあたる座標はModelRenderer(this,x,y)で設定可能。
+       */
+       
+        miniHakkero = new ModelRenderer[2];
+       //持つ場所
+        miniHakkero[0] = new ModelRenderer(this, 0, 15);//テクスチャ座標0,0を左上にする
+       
+       //ボックスを追加する。
+       //addBox(X座標、Z座標、Y座標、X方向のサイズ、Z方向のサイズ、Y方向のサイズ、？（倍率？）)
+       //サイズはテクスチャのサイズそのもの
+       miniHakkero[0].addBox(-8, -8, 0, 16, 16 , 1, 0.0F);
+       miniHakkero[1] = new ModelRenderer(this, 0, 15);
+       miniHakkero[1].addBox(-8, -8,  5, 16, 16 , 1, 0.0F);
+    }
+
+    @Override
+    public void render(Entity entity, float movement, float far, float tick, float yaw, float pitch, float size)
+    {
+        for (int i = 0; i < 2; i++)
+    	{
+    		miniHakkero[i].render(size);
+    	}
+    }
+
+    @Override
+    public void setRotationAngles(float movement, float far, float tick, float yaw, float pitch, float size, Entity entity)
+    {
+    }
+}

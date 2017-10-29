@@ -1,95 +1,122 @@
-/*   1:    */ package thKaguyaMod.entity;
-/*   2:    */ 
-/*   3:    */ import net.minecraft.entity.Entity;
-/*   4:    */ import net.minecraft.entity.player.EntityPlayer;
-/*   5:    */ import net.minecraft.nbt.NBTTagCompound;
-/*   6:    */ import net.minecraft.world.World;
-/*   7:    */ 
-/*   8:    */ public class EntityObjectEye
-/*   9:    */   extends Entity
-/*  10:    */ {
-/*  11:    */   public EntityPlayer user;
-/*  12:    */   public Entity target;
-/*  13:    */   public int count;
-/*  14:    */   public float turnAngle;
-/*  15:    */   public int befUseCount;
-/*  16:    */   
-/*  17:    */   public EntityObjectEye(World world)
-/*  18:    */   {
-/*  19: 24 */     super(world);
-/*  20: 25 */     setSize(1.0F, 1.0F);
-/*  21:    */   }
-/*  22:    */   
-/*  23:    */   public EntityObjectEye(World world, EntityPlayer userEntity, Entity targetEntity)
-/*  24:    */   {
-/*  25: 31 */     this(world);
-/*  26: 32 */     this.user = userEntity;
-/*  27: 33 */     this.target = targetEntity;
-/*  28: 34 */     this.prevPosX = this.target.posX;
-/*  29: 35 */     this.prevPosY = this.target.posY;
-/*  30: 36 */     this.prevPosZ = this.target.posZ;
-/*  31: 37 */     setPosition(this.target.posX, this.target.posY + this.target.getEyeHeight(), this.target.posZ);
-/*  32:    */     
-/*  33: 39 */     this.count = 0;
-/*  34: 40 */     this.befUseCount = 0;
-/*  35: 41 */     this.turnAngle = 0.0F;
-/*  36:    */   }
-/*  37:    */   
-/*  38:    */   protected void entityInit() {}
-/*  39:    */   
-/*  40:    */   protected boolean canTriggerWalking()
-/*  41:    */   {
-/*  42: 55 */     return false;
-/*  43:    */   }
-/*  44:    */   
-/*  45:    */   public boolean canBeCollidedWith()
-/*  46:    */   {
-/*  47: 61 */     return false;
-/*  48:    */   }
-/*  49:    */   
-/*  50:    */   public void onUpdate()
-/*  51:    */   {
-/*  52: 69 */     if ((!this.worldObj.isRemote) && ((this.user == null) || (this.user.isDead) || (this.target == null) || (this.target.isDead)))
-/*  53:    */     {
-/*  54: 71 */       setDead();
-/*  55: 72 */       return;
-/*  56:    */     }
-/*  57: 74 */     super.onUpdate();
-/*  58: 77 */     if (this.user != null) {
-/*  59: 80 */       if (!this.user.isUsingItem())
-/*  60:    */       {
-/*  61: 82 */         int time = this.count;
-/*  62: 83 */         time /= 3;
-/*  63:    */         
-/*  64:    */ 
-/*  65:    */ 
-/*  66:    */ 
-/*  67:    */ 
-/*  68:    */ 
-/*  69:    */ 
-/*  70:    */ 
-/*  71:    */ 
-/*  72:    */ 
-/*  73:    */ 
-/*  74:    */ 
-/*  75: 96 */         setDead();
-/*  76:    */       }
-/*  77:    */     }
-/*  78:104 */     this.count += 1;
-/*  79:105 */     if (this.count > 114) {
-/*  80:107 */       this.count = 114;
-/*  81:109 */     } else if (this.count > 50) {
-/*  82:111 */       this.turnAngle += 2.88F;
-/*  83:    */     }
-/*  84:    */   }
-/*  85:    */   
-/*  86:    */   protected void writeEntityToNBT(NBTTagCompound par1NBTTagCompound) {}
-/*  87:    */   
-/*  88:    */   protected void readEntityFromNBT(NBTTagCompound par1NBTTagCompound) {}
-/*  89:    */ }
+package thKaguyaMod.entity;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.entity.EntityObjectEye
- * JD-Core Version:    0.7.0.1
- */
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.world.World;
+
+public class EntityObjectEye extends Entity
+{
+	//フランドールの棒で出る目
+
+	public EntityPlayer user;
+	public Entity target;
+	public int count;
+	public float turnAngle;
+	public int befUseCount;
+
+	//ワールド読み込み時に呼び出されるコンストラクト
+    public EntityObjectEye(World world)
+    {
+        super(world);
+        setSize(1.0F, 1.0F);//サイズを設定　平面上の横と奥行きサイズ、高さ
+    }
+
+	//出現時に呼び出されるコンストラクト
+    public EntityObjectEye(World world,EntityPlayer userEntity, Entity targetEntity)
+    {
+        this(world);
+    	user = userEntity;
+    	target = targetEntity;
+    	prevPosX = target.posX;
+        prevPosY = target.posY;
+        prevPosZ = target.posZ;
+        setPosition(target.posX, target.posY + target.getEyeHeight(), target.posZ);//初期位置を設定(x,y,z)
+    	//setRotation(entityLiving.rotationYaw,  0.0F);
+    	count = 0;
+    	befUseCount = 0;
+    	turnAngle = 0F;
+    }
+
+	//生成時に呼ばれる
+    protected void entityInit()
+    {
+    }
+	
+	/**
+     * returns if this entity triggers Block.onEntityWalking on the blocks they walk on. used for spiders and wolves to
+     * prevent them from trampling crops
+     */
+    protected boolean canTriggerWalking()
+    {
+        return false;
+    }
+
+	//当たり判定の有無　falseだと右クリックの選択ですらできない。trueならsetSize()で設定したボックスの当たり判定が出現する
+    public boolean canBeCollidedWith()
+    {
+        return false;
+    }
+
+	//Entityが存在する限り毎フレーム呼び出されるメソッド
+	@Override
+    public void onUpdate()
+    {
+    	//使用者かターゲットがいないなら消す
+    	if(!worldObj.isRemote && (user == null || user.isDead || target == null || target.isDead) )
+    	{
+    		setDead();
+    		return;
+    	}
+    	super.onUpdate();
+    	
+    	//使用者が右クリックをやめたら消す
+    	if(user != null)
+    	{
+    		//if(userPlayer.getItemInUseCount() == 0)
+    		if(!user.isUsingItem())
+    		{
+    			int time = count;
+    			time /= 3;
+    			/*if( userPlayer.inventory.hasItem(Item.redstone.itemID))
+    			{
+    				if(!worldObj.isRemote)
+    				{
+    					userPlayer.addPotionEffect(new PotionEffect( 1, time * 20, 1));//スピードアップ
+        				userPlayer.addPotionEffect(new PotionEffect( 5, time * 20, 1));//攻撃力アップ
+        				userPlayer.addPotionEffect(new PotionEffect( 8, time * 20, 1));//跳躍力アップ
+        				userPlayer.addPotionEffect(new PotionEffect(11, time * 20, 1));//防御力アップ
+        				//entityPlayer.addPotionEffect(new PotionEffect(12, 15 * 20, 1));//炎耐性
+        				userPlayer.inventory.consumeInventoryItem(Item.redstone.itemID);//レッドストーン消費
+    				}
+    			}*/
+    			setDead();
+    		}
+    		else
+    		{
+    			//thKaguyaLib.itemEffectFollowUser(this, user, 0.5D, 0F);
+    		}
+    	}
+
+    	count++;
+    	if(count > 114)
+    	{
+    		count = 114;
+    	}
+    	else if(count > 50)
+    	{
+    		    turnAngle += 2.88F;
+    	}
+	}
+
+	protected void writeEntityToNBT(NBTTagCompound par1NBTTagCompound)
+    {
+    }
+
+    protected void readEntityFromNBT(NBTTagCompound par1NBTTagCompound)
+    {
+    }
+}

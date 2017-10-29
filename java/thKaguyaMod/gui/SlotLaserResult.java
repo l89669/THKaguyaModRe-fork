@@ -1,213 +1,276 @@
-/*   1:    */ package thKaguyaMod.gui;
-/*   2:    */ 
-/*   3:    */ import cpw.mods.fml.common.eventhandler.EventBus;
-/*   4:    */ import net.minecraft.entity.player.EntityPlayer;
-/*   5:    */ import net.minecraft.entity.player.InventoryPlayer;
-/*   6:    */ import net.minecraft.inventory.IInventory;
-/*   7:    */ import net.minecraft.inventory.Slot;
-/*   8:    */ import net.minecraft.item.Item;
-/*   9:    */ import net.minecraft.item.ItemStack;
-/*  10:    */ import net.minecraft.nbt.NBTTagCompound;
-/*  11:    */ import net.minecraftforge.common.MinecraftForge;
-/*  12:    */ import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
-/*  13:    */ import thKaguyaMod.init.THKaguyaConfig;
-/*  14:    */ 
-/*  15:    */ public class SlotLaserResult
-/*  16:    */   extends Slot
-/*  17:    */ {
-/*  18:    */   private final IInventory craftMaterial;
-/*  19:    */   private final IInventory craftMatrix;
-/*  20:    */   private final IInventory craftNum;
-/*  21:    */   private final IInventory craftSpeed;
-/*  22:    */   private final IInventory craftCopy;
-/*  23:    */   private EntityPlayer thePlayer;
-/*  24:    */   private int amountCrafted;
-/*  25:    */   
-/*  26:    */   public SlotLaserResult(EntityPlayer player, IInventory material, IInventory formInventory, IInventory numInventory, IInventory speed, IInventory copy, IInventory iInventoryResult, int index, int x, int y)
-/*  27:    */   {
-/*  28: 29 */     super(iInventoryResult, index, x, y);
-/*  29: 30 */     this.thePlayer = player;
-/*  30: 31 */     this.craftMaterial = material;
-/*  31: 32 */     this.craftMatrix = formInventory;
-/*  32: 33 */     this.craftNum = numInventory;
-/*  33: 34 */     this.craftSpeed = speed;
-/*  34: 35 */     this.craftCopy = copy;
-/*  35:    */   }
-/*  36:    */   
-/*  37:    */   public ItemStack decrStackSize(int par1)
-/*  38:    */   {
-/*  39: 48 */     if (getHasStack()) {
-/*  40: 50 */       this.amountCrafted += Math.min(par1, getStack().stackSize);
-/*  41:    */     }
-/*  42: 53 */     return super.decrStackSize(par1);
-/*  43:    */   }
-/*  44:    */   
-/*  45:    */   public boolean isItemValid(ItemStack itemStack)
-/*  46:    */   {
-/*  47: 59 */     return false;
-/*  48:    */   }
-/*  49:    */   
-/*  50:    */   public void onPickupFromSlot(EntityPlayer par1EntityPlayer, ItemStack par2ItemStack)
-/*  51:    */   {
-/*  52: 78 */     onCrafting(par2ItemStack);
-/*  53:    */     
-/*  54: 80 */     int copyNum = 1;
-/*  55: 81 */     int oriNum = 1;
-/*  56: 83 */     if (this.craftCopy.getStackInSlot(0) != null) {
-/*  57: 85 */       copyNum += this.craftCopy.getStackInSlot(0).stackSize;
-/*  58:    */     }
-/*  59: 88 */     if (this.craftMaterial.getStackInSlot(0) != null) {
-/*  60: 90 */       oriNum = this.craftMaterial.getStackInSlot(0).stackSize;
-/*  61:    */     }
-/*  62: 93 */     if (copyNum > oriNum) {
-/*  63: 95 */       copyNum = oriNum;
-/*  64:    */     }
-/*  65: 98 */     for (int i = 0; i < this.craftMatrix.getSizeInventory(); i++)
-/*  66:    */     {
-/*  67:100 */       ItemStack itemstack1 = this.craftMatrix.getStackInSlot(i);
-/*  68:102 */       if (itemstack1 != null)
-/*  69:    */       {
-/*  70:104 */         this.craftMatrix.decrStackSize(i, 1);
-/*  71:106 */         if (itemstack1.getItem().hasContainerItem())
-/*  72:    */         {
-/*  73:108 */           ItemStack itemstack2 = itemstack1;
-/*  74:110 */           if ((itemstack2.isItemStackDamageable()) && (itemstack2.getItemDamage() > itemstack2.getMaxDamage()))
-/*  75:    */           {
-/*  76:112 */             MinecraftForge.EVENT_BUS.post(new PlayerDestroyItemEvent(this.thePlayer, itemstack2));
-/*  77:113 */             itemstack2 = null;
-/*  78:    */           }
-/*  79:116 */           if ((itemstack2 != null) && ((!itemstack1.getItem().doesContainerItemLeaveCraftingGrid(itemstack1)) || (!this.thePlayer.inventory.addItemStackToInventory(itemstack2)))) {
-/*  80:118 */             if (this.craftMatrix.getStackInSlot(i) == null) {
-/*  81:120 */               this.craftMatrix.setInventorySlotContents(i, itemstack2);
-/*  82:    */             } else {
-/*  83:125 */               this.thePlayer.dropItem(itemstack2.getItem(), 2);
-/*  84:    */             }
-/*  85:    */           }
-/*  86:    */         }
-/*  87:    */       }
-/*  88:    */     }
-/*  89:132 */     int usePoint = THKaguyaConfig.laserMaxNumber;
-/*  90:134 */     if (this.craftMaterial.getStackInSlot(0) != null)
-/*  91:    */     {
-/*  92:136 */       NBTTagCompound nbt = this.craftMaterial.getStackInSlot(0).getTagCompound();
-/*  93:137 */       if (nbt != null)
-/*  94:    */       {
-/*  95:139 */         int baseNum = 0;
-/*  96:140 */         baseNum = nbt.getShort("Number");
-/*  97:142 */         if (this.craftNum.getStackInSlot(0) != null) {
-/*  98:144 */           if (this.craftNum.getStackInSlot(0).stackSize > usePoint - baseNum) {
-/*  99:146 */             usePoint -= baseNum;
-/* 100:    */           }
-/* 101:    */         }
-/* 102:    */       }
-/* 103:152 */       else if (this.craftNum.getStackInSlot(0) != null)
-/* 104:    */       {
-/* 105:154 */         int numNum = this.craftNum.getStackInSlot(0).stackSize;
-/* 106:155 */         if (numNum > usePoint) {
-/* 107:157 */           usePoint--;
-/* 108:    */         } else {
-/* 109:161 */           usePoint = numNum;
-/* 110:    */         }
-/* 111:    */       }
-/* 112:    */     }
-/* 113:166 */     slotUseProcess(this.craftNum, usePoint);
-/* 114:    */     
-/* 115:168 */     usePoint = 64;
-/* 116:170 */     if (this.craftMaterial.getStackInSlot(0) != null)
-/* 117:    */     {
-/* 118:172 */       NBTTagCompound nbt = this.craftMaterial.getStackInSlot(0).getTagCompound();
-/* 119:173 */       if (nbt != null)
-/* 120:    */       {
-/* 121:175 */         int baseSpeed = 0;
-/* 122:176 */         baseSpeed = nbt.getByte("Speed");
-/* 123:178 */         if (this.craftSpeed.getStackInSlot(0) != null) {
-/* 124:180 */           if (this.craftSpeed.getStackInSlot(0).stackSize > 64 - baseSpeed) {
-/* 125:182 */             usePoint = 64 - baseSpeed;
-/* 126:    */           }
-/* 127:    */         }
-/* 128:    */       }
-/* 129:    */     }
-/* 130:187 */     slotUseProcess(this.craftSpeed, usePoint);
-/* 131:    */     
-/* 132:    */ 
-/* 133:    */ 
-/* 134:    */ 
-/* 135:    */ 
-/* 136:    */ 
-/* 137:    */ 
-/* 138:    */ 
-/* 139:    */ 
-/* 140:    */ 
-/* 141:    */ 
-/* 142:    */ 
-/* 143:    */ 
-/* 144:    */ 
-/* 145:    */ 
-/* 146:    */ 
-/* 147:    */ 
-/* 148:    */ 
-/* 149:    */ 
-/* 150:    */ 
-/* 151:    */ 
-/* 152:    */ 
-/* 153:    */ 
-/* 154:    */ 
-/* 155:    */ 
-/* 156:    */ 
-/* 157:    */ 
-/* 158:    */ 
-/* 159:    */ 
-/* 160:    */ 
-/* 161:    */ 
-/* 162:    */ 
-/* 163:    */ 
-/* 164:    */ 
-/* 165:    */ 
-/* 166:    */ 
-/* 167:    */ 
-/* 168:    */ 
-/* 169:    */ 
-/* 170:    */ 
-/* 171:    */ 
-/* 172:    */ 
-/* 173:    */ 
-/* 174:231 */     slotUseProcess(this.craftMaterial, copyNum);
-/* 175:232 */     slotUseProcess(this.craftCopy, copyNum - 1);
-/* 176:    */   }
-/* 177:    */   
-/* 178:    */   public void slotUseProcess(IInventory inventory, int useNum)
-/* 179:    */   {
-/* 180:239 */     ItemStack itemstack1 = inventory.getStackInSlot(0);
-/* 181:241 */     if (itemstack1 != null)
-/* 182:    */     {
-/* 183:243 */       inventory.decrStackSize(0, useNum);
-/* 184:245 */       if (itemstack1.getItem().hasContainerItem())
-/* 185:    */       {
-/* 186:248 */         ItemStack itemstack2 = itemstack1.getItem().getContainerItem(itemstack1);
-/* 187:250 */         if ((itemstack2.isItemStackDamageable()) && (itemstack2.getItemDamage() > itemstack2.getMaxDamage()))
-/* 188:    */         {
-/* 189:252 */           MinecraftForge.EVENT_BUS.post(new PlayerDestroyItemEvent(this.thePlayer, itemstack2));
-/* 190:253 */           itemstack2 = null;
-/* 191:    */         }
-/* 192:256 */         if ((itemstack2 != null) && ((!itemstack1.getItem().doesContainerItemLeaveCraftingGrid(itemstack1)) || (!this.thePlayer.inventory.addItemStackToInventory(itemstack2)))) {
-/* 193:258 */           if (inventory.getStackInSlot(0) == null) {
-/* 194:260 */             inventory.setInventorySlotContents(0, itemstack2);
-/* 195:    */           } else {
-/* 196:265 */             this.thePlayer.dropItem(itemstack2.getItem(), 1);
-/* 197:    */           }
-/* 198:    */         }
-/* 199:    */       }
-/* 200:    */     }
-/* 201:    */   }
-/* 202:    */   
-/* 203:    */   public int getSlotStackLimit()
-/* 204:    */   {
-/* 205:274 */     return 64;
-/* 206:    */   }
-/* 207:    */ }
+package thKaguyaMod.gui;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.gui.SlotLaserResult
- * JD-Core Version:    0.7.0.1
- */
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
+import thKaguyaMod.init.THKaguyaConfig;
+
+public class SlotLaserResult extends Slot
+{
+    /** The beacon this slot belongs to. */
+    //final ContainerDanmakuCrafting danmaku;
+	private final IInventory craftMaterial;
+	private final IInventory craftMatrix;
+	private final IInventory craftNum;
+	private final IInventory craftSpeed;
+	private final IInventory craftCopy;
+	//private final IInventory craftGravity;
+	//private final IInventory craftSpecial;
+	private EntityPlayer thePlayer;
+	
+	private int amountCrafted;
+	
+    public SlotLaserResult(EntityPlayer player, IInventory material, IInventory formInventory, IInventory numInventory, IInventory speed, IInventory copy, IInventory iInventoryResult, int index, int x, int y)
+    {
+        super(iInventoryResult, index, x, y);
+        this.thePlayer = player;
+        craftMaterial = material;
+        craftMatrix = formInventory;
+        craftNum = numInventory;
+        craftSpeed = speed;
+        craftCopy = copy;
+        //craftGravity = gravity;
+        //craftSpecial = special;
+        
+        //this.danmaku = containerDanmakuCrafting;
+    }
+    
+    /**
+     * Decrease the size of the stack in slot (first int arg) by the amount of the second int arg. Returns the new
+     * stack.
+     */
+    public ItemStack decrStackSize(int par1)
+    {
+        if (this.getHasStack())
+        {
+            this.amountCrafted += Math.min(par1, this.getStack().stackSize);
+        }
+
+        return super.decrStackSize(par1);
+    }
+
+    //スロットにアイテムを入れられるか。　falseでは入れられない
+    public boolean isItemValid(ItemStack itemStack)
+    {
+    	return false;
+    	/*
+    	switch(slotType)
+    	{
+    		case 0:
+    			return itemStack == null ? false : itemStack.itemID == mod_thKaguya.powerItem.itemID;
+    		case 1:
+    			return itemStack == null ? false : itemStack.itemID == mod_thKaguya.pointItem.itemID;
+    		case 2:
+    			return itemStack == null ? false : itemStack.itemID == mod_thKaguya.thShotItem.itemID;
+    		default:
+    			return false;
+    	}*/
+    }
+
+    //スロットから出した時の処理
+    public void onPickupFromSlot(EntityPlayer par1EntityPlayer, ItemStack par2ItemStack)
+    {
+        //GameRegistry.onItemCrafted(par1EntityPlayer, par2ItemStack, craftMatrix);
+        this.onCrafting(par2ItemStack);
+        
+        int copyNum = 1;
+        int oriNum = 1;
+        
+        if(craftCopy.getStackInSlot(0) != null)
+        {
+        	copyNum += craftCopy.getStackInSlot(0).stackSize;
+        }
+        
+        if(craftMaterial.getStackInSlot(0) != null)
+        {
+        	oriNum = craftMaterial.getStackInSlot(0).stackSize;
+        }
+        
+        if(copyNum > oriNum)
+        {
+        	copyNum = oriNum;
+        }
+
+        for (int i = 0; i < this.craftMatrix.getSizeInventory(); ++i)
+        {
+            ItemStack itemstack1 = this.craftMatrix.getStackInSlot(i);
+
+            if (itemstack1 != null)
+            {
+                this.craftMatrix.decrStackSize(i, 1);
+
+                if (itemstack1.getItem().hasContainerItem())
+                {
+                    ItemStack itemstack2 = itemstack1;//.getItem().getContainerItemStack(itemstack1);
+
+                    if (itemstack2.isItemStackDamageable() && itemstack2.getItemDamage() > itemstack2.getMaxDamage())
+                    {
+                        MinecraftForge.EVENT_BUS.post(new PlayerDestroyItemEvent(thePlayer, itemstack2));
+                        itemstack2 = null;
+                    }
+
+                    if (itemstack2 != null && (!itemstack1.getItem().doesContainerItemLeaveCraftingGrid(itemstack1) || !this.thePlayer.inventory.addItemStackToInventory(itemstack2)))
+                    {
+                        if (this.craftMatrix.getStackInSlot(i) == null)
+                        {
+                            this.craftMatrix.setInventorySlotContents(i, itemstack2);
+                        }
+                        else
+                        {
+                            //this.thePlayer.dropPlayerItem(itemstack2);
+                            this.thePlayer.dropItem(itemstack2.getItem(), 2);
+                        }
+                    }
+                }
+            }
+        }
+        
+        int usePoint = THKaguyaConfig.laserMaxNumber;
+    	
+        if(craftMaterial.getStackInSlot(0) != null)
+    	{
+    		NBTTagCompound nbt = craftMaterial.getStackInSlot(0).getTagCompound();
+        	if(nbt != null)
+        	{
+        		int baseNum = 0;
+        		baseNum = (int)nbt.getShort("Number");
+        		
+        		if(craftNum.getStackInSlot(0) != null)
+        		{
+        			if(craftNum.getStackInSlot(0).stackSize > usePoint - baseNum)
+        			{
+        				usePoint = usePoint - baseNum;
+        			}
+        		}
+        	}
+        	else
+        	{
+          		if(craftNum.getStackInSlot(0) != null)
+        		{
+          			int numNum = craftNum.getStackInSlot(0).stackSize;
+        			if(numNum > usePoint)
+        			{
+        				usePoint--;
+        			}
+        			else
+        			{
+        				usePoint = numNum;
+        			}
+        		}
+        	}
+    	}
+        slotUseProcess(this.craftNum, usePoint);
+        
+       	usePoint = 64;
+    	
+       	if(craftMaterial.getStackInSlot(0) != null)
+    	{
+    		NBTTagCompound nbt = craftMaterial.getStackInSlot(0).getTagCompound();
+        	if(nbt != null)
+        	{
+        		int baseSpeed = 0;
+        		baseSpeed = (int)nbt.getByte("Speed");
+        		
+        		if(craftSpeed.getStackInSlot(0) != null)
+        		{
+        			if(craftSpeed.getStackInSlot(0).stackSize > 64 - baseSpeed)
+        			{
+        				usePoint = 64 - baseSpeed;
+        			}
+        		}
+        	}
+    	}
+        slotUseProcess(this.craftSpeed, usePoint);
+        
+       	/*usePoint = 16;
+    	
+       	if(craftMaterial.getStackInSlot(0) != null)
+    	{
+    		NBTTagCompound nbt = craftMaterial.getStackInSlot(0).getTagCompound();
+        	if(nbt != null)
+        	{
+        		int baseGravity = 0;
+        		baseGravity = (int)nbt.getByte("gravity");
+        		
+        		if(craftGravity.getStackInSlot(0) != null)
+        		{
+        			if(craftGravity.getStackInSlot(0).stackSize > 16 - baseGravity)
+        			{
+        				usePoint = 16 - baseGravity;
+        			}
+        		}
+        	}
+    	}
+        slotUseProcess(this.craftGravity, usePoint);*/
+        
+       	/*usePoint = 4;
+    	
+       	if(craftMaterial.getStackInSlot(0) != null)
+    	{
+    		NBTTagCompound nbt = craftMaterial.getStackInSlot(0).getTagCompound();
+        	if(nbt != null)
+        	{
+        		int baseBound = 0;
+        		baseBound = (int)nbt.getByte("special") - thShotLib.BOUND01 + 1;
+        		
+        		if(craftSpecial.getStackInSlot(0) != null)
+        		{
+        			if(craftSpecial.getStackInSlot(0).stackSize > 4 - baseBound)
+        			{
+        				usePoint = 4 - baseBound;
+        			}
+        		}
+        	}
+    	}
+        slotUseProcess(this.craftSpecial, usePoint);*/
+        //slotUseProcess(this.craftSpecial, 1);
+        slotUseProcess(this.craftMaterial, copyNum);
+        slotUseProcess(this.craftCopy, copyNum - 1);
+        
+    }
+    
+    //完成したアイテムを取り出したときの、各インベントリでの処理
+    public void slotUseProcess(IInventory inventory, int useNum)
+    {
+        ItemStack itemstack1 = inventory.getStackInSlot(0);
+        
+        if (itemstack1 != null)
+        {
+            inventory.decrStackSize(0, useNum);
+
+            if (itemstack1.getItem().hasContainerItem())
+            {
+                //ItemStack itemstack2 = itemstack1.getItem().getContainerItemStack(itemstack1);
+                ItemStack itemstack2 = itemstack1.getItem().getContainerItem(itemstack1);
+
+                if (itemstack2.isItemStackDamageable() && itemstack2.getItemDamage() > itemstack2.getMaxDamage())
+                {
+                    MinecraftForge.EVENT_BUS.post(new PlayerDestroyItemEvent(thePlayer, itemstack2));
+                    itemstack2 = null;
+                }
+
+                if (itemstack2 != null && (!itemstack1.getItem().doesContainerItemLeaveCraftingGrid(itemstack1) || !this.thePlayer.inventory.addItemStackToInventory(itemstack2)))
+                {
+                    if (inventory.getStackInSlot(0) == null)
+                    {
+                        inventory.setInventorySlotContents(0, itemstack2);
+                    }
+                    else
+                    {
+                        //this.thePlayer.dropPlayerItem(itemstack2);
+                        this.thePlayer.dropItem(itemstack2.getItem(), 1);
+                    }
+                }
+            }
+        }
+    }
+    
+    public int getSlotStackLimit()
+    {
+    	return 64;
+    }
+}

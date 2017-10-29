@@ -20,7 +20,7 @@ public class ItemGapFoldingUmbrella extends Item
 	
 	private String colorName[] = { "black", "red", "green", "brown", "blue", "purple", "cyan", "lightGray", 
 									"gray","pink", "lime", "yellow", "lightBlue", "magenta", "orange", "white"};
-	
+
 	@SideOnly(Side.CLIENT)
     private IIcon icon_base;
 	@SideOnly(Side.CLIENT)

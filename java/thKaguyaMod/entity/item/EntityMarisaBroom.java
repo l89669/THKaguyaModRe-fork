@@ -1,561 +1,819 @@
-/*   1:    */ package thKaguyaMod.entity.item;
-/*   2:    */ 
-/*   3:    */ import cpw.mods.fml.relauncher.Side;
-/*   4:    */ import cpw.mods.fml.relauncher.SideOnly;
-/*   5:    */ import java.util.List;
-/*   6:    */ import net.minecraft.block.material.Material;
-/*   7:    */ import net.minecraft.client.Minecraft;
-/*   8:    */ import net.minecraft.client.settings.GameSettings;
-/*   9:    */ import net.minecraft.client.settings.KeyBinding;
-/*  10:    */ import net.minecraft.entity.DataWatcher;
-/*  11:    */ import net.minecraft.entity.Entity;
-/*  12:    */ import net.minecraft.entity.player.EntityPlayer;
-/*  13:    */ import net.minecraft.entity.player.PlayerCapabilities;
-/*  14:    */ import net.minecraft.nbt.NBTTagCompound;
-/*  15:    */ import net.minecraft.util.AxisAlignedBB;
-/*  16:    */ import net.minecraft.util.DamageSource;
-/*  17:    */ import net.minecraft.util.MathHelper;
-/*  18:    */ import net.minecraft.world.World;
-/*  19:    */ import thKaguyaMod.init.THKaguyaItems;
-/*  20:    */ 
-/*  21:    */ public class EntityMarisaBroom
-/*  22:    */   extends Entity
-/*  23:    */ {
-/*  24:    */   private boolean isEmpty;
-/*  25:    */   private double speedMultiplier;
-/*  26:    */   private int boatPosRotationIncrements;
-/*  27:    */   private double broomX;
-/*  28:    */   private double broomY;
-/*  29:    */   private double broomZ;
-/*  30:    */   private double broomYaw;
-/*  31:    */   private double broomPitch;
-/*  32:    */   @SideOnly(Side.CLIENT)
-/*  33:    */   private double velocityX;
-/*  34:    */   @SideOnly(Side.CLIENT)
-/*  35:    */   private double velocityY;
-/*  36:    */   @SideOnly(Side.CLIENT)
-/*  37:    */   private double velocityZ;
-/*  38:    */   
-/*  39:    */   public EntityMarisaBroom(World world)
-/*  40:    */   {
-/*  41: 39 */     super(world);
-/*  42: 40 */     this.isEmpty = true;
-/*  43: 41 */     this.speedMultiplier = 0.07000000000000001D;
-/*  44: 42 */     this.preventEntitySpawning = true;
-/*  45: 43 */     setSize(0.9F, 0.5F);
-/*  46: 44 */     this.yOffset = 0.8F;
-/*  47:    */   }
-/*  48:    */   
-/*  49:    */   public EntityMarisaBroom(World world, double x, double y, double z)
-/*  50:    */   {
-/*  51: 49 */     this(world);
-/*  52: 50 */     setPosition(x, y + this.yOffset, z);
-/*  53: 51 */     this.motionX = 0.0D;
-/*  54: 52 */     this.motionY = 0.0D;
-/*  55: 53 */     this.motionZ = 0.0D;
-/*  56: 54 */     this.prevPosX = x;
-/*  57: 55 */     this.prevPosY = y;
-/*  58: 56 */     this.prevPosZ = z;
-/*  59:    */   }
-/*  60:    */   
-/*  61:    */   protected boolean canTriggerWalking()
-/*  62:    */   {
-/*  63: 66 */     return false;
-/*  64:    */   }
-/*  65:    */   
-/*  66:    */   protected void entityInit()
-/*  67:    */   {
-/*  68: 73 */     this.dataWatcher.addObject(17, new Integer(0));
-/*  69: 74 */     this.dataWatcher.addObject(18, new Integer(1));
-/*  70: 75 */     this.dataWatcher.addObject(19, new Float(0.0F));
-/*  71:    */   }
-/*  72:    */   
-/*  73:    */   public AxisAlignedBB getCollisionBox(Entity entity)
-/*  74:    */   {
-/*  75: 85 */     return entity.boundingBox;
-/*  76:    */   }
-/*  77:    */   
-/*  78:    */   public AxisAlignedBB getBoundingBox()
-/*  79:    */   {
-/*  80: 94 */     return this.boundingBox;
-/*  81:    */   }
-/*  82:    */   
-/*  83:    */   public boolean canBePushed()
-/*  84:    */   {
-/*  85:103 */     return true;
-/*  86:    */   }
-/*  87:    */   
-/*  88:    */   public double getMountedYOffset()
-/*  89:    */   {
-/*  90:112 */     return -0.15D;
-/*  91:    */   }
-/*  92:    */   
-/*  93:    */   public boolean attackEntityFrom(DamageSource damageSource, float par2)
-/*  94:    */   {
-/*  95:120 */     if (isEntityInvulnerable()) {
-/*  96:122 */       return false;
-/*  97:    */     }
-/*  98:125 */     if ((!this.worldObj.isRemote) && (!this.isDead))
-/*  99:    */     {
-/* 100:127 */       setForwardDirection(-getForwardDirection());
-/* 101:128 */       setTimeSinceHit(10);
-/* 102:129 */       setDamageTaken(getDamageTaken() + par2 * 10.0F);
-/* 103:130 */       setBeenAttacked();
-/* 104:131 */       boolean flag = ((damageSource.getEntity() instanceof EntityPlayer)) && (((EntityPlayer)damageSource.getEntity()).capabilities.isCreativeMode);
-/* 105:133 */       if ((flag) || (getDamageTaken() > 40.0F))
-/* 106:    */       {
-/* 107:135 */         if (this.riddenByEntity != null) {
-/* 108:137 */           this.riddenByEntity.mountEntity(this);
-/* 109:    */         }
-/* 110:140 */         if (!flag) {
-/* 111:142 */           dropItem(THKaguyaItems.magic_bloom, 1);
-/* 112:    */         }
-/* 113:145 */         setDead();
-/* 114:    */       }
-/* 115:148 */       return true;
-/* 116:    */     }
-/* 117:152 */     return true;
-/* 118:    */   }
-/* 119:    */   
-/* 120:    */   @SideOnly(Side.CLIENT)
-/* 121:    */   public void performHurtAnimation()
-/* 122:    */   {
-/* 123:162 */     setForwardDirection(-getForwardDirection());
-/* 124:163 */     setTimeSinceHit(10);
-/* 125:164 */     setDamageTaken(getDamageTaken() * 11.0F);
-/* 126:    */   }
-/* 127:    */   
-/* 128:    */   public boolean canBeCollidedWith()
-/* 129:    */   {
-/* 130:171 */     return !this.isDead;
-/* 131:    */   }
-/* 132:    */   
-/* 133:    */   @SideOnly(Side.CLIENT)
-/* 134:    */   public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int par9)
-/* 135:    */   {
-/* 136:182 */     if (this.isEmpty)
-/* 137:    */     {
-/* 138:184 */       this.boatPosRotationIncrements = (par9 + 5);
-/* 139:    */     }
-/* 140:    */     else
-/* 141:    */     {
-/* 142:188 */       double xDistance = x - this.posX;
-/* 143:189 */       double yDistance = y - this.posY;
-/* 144:190 */       double zDistance = z - this.posZ;
-/* 145:191 */       double distance = xDistance * xDistance + yDistance * yDistance + zDistance * zDistance;
-/* 146:193 */       if (distance <= 1.0D) {
-/* 147:195 */         return;
-/* 148:    */       }
-/* 149:198 */       this.boatPosRotationIncrements = 3;
-/* 150:    */     }
-/* 151:201 */     this.broomX = x;
-/* 152:202 */     this.broomY = y;
-/* 153:203 */     this.broomZ = z;
-/* 154:204 */     this.broomYaw = yaw;
-/* 155:205 */     this.broomPitch = pitch;
-/* 156:206 */     this.motionX = this.velocityX;
-/* 157:207 */     this.motionY = this.velocityY;
-/* 158:208 */     this.motionZ = this.velocityZ;
-/* 159:    */   }
-/* 160:    */   
-/* 161:    */   @SideOnly(Side.CLIENT)
-/* 162:    */   public void setVelocity(double x, double y, double z)
-/* 163:    */   {
-/* 164:216 */     this.velocityX = (this.motionX = x);
-/* 165:217 */     this.velocityY = (this.motionY = y);
-/* 166:218 */     this.velocityZ = (this.motionZ = z);
-/* 167:    */   }
-/* 168:    */   
-/* 169:    */   @SideOnly(Side.CLIENT)
-/* 170:    */   public boolean isPushKeyUp()
-/* 171:    */   {
-/* 172:224 */     Minecraft mc = Minecraft.getMinecraft();
-/* 173:225 */     GameSettings gameSettings = mc.gameSettings;
-/* 174:226 */     return gameSettings.keyBindForward.getIsKeyPressed();
-/* 175:    */   }
-/* 176:    */   
-/* 177:    */   @SideOnly(Side.CLIENT)
-/* 178:    */   public boolean isPushKeyBack()
-/* 179:    */   {
-/* 180:232 */     Minecraft mc = Minecraft.getMinecraft();
-/* 181:233 */     GameSettings gameSettings = mc.gameSettings;
-/* 182:234 */     return gameSettings.keyBindBack.getIsKeyPressed();
-/* 183:    */   }
-/* 184:    */   
-/* 185:    */   @SideOnly(Side.CLIENT)
-/* 186:    */   public boolean isPushKeyRight()
-/* 187:    */   {
-/* 188:240 */     Minecraft mc = Minecraft.getMinecraft();
-/* 189:241 */     GameSettings gameSettings = mc.gameSettings;
-/* 190:242 */     return gameSettings.keyBindRight.getIsKeyPressed();
-/* 191:    */   }
-/* 192:    */   
-/* 193:    */   @SideOnly(Side.CLIENT)
-/* 194:    */   public boolean isPushKeyLeft()
-/* 195:    */   {
-/* 196:248 */     Minecraft mc = Minecraft.getMinecraft();
-/* 197:249 */     GameSettings gameSettings = mc.gameSettings;
-/* 198:250 */     return gameSettings.keyBindLeft.getIsKeyPressed();
-/* 199:    */   }
-/* 200:    */   
-/* 201:    */   @SideOnly(Side.CLIENT)
-/* 202:    */   public boolean isPushKeyJump()
-/* 203:    */   {
-/* 204:256 */     Minecraft mc = Minecraft.getMinecraft();
-/* 205:257 */     GameSettings gameSettings = mc.gameSettings;
-/* 206:258 */     return gameSettings.keyBindJump.getIsKeyPressed();
-/* 207:    */   }
-/* 208:    */   
-/* 209:    */   public void onUpdate()
-/* 210:    */   {
-/* 211:265 */     super.onUpdate();
-/* 212:268 */     if (getTimeSinceHit() > 0) {
-/* 213:270 */       setTimeSinceHit(getTimeSinceHit() - 1);
-/* 214:    */     }
-/* 215:273 */     if (getDamageTaken() > 0.0F) {
-/* 216:275 */       setDamageTaken(getDamageTaken() - 1.0F);
-/* 217:    */     }
-/* 218:279 */     this.prevPosX = this.posX;
-/* 219:280 */     this.prevPosY = this.posY;
-/* 220:281 */     this.prevPosZ = this.posZ;
-/* 221:    */     
-/* 222:283 */     byte b0 = 5;
-/* 223:284 */     double d0 = 0.0D;
-/* 224:286 */     for (int i = 0; i < b0; i++)
-/* 225:    */     {
-/* 226:288 */       double d1 = this.boundingBox.minY + (this.boundingBox.maxY - this.boundingBox.minY) * (i + 0) / b0 - 0.125D;
-/* 227:289 */       double d2 = this.boundingBox.minY + (this.boundingBox.maxY - this.boundingBox.minY) * (i + 1) / b0 - 0.125D;
-/* 228:290 */       AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(this.boundingBox.minX, d1, this.boundingBox.minZ, this.boundingBox.maxX, d2, this.boundingBox.maxZ);
-/* 229:292 */       if (this.worldObj.isAABBInMaterial(axisalignedbb, Material.water)) {
-/* 230:294 */         d0 += 1.0D / b0;
-/* 231:    */       }
-/* 232:    */     }
-/* 233:298 */     double motionXZ = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+package thKaguyaMod.entity.item;
 
-/* 235:305 */     if ((this.worldObj.isRemote) && (this.isEmpty))
-/* 236:    */     {
-/* 237:308 */       if (this.boatPosRotationIncrements > 0)
-/* 238:    */       {
-/* 239:311 */         double x_increments = this.posX + (this.broomX - this.posX) / this.boatPosRotationIncrements;
-/* 240:312 */         double y_increments = this.posY + (this.broomY - this.posY) / this.boatPosRotationIncrements;
-/* 241:313 */         double z_increments = this.posZ + (this.broomZ - this.posZ) / this.boatPosRotationIncrements;
-/* 242:314 */         double d10 = MathHelper.wrapAngleTo180_double(this.broomYaw - this.rotationYaw);
-/* 243:315 */         this.rotationYaw = ((float)(this.rotationYaw + d10 / this.boatPosRotationIncrements));
-/* 244:316 */         this.rotationPitch = ((float)(this.rotationPitch + (this.broomPitch - this.rotationPitch) / this.boatPosRotationIncrements));
-/* 245:317 */         this.boatPosRotationIncrements -= 1;
-/* 246:318 */         setPosition(x_increments, y_increments, z_increments);
-/* 247:319 */         setRotation(this.rotationYaw, this.rotationPitch);
-/* 248:    */       }
-/* 249:    */       else
-/* 250:    */       {
-/* 251:324 */         double x_increments = this.posX + this.motionX;
-/* 252:325 */         double y_increments = this.posY + this.motionY;
-/* 253:326 */         double z_increments = this.posZ + this.motionZ;
-/* 254:327 */         setPosition(x_increments, y_increments, z_increments);
-/* 255:329 */         if (this.onGround)
-/* 256:    */         {
-/* 257:332 */           this.motionX *= 0.5D;
-/* 258:333 */           this.motionY *= 0.5D;
-/* 259:334 */           this.motionZ *= 0.5D;
-/* 260:    */         }
-/* 261:337 */         this.motionX *= 0.9900000095367432D;
-/* 262:338 */         this.motionY *= 0.949999988079071D;
-/* 263:339 */         this.motionZ *= 0.9900000095367432D;
-/* 264:    */       }
-/* 265:    */     }
-/* 266:    */     else
-/* 267:    */     {
-/* 268:344 */       if (d0 < 1.0D) {
-/* 269:346 */        double x_increments = d0 * 2.0D - 1.0D;
-/* 270:    */       }
-/* 271:360 */       if ((this.riddenByEntity != null) && ((this.riddenByEntity instanceof EntityPlayer)))
-/* 272:    */       {
-/* 273:363 */         EntityPlayer living = (EntityPlayer)this.riddenByEntity;
-/* 274:    */         
-/* 275:365 */         boolean move_up = true;
-/* 276:366 */         boolean move_right = false;
-/* 277:367 */         boolean move_left = false;
-/* 278:368 */         boolean move_back = false;
-/* 279:369 */         boolean move_jump = false;
-/* 280:372 */         if (this.worldObj.isRemote)
-/* 281:    */         {
-/* 282:374 */           move_up = isPushKeyUp();
-/* 283:375 */           move_right = isPushKeyRight();
-/* 284:376 */           move_left = isPushKeyLeft();
-/* 285:377 */           move_back = isPushKeyBack();
-/* 286:378 */           move_jump = isPushKeyJump();
-/* 287:    */         }
-/* 288:395 */         double acceleration = 0.04D;
-/* 289:396 */         double acceleration2 = 0.08D;
-/* 290:397 */         if (move_jump)
-/* 291:    */         {
-/* 292:399 */           acceleration = 0.5D;
-/* 293:    */           
-/* 294:    */ 
-/* 295:    */ 
-/* 296:403 */           this.motionX *= 0.0D;
-/* 297:404 */           this.motionZ *= 0.0D;
-/* 298:405 */           this.motionY *= 0.0D;
-/* 299:410 */           if (move_up) {
-/* 300:412 */             this.motionY = (-Math.sin(-1.570796489715576D) * acceleration);
-/* 301:    */           }
-/* 302:418 */           if (move_back) {
-/* 303:420 */             this.motionY = (-Math.sin(1.570796489715576D) * acceleration);
-/* 304:    */           }
-/* 305:427 */           if (move_right)
-/* 306:    */           {
-/* 307:429 */             this.motionX = (Math.sin((this.rotationYaw + 0.0F) / 180.0F * 3.141593F) * acceleration);
-/* 308:430 */             this.motionZ = (-Math.cos((this.rotationYaw + 0.0F) / 180.0F * 3.141593F) * acceleration);
-/* 309:    */           }
-/* 310:432 */           if (move_left)
-/* 311:    */           {
-/* 312:434 */             this.motionX = (Math.sin((this.rotationYaw - 180.0F) / 180.0F * 3.141593F) * acceleration);
-/* 313:435 */             this.motionZ = (-Math.cos((this.rotationYaw - 180.0F) / 180.0F * 3.141593F) * acceleration);
-/* 314:    */           }
-/* 315:437 */           double moveSpeed = Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-/* 316:438 */           if (moveSpeed > 0.5D)
-/* 317:    */           {
-/* 318:440 */             this.motionX *= moveSpeed;
-/* 319:441 */             this.motionY *= moveSpeed;
-/* 320:442 */             this.motionZ *= moveSpeed;
-/* 321:    */           }
-/* 322:    */         }
-/* 323:    */         else
-/* 324:    */         {
-/* 325:447 */           this.motionY += -Math.sin(this.rotationPitch / 180.0F * 3.141593F) * acceleration;
-/* 326:448 */           if ((!move_up) && (!move_back) && (!move_right) && (!move_left))
-/* 327:    */           {
-/* 328:451 */             this.motionX *= 0.97D;
-/* 329:452 */             this.motionZ *= 0.97D;
-/* 330:453 */             this.motionY *= 0.97D;
-/* 331:    */           }
-/* 332:    */           else
-/* 333:    */           {
-/* 334:457 */             if (move_up)
-/* 335:    */             {
-/* 336:459 */               this.motionX += Math.sin((this.rotationYaw - 90.0F) / 180.0F * 3.141593F) * acceleration;
-/* 337:460 */               this.motionZ += -Math.cos((this.rotationYaw - 90.0F) / 180.0F * 3.141593F) * acceleration;
-/* 338:    */             }
-/* 339:462 */             if (move_back)
-/* 340:    */             {
-/* 341:464 */               this.motionX += -Math.sin((this.rotationYaw - 90.0F) / 180.0F * 3.141593F) * acceleration2;
-/* 342:465 */               this.motionZ += Math.cos((this.rotationYaw - 90.0F) / 180.0F * 3.141593F) * acceleration2;
-/* 343:    */             }
-/* 344:    */           }
-/* 345:468 */           if (move_right)
-/* 346:    */           {
-/* 347:470 */             this.motionX += Math.sin((this.rotationYaw + 0.0F) / 180.0F * 3.141593F) * acceleration;
-/* 348:471 */             this.motionZ += -Math.cos((this.rotationYaw + 0.0F) / 180.0F * 3.141593F) * acceleration;
-/* 349:    */           }
-/* 350:473 */           if (move_left)
-/* 351:    */           {
-/* 352:475 */             this.motionX += Math.sin((this.rotationYaw - 180.0F) / 180.0F * 3.141593F) * acceleration;
-/* 353:476 */             this.motionZ += -Math.cos((this.rotationYaw - 180.0F) / 180.0F * 3.141593F) * acceleration;
-/* 354:    */           }
-/* 355:    */         }
-/* 356:481 */         float f = this.riddenByEntity.rotationYaw;
-/* 357:    */         
-/* 358:483 */         this.speedMultiplier = 0.6D;
-/* 359:    */         
-/* 360:    */ 
-/* 361:486 */         float pitch = this.riddenByEntity.rotationPitch;
-/* 362:487 */         this.rotationPitch = pitch;
-/* 363:489 */         if (pitch > 90.0F) {
-/* 364:491 */           pitch = 90.0F;
-/* 365:493 */         } else if (pitch < -90.0F) {
-/* 366:495 */           pitch = -90.0F;
-/* 367:    */         }
-/* 368:501 */         if (pitch < 0.0F) {
-/* 369:503 */           pitch *= 0.1F;
-/* 370:    */         }
-/* 371:507 */         this.rotationYaw = (this.riddenByEntity.rotationYaw - 90.0F);
-/* 372:    */         
-/* 373:    */ 
-/* 374:510 */         double moveSpeed = Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-/* 375:511 */         if (moveSpeed > 0.8D)
-/* 376:    */         {
-/* 377:513 */           this.motionX *= moveSpeed;
-/* 378:514 */           this.motionY *= moveSpeed;
-/* 379:515 */           this.motionZ *= moveSpeed;
-/* 380:    */         }
-/* 381:    */       }
-/* 382:555 */       if (this.inWater)
-/* 383:    */       {
-/* 384:557 */         this.motionX *= 0.5D;
-/* 385:558 */         this.motionY *= 0.5D;
-/* 386:559 */         this.motionZ *= 0.5D;
-/* 387:    */       }
-/* 388:562 */       moveEntity(this.motionX, this.motionY, this.motionZ);
-/* 389:    */       
-/* 390:    */ 
-/* 391:    */ 
-/* 392:    */ 
-/* 393:    */ 
-/* 394:    */ 
-/* 395:    */ 
-/* 396:    */ 
-/* 397:    */ 
-/* 398:    */ 
-/* 399:    */ 
-/* 400:    */ 
-/* 401:    */ 
-/* 402:    */ 
-/* 403:    */ 
-/* 404:    */ 
-/* 405:    */ 
-/* 406:    */ 
-/* 407:    */ 
-/* 408:    */ 
-/* 409:    */ 
-/* 410:584 */       this.motionX *= 0.9900000095367432D;
-/* 411:585 */       this.motionY *= 0.949999988079071D;
-/* 412:586 */       this.motionZ *= 0.9900000095367432D;
-/* 413:    */       
-/* 414:    */ 
-/* 415:    */ 
-/* 416:    */ 
-/* 417:    */ 
-/* 418:    */ 
-/* 419:    */ 
-/* 420:    */ 
-/* 421:    */ 
-/* 422:    */ 
-/* 423:    */ 
-/* 424:    */ 
-/* 425:    */ 
-/* 426:    */ 
-/* 427:    */ 
-/* 428:    */ 
-/* 429:    */ 
-/* 430:    */ 
-/* 431:    */ 
-/* 432:    */ 
-/* 433:    */ 
-/* 434:    */ 
-/* 435:    */ 
-/* 436:    */ 
-/* 437:    */ 
-/* 438:    */ 
-/* 439:    */ 
-/* 440:614 */       setRotation(this.rotationYaw, this.rotationPitch);
-/* 441:617 */       if (!this.worldObj.isRemote)
-/* 442:    */       {
-/* 443:619 */         List list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(0.2000000029802322D, 0.0D, 0.2000000029802322D));
-/* 444:622 */         if ((list != null) && (!list.isEmpty())) {
-/* 445:624 */           for (int l = 0; l < list.size(); l++)
-/* 446:    */           {
-/* 447:626 */             Entity entity = (Entity)list.get(l);
-/* 448:628 */             if ((entity != this.riddenByEntity) && (entity.canBePushed()) && ((entity instanceof EntityMarisaBroom))) {
-/* 449:630 */               entity.applyEntityCollision(this);
-/* 450:    */             }
-/* 451:    */           }
-/* 452:    */         }
-/* 453:657 */         if ((this.riddenByEntity != null) && (this.riddenByEntity.isDead)) {
-/* 454:659 */           this.riddenByEntity = null;
-/* 455:    */         }
-/* 456:665 */         if (this.riddenByEntity != null)
-/* 457:    */         {
-/* 458:667 */           this.riddenByEntity.fallDistance = 0.0F;
-/* 459:668 */           this.fallDistance = 0.0F;
-/* 460:    */         }
-/* 461:    */         else
-/* 462:    */         {
-/* 463:672 */           this.motionX *= 0.9D;
-/* 464:673 */           this.motionY -= 0.03D;
-/* 465:674 */           this.motionZ *= 0.9D;
-/* 466:675 */           if (this.rotationPitch > 1.0F) {
-/* 467:677 */             this.rotationPitch -= 1.0F;
-/* 468:679 */           } else if (this.rotationPitch < -1.0F) {
-/* 469:681 */             this.rotationPitch += 1.0F;
-/* 470:    */           }
-/* 471:683 */           if (this.onGround) {
-/* 472:685 */             this.motionY += 0.06D;
-/* 473:    */           }
-/* 474:    */         }
-/* 475:    */       }
-/* 476:    */     }
-/* 477:    */   }
-/* 478:    */   
-/* 479:    */   public void updateRiderPosition2()
-/* 480:    */   {
-/* 481:698 */     if (this.riddenByEntity != null)
-/* 482:    */     {
-/* 483:701 */       double d0 = 0.0D;
-/* 484:702 */       double d1 = 0.0D;
-/* 485:703 */       this.riddenByEntity.setPosition(this.posX + d0, this.posY + getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ + d1);
-/* 486:    */     }
-/* 487:    */   }
-/* 488:    */   
-/* 489:    */   public void updateRidden()
-/* 490:    */   {
-/* 491:712 */     super.updateRidden();
-/* 492:713 */     if (this.ridingEntity.isDead) {
-/* 493:715 */       this.ridingEntity = null;
-/* 494:    */     } else {
-/* 495:719 */       updateRiderPosition2();
-/* 496:    */     }
-/* 497:    */   }
-/* 498:    */   
-/* 499:    */   protected void writeEntityToNBT(NBTTagCompound nbtTagCompound) {}
-/* 500:    */   
-/* 501:    */   protected void readEntityFromNBT(NBTTagCompound nbtTagCompound) {}
-/* 502:    */   
-/* 503:    */   @SideOnly(Side.CLIENT)
-/* 504:    */   public float getShadowSize()
-/* 505:    */   {
-/* 506:742 */     return 0.0F;
-/* 507:    */   }
-/* 508:    */   
-/* 509:    */   public boolean interactFirst(EntityPlayer entityPlayer)
-/* 510:    */   {
-/* 511:750 */     if ((this.riddenByEntity != null) && ((this.riddenByEntity instanceof EntityPlayer)) && (this.riddenByEntity != entityPlayer)) {
-/* 512:752 */       return true;
-/* 513:    */     }
-/* 514:756 */     if (!this.worldObj.isRemote) {
-/* 515:758 */       entityPlayer.mountEntity(this);
-/* 516:    */     }
-/* 517:761 */     return true;
-/* 518:    */   }
-/* 519:    */   
-/* 520:    */   public void setDamageTaken(float par1)
-/* 521:    */   {
-/* 522:770 */     this.dataWatcher.updateObject(19, Float.valueOf(par1));
-/* 523:    */   }
-/* 524:    */   
-/* 525:    */   public float getDamageTaken()
-/* 526:    */   {
-/* 527:779 */     return this.dataWatcher.getWatchableObjectFloat(19);
-/* 528:    */   }
-/* 529:    */   
-/* 530:    */   public void setTimeSinceHit(int par1)
-/* 531:    */   {
-/* 532:787 */     this.dataWatcher.updateObject(17, Integer.valueOf(par1));
-/* 533:    */   }
-/* 534:    */   
-/* 535:    */   public int getTimeSinceHit()
-/* 536:    */   {
-/* 537:795 */     return this.dataWatcher.getWatchableObjectInt(17);
-/* 538:    */   }
-/* 539:    */   
-/* 540:    */   public void setForwardDirection(int par1)
-/* 541:    */   {
-/* 542:803 */     this.dataWatcher.updateObject(18, Integer.valueOf(par1));
-/* 543:    */   }
-/* 544:    */   
-/* 545:    */   public int getForwardDirection()
-/* 546:    */   {
-/* 547:811 */     return this.dataWatcher.getWatchableObjectInt(18);
-/* 548:    */   }
-/* 549:    */   
-/* 550:    */   @SideOnly(Side.CLIENT)
-/* 551:    */   public void setIsBoatEmpty(boolean par1)
-/* 552:    */   {
-/* 553:817 */     this.isEmpty = par1;
-/* 554:    */   }
-/* 555:    */ }
+import java.util.List;
 
-
-/* Location:           C:\Users\acer\Downloads\五つの難題MOD+ ver2.90.1-1.7.10-deobf.jar
- * Qualified Name:     thKaguyaMod.entity.item.EntityMarisaBroom
- * JD-Core Version:    0.7.0.1
- */
+import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+import thKaguyaMod.init.THKaguyaItems;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+/** 魔法の箒 */
+public class EntityMarisaBroom extends Entity
+{
+    private boolean isEmpty;
+    private double speedMultiplier;
+    private int boatPosRotationIncrements;
+    private double broomX;
+    private double broomY;
+    private double broomZ;
+    private double broomYaw;
+    private double broomPitch;
+    @SideOnly(Side.CLIENT)
+    private double velocityX;
+    @SideOnly(Side.CLIENT)
+    private double velocityY;
+    @SideOnly(Side.CLIENT)
+    private double velocityZ;
+
+    public EntityMarisaBroom(World world)
+    {
+        super(world);
+        this.isEmpty = true;
+        this.speedMultiplier = 0.07D;
+        this.preventEntitySpawning = true;
+        this.setSize(0.9F, 0.5F);
+        this.yOffset = 0.8F;
+    }
+    
+    public EntityMarisaBroom(World world, double x, double y, double z)
+    {
+        this(world);
+        this.setPosition(x, y + (double)this.yOffset, z);
+        this.motionX = 0.0D;
+        this.motionY = 0.0D;
+        this.motionZ = 0.0D;
+        this.prevPosX = x;
+        this.prevPosY = y;
+        this.prevPosZ = z;
+    }
+   
+    /**
+     * returns if this entity triggers Block.onEntityWalking on the blocks they walk on. used for spiders and wolves to
+     * prevent them from trampling crops
+     */
+    @Override
+    protected boolean canTriggerWalking()
+    {
+        return false;
+    }
+    
+    /** 生成時に一度だけ呼ばれる処理 */
+    @Override
+    protected void entityInit()
+    {
+        this.dataWatcher.addObject(17, new Integer(0));
+        this.dataWatcher.addObject(18, new Integer(1));
+        this.dataWatcher.addObject(19, new Float(0.0F));
+    }
+
+    /**
+     * Returns a boundingBox used to collide the entity with other entities and blocks. This enables the entity to be
+     * pushable on contact, like boats or minecarts.
+     */
+    @Override
+    public AxisAlignedBB getCollisionBox(Entity entity)
+    {
+        return entity.boundingBox;
+    }
+
+    /**
+     * returns the bounding box for this entity
+     */
+    @Override
+    public AxisAlignedBB getBoundingBox()
+    {
+        return this.boundingBox;
+    }
+
+    /**
+     * Returns true if this entity should push and be pushed by other entities when colliding.
+     */
+    @Override
+    public boolean canBePushed()
+    {
+        return true;
+    }
+
+    
+
+	//魔理沙の箒に乗っているEntityが乗る高さを返す
+    @Override
+    public double getMountedYOffset()
+    {
+        return  -0.15D;
+    }
+
+	//Entityに攻撃されたときに呼ばれる
+    @Override
+    public boolean attackEntityFrom(DamageSource damageSource, float par2)
+    {
+    	//無敵ならfalseを返す
+        if (this.isEntityInvulnerable())
+        {
+            return false;
+        }
+        //無敵でないなら
+        else if (!this.worldObj.isRemote && !this.isDead)
+        {
+            this.setForwardDirection(-this.getForwardDirection());
+            this.setTimeSinceHit(10);
+            this.setDamageTaken(this.getDamageTaken() + par2 * 10.0F);
+            this.setBeenAttacked();
+            boolean flag = damageSource.getEntity() instanceof EntityPlayer && ((EntityPlayer)damageSource.getEntity()).capabilities.isCreativeMode;
+
+            if (flag || this.getDamageTaken() > 40.0F)//相手がプレイヤーでクリエイティブ、または、４以上のダメージを受けているなら
+            {
+                if (this.riddenByEntity != null)
+                {
+                    this.riddenByEntity.mountEntity(this);
+                }
+
+                if (!flag)
+                {
+                    this.dropItem(THKaguyaItems.magic_bloom, 1);
+                }
+
+                this.setDead();
+            }
+
+            return true;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+
+	//攻撃された時のアニメーション関連
+    @Override
+    public void performHurtAnimation()
+    {
+        this.setForwardDirection(-this.getForwardDirection());
+        this.setTimeSinceHit(10);
+        this.setDamageTaken(this.getDamageTaken() * 11.0F);
+    }
+
+	//触れることができるかどうか
+    @Override
+    public boolean canBeCollidedWith()
+    {
+        return !this.isDead;
+    }
+
+    @SideOnly(Side.CLIENT)
+
+    /**
+     * Sets the position and rotation. Only difference from the other one is no bounding on the rotation. Args: posX,
+     * posY, posZ, yaw, pitch
+     */
+    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int par9)
+    {
+        if (this.isEmpty)
+        {
+            this.boatPosRotationIncrements = par9 + 5;
+        }
+        else
+        {
+            double xDistance = x - this.posX;
+            double yDistance = y - this.posY;
+            double zDistance = z - this.posZ;
+            double distance = xDistance * xDistance + yDistance * yDistance + zDistance * zDistance;
+
+            if (distance <= 1.0D)
+            {
+                return;
+            }
+
+            this.boatPosRotationIncrements = 3;
+        }
+
+        this.broomX = x;
+        this.broomY = y;
+        this.broomZ = z;
+        this.broomYaw = (double)yaw;
+        this.broomPitch = (double)pitch;
+        this.motionX = this.velocityX;
+        this.motionY = this.velocityY;
+        this.motionZ = this.velocityZ;
+    }
+
+    @SideOnly(Side.CLIENT)
+
+	//ベクトルを設定
+    public void setVelocity(double x, double y, double z)
+    {
+        this.velocityX = this.motionX = x;
+        this.velocityY = this.motionY = y;
+        this.velocityZ = this.motionZ = z;
+    }
+    
+	@SideOnly(Side.CLIENT)
+	public boolean isPushKeyUp()
+	{
+    	Minecraft mc = Minecraft.getMinecraft();
+    	GameSettings gameSettings = mc.gameSettings;
+    	return gameSettings.keyBindForward.getIsKeyPressed();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public boolean isPushKeyBack()
+	{
+    	Minecraft mc = Minecraft.getMinecraft();
+    	GameSettings gameSettings = mc.gameSettings;
+    	return gameSettings.keyBindBack.getIsKeyPressed();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public boolean isPushKeyRight()
+	{
+    	Minecraft mc = Minecraft.getMinecraft();
+    	GameSettings gameSettings = mc.gameSettings;
+    	return gameSettings.keyBindRight.getIsKeyPressed();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public boolean isPushKeyLeft()
+	{
+    	Minecraft mc = Minecraft.getMinecraft();
+    	GameSettings gameSettings = mc.gameSettings;
+    	return gameSettings.keyBindLeft.getIsKeyPressed();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public boolean isPushKeyJump()
+	{
+    	Minecraft mc = Minecraft.getMinecraft();
+    	GameSettings gameSettings = mc.gameSettings;
+    	return gameSettings.keyBindJump.getIsKeyPressed();
+	}
+
+	/** 毎tick呼ばれる処理 */
+    @Override
+    public void onUpdate()
+    {
+        super.onUpdate();
+
+    	//ダメージアニメーション関連
+        if (this.getTimeSinceHit() > 0)
+        {
+            this.setTimeSinceHit(this.getTimeSinceHit() - 1);
+        }
+
+        if (this.getDamageTaken() > 0.0F)
+        {
+            this.setDamageTaken(this.getDamageTaken() - 1.0F);
+        }
+    	
+		//前のポジションを今のポジションにする
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
+    	
+        byte b0 = 5;
+        double d0 = 0.0D;
+
+        for (int i = 0; i < b0; ++i)
+        {
+            double d1 = this.boundingBox.minY + (this.boundingBox.maxY - this.boundingBox.minY) * (double)(i + 0) / (double)b0 - 0.125D;
+            double d2 = this.boundingBox.minY + (this.boundingBox.maxY - this.boundingBox.minY) * (double)(i + 1) / (double)b0 - 0.125D;
+            AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(this.boundingBox.minX, d1, this.boundingBox.minZ, this.boundingBox.maxX, d2, this.boundingBox.maxZ);
+
+            if (this.worldObj.isAABBInMaterial(axisalignedbb, Material.water))
+            {
+                d0 += 1.0D / (double)b0;
+            }
+        }
+
+        double motionXZ = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);//平面方向の移動量
+        double cos_yaw_rad;//d4
+        double sin_yaw_rad;//d5
+
+        double d10;
+        double d11;
+
+        if (this.worldObj.isRemote && this.isEmpty)
+        {
+        	//箒の回転増加量が０より大きいなら
+            if (this.boatPosRotationIncrements > 0)
+            {
+            	
+                double x_increments = this.posX + (this.broomX - this.posX) / (double)this.boatPosRotationIncrements;
+                double y_increments = this.posY + (this.broomY - this.posY) / (double)this.boatPosRotationIncrements;
+                double z_increments = this.posZ + (this.broomZ - this.posZ) / (double)this.boatPosRotationIncrements;
+                d10 = MathHelper.wrapAngleTo180_double(this.broomYaw - (double)this.rotationYaw);
+                this.rotationYaw = (float)((double)this.rotationYaw + d10 / (double)this.boatPosRotationIncrements);
+                this.rotationPitch = (float)((double)this.rotationPitch + (this.broomPitch - (double)this.rotationPitch) / (double)this.boatPosRotationIncrements);
+                --this.boatPosRotationIncrements;
+                this.setPosition(x_increments, y_increments, z_increments);
+                this.setRotation(this.rotationYaw, this.rotationPitch);
+            }
+        	//０より小さいなら
+            else
+            {
+                double x_increments = this.posX + this.motionX;
+                double y_increments = this.posY + this.motionY;
+                double z_increments = this.posZ + this.motionZ;
+                this.setPosition(x_increments, y_increments, z_increments);
+
+                if (this.onGround)//地面の上なら
+                {
+                	//移動量を半減する
+                    this.motionX *= 0.5D;
+                    this.motionY *= 0.5D;
+                    this.motionZ *= 0.5D;
+                }
+
+                this.motionX *= 0.9900000095367432D;
+                this.motionY *= 0.949999988079071D;
+                this.motionZ *= 0.9900000095367432D;
+            }
+        }
+        else
+        {
+            if (d0 < 1.0D)
+            {
+                double d4 = d0 * 2.0D - 1.0D;
+            }
+            else
+            {
+                /*if (this.motionY < 0.0D)//下降気味なら
+                {
+                    this.motionY /= 2.0D;//下降速度を半減
+                }
+
+                this.motionY += 0.007000000216066837D;//若干浮遊させる
+            */}
+
+            //riddenByEntity = new EntityZombie(worldObj);
+        	//Entityが乗っているなら
+            if (this.riddenByEntity != null && this.riddenByEntity instanceof EntityPlayer)
+            {
+            	
+            	EntityPlayer living = (EntityPlayer)this.riddenByEntity;
+            	
+        		boolean move_up = true;
+        		boolean move_right = false;
+        		boolean move_left = false;
+        		boolean move_back = false;
+        		boolean move_jump = false;
+            	
+            	
+            	if(worldObj.isRemote)
+            	{
+            		move_up = isPushKeyUp();
+            		move_right = isPushKeyRight();
+            		move_left = isPushKeyLeft();
+            		move_back = isPushKeyBack();
+            		move_jump = isPushKeyJump();
+            	}
+            	
+            	/*@SideOnly(Side.CLIENT)
+            	//if(worldObj.isRemote)
+            	{
+	            	Minecraft mc = Minecraft.getMinecraft();
+	            	GameSettings gameSettings = mc.gameSettings;
+	            	//gameSettings.sendSettingsToServer();
+	            	move_up = gameSettings.keyBindForward.getIsKeyPressed();
+	            	move_right = gameSettings.keyBindRight.getIsKeyPressed();
+	            	move_left = gameSettings.keyBindLeft.getIsKeyPressed();
+	            	move_back = gameSettings.keyBindBack.getIsKeyPressed();
+	            	move_jump = gameSettings.keyBindJump.getIsKeyPressed();
+            	}*/
+	            	//KeyBinding key;
+	            	
+	            	double acceleration = 0.04D;
+	            	double acceleration2 = 0.08D;
+	            	if(move_jump)
+	            	{
+	            		acceleration = 0.5D;
+	            		//motionY = -Math.sin(riddenByEntity.rotationPitch / 180F * 3.141593F) * acceleration;
+		            	//if(gameSettings.keyBindForward.getIsKeyPressed() && gameSettings.keyBindBack.getIsKeyPressed())
+		            	{
+		            		motionX *= 0.0D;
+		            		motionZ *= 0.0D;
+		            		motionY *= 0.0D;
+		            	}
+		            	//else
+		            	{
+		            		
+			            	if(move_up)
+			            	{
+			            		motionY = -Math.sin(-90F / 180F * 3.141593F) * acceleration;
+			            		//motionX = 0.0D;
+			            		//motionZ = 0.0D;
+			            		//motionX = -Math.sin(riddenByEntity.rotationYaw / 180F * (float)Math.PI) * acceleration;
+			            		//motionZ =  Math.cos(riddenByEntity.rotationYaw / 180F * (float)Math.PI) * acceleration;
+			            	}
+			            	if(move_back)
+			            	{
+			            		motionY = -Math.sin(90F / 180F * 3.141593F) * acceleration;
+			            		//motionX = 0.0D;
+			            		//motionZ = 0.0D;
+			            		//motionX =  Math.sin(riddenByEntity.rotationYaw / 180F * (float)Math.PI) * acceleration;
+			            		//motionZ = -Math.cos(riddenByEntity.rotationYaw / 180F * (float)Math.PI) * acceleration;
+			            	}
+		            	}
+		            	if(move_right)
+		            	{
+		            		motionX =  Math.sin((rotationYaw + 0F) / 180F * (float)Math.PI) * acceleration;
+		            		motionZ = -Math.cos((rotationYaw + 0F) / 180F * (float)Math.PI) * acceleration;
+		            	}
+		            	if(move_left)
+		            	{
+		            		motionX =  Math.sin((rotationYaw - 180F) / 180F * (float)Math.PI) * acceleration;
+		            		motionZ = -Math.cos((rotationYaw - 180F) / 180F * (float)Math.PI) * acceleration;
+		            	}
+		            	double moveSpeed =  Math.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
+		            	if(moveSpeed > 0.5D)
+		            	{
+		            		motionX *= moveSpeed;
+		            		motionY *= moveSpeed;
+		            		motionZ *= moveSpeed;
+		            	}
+	            	}
+	            	else
+	            	{
+	            		motionY += -Math.sin(rotationPitch / 180F * 3.141593F) * acceleration;
+		            	if(!move_up && !move_back &&
+		            			!move_right && !move_left)
+		            	{
+		            		motionX *= 0.97D;
+		            		motionZ *= 0.97D;
+		            		motionY *= 0.97D;
+		            	}
+		            	else
+		            	{
+			            	if(move_up)
+			            	{
+			            		motionX +=  Math.sin((rotationYaw - 90F) / 180F * (float)Math.PI) * acceleration;
+			            		motionZ += -Math.cos((rotationYaw - 90F) / 180F * (float)Math.PI) * acceleration;
+			            	}
+			            	if(move_back)
+			            	{
+			            		motionX += -Math.sin((rotationYaw - 90F) / 180F * (float)Math.PI) * acceleration2;
+			            		motionZ +=  Math.cos((rotationYaw - 90F) / 180F * (float)Math.PI) * acceleration2;
+			            	}
+		            	}
+		            	if(move_right)
+		            	{
+		            		motionX +=  Math.sin((rotationYaw + 0F) / 180F * (float)Math.PI) * acceleration;
+		            		motionZ += -Math.cos((rotationYaw + 0F) / 180F * (float)Math.PI) * acceleration;
+		            	}
+		            	if(move_left)
+		            	{
+		            		motionX +=  Math.sin((rotationYaw - 180F) / 180F * (float)Math.PI) * acceleration;
+		            		motionZ += -Math.cos((rotationYaw - 180F) / 180F * (float)Math.PI) * acceleration;
+		            	}
+	            	
+            	}
+
+            	float f = this.riddenByEntity.rotationYaw;// + -living.moveStrafing * 90.0F;
+            	//f *= 20;
+            	speedMultiplier = 0.6D;
+
+            	
+            	float pitch = riddenByEntity.rotationPitch;// * 3F;
+            	rotationPitch = pitch;
+
+            	if(pitch > 90F)
+            	{
+            		pitch = 90F;
+            	}
+            	else if(pitch < -90F)
+            	{
+            		pitch = -90F;
+            	}
+            	//Entityの移動量に箒の移動量を合わす
+            	//motionX -=  Math.sin(riddenByEntity.rotationYaw / 180F * 3.141593F) * speedMultiplier * 0.6D;
+            	//motionZ +=  Math.cos(riddenByEntity.rotationYaw / 180F * 3.141593F) * speedMultiplier * 0.6D;
+            	// = -Math.sin(pitch / 180F * 3.141593F) * speedMultiplier * 1.0D;
+            	if(pitch < 0F)
+            	{
+            		pitch *= 0.1F;
+            	}
+            	
+            	//rotationYaw = living.moveStrafing;
+            	rotationYaw = riddenByEntity.rotationYaw - 90F;
+            	
+            	
+            	double moveSpeed =  Math.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
+            	if(moveSpeed > 0.8D)
+            	{
+            		motionX *= moveSpeed;
+            		motionY *= moveSpeed;
+            		motionZ *= moveSpeed;
+            	}
+            }
+            
+
+            /*double thisMotionXZ = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+
+            if (motionXZ > 0.7D)//一定の水平移動量があるなら
+            {
+                double motionXZ_rate = 0.7D / motionXZ;
+                this.motionX *= motionXZ_rate;//一定の速度を超えないように移動量を制限
+                this.motionZ *= motionXZ_rate;
+                motionXZ = 0.7D;
+            }
+
+            if (thisMotionXZ > motionXZ && this.speedMultiplier < 0.7D)
+            {
+                this.speedMultiplier += (0.70D - this.speedMultiplier) / 70.0D;
+
+                if (this.speedMultiplier > 0.7D)
+                {
+                    this.speedMultiplier = 0.7D;
+                }
+            }
+            else
+            {
+                this.speedMultiplier -= (this.speedMultiplier - 0.07D) / 70.0D;
+
+                if (this.speedMultiplier < 0.07D)
+                {
+                    this.speedMultiplier = 0.07D;
+                }
+            }*/
+
+            /*if (this.onGround)
+            {
+                this.motionX *= 0.5D;
+                this.motionY *= 0.5D;
+                this.motionZ *= 0.5D;
+            }*/
+            if(this.inWater)
+            {
+            	motionX *= 0.5D;
+            	motionY *= 0.5D;
+            	motionZ *= 0.5D;
+            }
+
+            this.moveEntity(this.motionX, this.motionY, this.motionZ);
+
+            /*if (this.isCollidedHorizontally && motionXZ > 0.2D)
+            {
+                if (!this.worldObj.isRemote && !this.isDead)
+                {
+                    this.setDead();
+                    int k;
+
+                    for (k = 0; k < 3; ++k)
+                    {
+                        this.dropItemWithOffset(Block.planks.blockID, 1, 0.0F);
+                    }
+
+                    for (k = 0; k < 2; ++k)
+                    {
+                        this.dropItemWithOffset(Item.stick.itemID, 1, 0.0F);
+                    }
+                }
+            }
+            else*/
+            {
+                this.motionX *= 0.9900000095367432D;
+                this.motionY *= 0.949999988079071D;
+                this.motionZ *= 0.9900000095367432D;
+            }
+
+        	//角度の修正********
+            //this.rotationPitch = 0.0F;//垂直角度は常に一定で動かない
+            /*double thisYaw = (double)this.rotationYaw;
+            double prevXtoX = this.prevPosX - this.posX;
+            double prevZtoZ = this.prevPosZ - this.posZ;
+
+            if (prevXtoX * prevXtoX + prevZtoZ * prevZtoZ > 0.001D)//少しでも動いているなら
+            {
+                thisYaw = (double)((float)(Math.atan2(prevZtoZ, prevXtoX) * 180.0D / Math.PI));
+            }
+
+            double d12 = MathHelper.wrapAngleTo180_double(thisYaw - (double)this.rotationYaw);
+
+            if (d12 > 20.0D)
+            {
+                d12 = 20.0D;
+            }
+
+            if (d12 < -20.0D)
+            {
+                d12 = -20.0D;
+            }
+
+            this.rotationYaw = (float)((double)this.rotationYaw + d12);*/
+            
+            this.setRotation(this.rotationYaw, this.rotationPitch);
+        	//*******************
+
+            if (!this.worldObj.isRemote)
+            {
+                List list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(0.20000000298023224D, 0.0D, 0.20000000298023224D));
+                int l;
+
+                if (list != null && !list.isEmpty())
+                {
+                    for (l = 0; l < list.size(); ++l)
+                    {
+                        Entity entity = (Entity)list.get(l);
+
+                        if (entity != this.riddenByEntity && entity.canBePushed() && entity instanceof EntityMarisaBroom)
+                        {
+                            entity.applyEntityCollision(this);
+                        }
+                    }
+                }
+
+                /*for (l = 0; l < 4; ++l)
+                {
+                    int i1 = MathHelper.floor_double(this.posX + ((double)(l % 2) - 0.5D) * 0.8D);
+                    int j1 = MathHelper.floor_double(this.posZ + ((double)(l / 2) - 0.5D) * 0.8D);
+
+                    for (int k1 = 0; k1 < 2; ++k1)
+                    {
+                        int l1 = MathHelper.floor_double(this.posY) + k1;
+                        int i2 = this.worldObj.getBlockId(i1, l1, j1);//箒のいる場所のブロックIDを取得
+
+                        if (i2 == Block.snow.blockID)//雪に衝突したなら
+                        {
+                            this.worldObj.setBlockToAir(i1, l1, j1);//空気ブロックに入れ替える
+                        }
+                        else if (i2 == Block.waterlily.blockID)//蓮に衝突したなら
+                        {
+                            this.worldObj.destroyBlock(i1, l1, j1, true);//蓮を破壊し、蓮をアイテム化する
+                        }
+                    }
+                }*/
+
+            	//乗っているEntityがおり、それが死んでいるなら
+                if (this.riddenByEntity != null && this.riddenByEntity.isDead)
+                {
+                    this.riddenByEntity = null;//乗っているEntityをいないことにする
+                }
+                else
+                {
+                	//riddenByEntity.fallDistance = 0.0F;
+                }
+                if(this.riddenByEntity != null)
+                {
+                	riddenByEntity.fallDistance = 0.0F;
+                	fallDistance = 0.0F;
+                }
+                else
+                {
+                	motionX *= 0.9D;
+                	motionY -= 0.03D;
+                	motionZ *= 0.9D;
+                	if(rotationPitch > 1.0F)
+                	{
+                		rotationPitch--;
+                	}
+                	else if(rotationPitch < -1.0F)
+                	{
+                		rotationPitch++;
+                	}
+                	if(onGround)
+                	{
+                		motionY += 0.06D;
+                	}
+                }
+            }
+        }
+        
+
+    }
+    
+
+	//乗っているEntityの位置を更新
+    public void updateRiderPosition2()
+    {
+        if (this.riddenByEntity != null)
+        {
+        	//
+            double d0 = 0D;//Math.cos((double)this.rotationYaw * Math.PI / 180.0D) * 0.4D;
+            double d1 = 0D;//Math.sin((double)this.rotationYaw * Math.PI / 180.0D) * 0.4D;
+            this.riddenByEntity.setPosition(this.posX + d0, this.posY + this.getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ + d1);
+        }
+    }
+    
+    /**
+     * Handles updating while being ridden by an entity
+     */
+    public void updateRidden()
+    {
+    	super.updateRidden();
+        if (this.ridingEntity.isDead)
+        {
+            this.ridingEntity = null;
+        }
+        else
+        {
+        	updateRiderPosition2();
+        }
+    }
+
+    /**
+	 * 保存するデータの書き込み
+	 * @param nbtTagCompound : NTBタグ
+	 */
+    protected void writeEntityToNBT(NBTTagCompound nbtTagCompound)
+    {
+    }
+
+    /**
+	 * 保存したデータの読み込み
+	 * @param nbtTagCompound : NBTタグ
+	 */
+    protected void readEntityFromNBT(NBTTagCompound nbtTagCompound)
+    {
+    }
+
+    @SideOnly(Side.CLIENT)
+    public float getShadowSize()
+    {
+        return 0.0F;
+    }
+
+	//プレイヤーに右クリックされたときに呼ばれる
+    //public boolean interact(EntityPlayer entityPlayer)
+	//public boolean func_130002_c(EntityPlayer entityPlayer)
+    public boolean interactFirst(EntityPlayer entityPlayer)
+    {
+        if (riddenByEntity != null && riddenByEntity instanceof EntityPlayer && riddenByEntity != entityPlayer)
+        {
+            return true;
+        }
+		else
+    	{
+        	if (!worldObj.isRemote)
+        	{
+            	entityPlayer.mountEntity(this);
+        	}
+
+        	return true;
+    	}
+    }
+
+    /**
+     * Sets the damage taken from the last hit.
+     */
+    public void setDamageTaken(float par1)
+    {
+        this.dataWatcher.updateObject(19, Float.valueOf(par1));
+    }
+
+    /**
+     * Gets the damage taken from the last hit.
+     */
+    public float getDamageTaken()
+    {
+        //return this.dataWatcher.func_111145_d(19);
+        return this.dataWatcher.getWatchableObjectFloat(19);
+    }
+
+    /**
+     * Sets the time to count down from since the last time entity was hit.
+     */
+    public void setTimeSinceHit(int par1)
+    {
+        this.dataWatcher.updateObject(17, Integer.valueOf(par1));
+    }
+
+    /**
+     * Gets the time since the last hit.
+     */
+    public int getTimeSinceHit()
+    {
+        return this.dataWatcher.getWatchableObjectInt(17);
+    }
+
+    /**
+     * Sets the forward direction of the entity.
+     */
+    public void setForwardDirection(int par1)
+    {
+        this.dataWatcher.updateObject(18, Integer.valueOf(par1));
+    }
+
+    /**
+     * Gets the forward direction of the entity.
+     */
+    public int getForwardDirection()
+    {
+        return this.dataWatcher.getWatchableObjectInt(18);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void func_70270_d(boolean par1)
+    {
+        this.isEmpty = par1;
+    }
+}

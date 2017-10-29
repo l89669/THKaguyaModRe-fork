@@ -53,9 +53,9 @@ public class GuiMiracleMallet extends GuiContainer
     protected void drawGuiContainerForegroundLayer(int par1, int par2)
     {
     	/*
-    	 * 绗紤寮曟暟銇ф弿鐢汇仚銈嬫枃瀛楀垪銈掓寚瀹?
-    	 * 绗紥銆侊紦寮曟暟銇枃瀛椼伄鎻忕敾浣嶇疆銆俋,Y銇爢銆傘亾銇綅缃伅GUI銇乏涓娿倰0锛?銇ㄣ仚銈?
-    	 * 绗紨寮曟暟銇墜銈掍粯銇戙仾銇忋仸銇勩亜銇ㄦ€濄亞
+    	 * 第１引数で描画する文字列を指定
+    	 * 第２、３引数は文字の描画位置。X,Yの順。この位置はGUIの左上を0，0とする
+    	 * 第４引数は手を付けなくていいと思う
     	 */
     	this.fontRendererObj.drawString(I18n.format("item.miracleMallet.name"), 6, 6, 4210752);
     	this.fontRendererObj.drawString(I18n.format("miracleMallet.material"), 134, 6, 4210752);
