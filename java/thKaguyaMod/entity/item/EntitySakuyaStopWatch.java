@@ -159,7 +159,7 @@ public class EntitySakuyaStopWatch extends Entity
         			{
         				EntitySakuyaWatch watch = (EntitySakuyaWatch)movingObjectPosition.entityHit;
         				//アイテム化させる
-        	    		THKaguyaLib.itemEffectFinish(watch, watch.user, THKaguyaItems.sakuya_watch);
+        	    		THKaguyaLib.itemEffectFinish(watch, watch.userEntity, THKaguyaItems.sakuya_watch);
         	    		dubbleWatch = true;
         			}
         			if( movingObjectPosition.entityHit instanceof EntitySakuyaStopWatch )
